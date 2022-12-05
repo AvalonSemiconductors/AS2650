@@ -14,24 +14,24 @@ module wrapped_as2650(
 );
 
 	wire oeb;
-	assign io_oeb = {'b0000000000000000000, 'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb};
+	assign io_oeb = {19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
 
 	wire reset = wb_rst_i;
 	
 	as2650 as2650(
 		.clk(wb_clk_i),
 		.reset(reset),
-		.adr(io_out[27:15]),
-		.dbus_in(io_in[7:0]),
-		.dbus_out(io_out[7:0]),
+		.adr(io_out[32:20]),
+		.dbus_in(io_in[12:5]),
+		.dbus_out(io_out[12:5]),
 		.oeb(oeb),
-		.sense(io_in[8]),
-		.d_c(io_out[9]),
-		.m_io(io_out[10]),
-		.wrp(io_out[11]),
-		.opreq(io_out[12]),
-		.rw(io_out[13]),
-		.flag(io_out[14])
+		.sense(io_in[13]),
+		.d_c(io_out[14]),
+		.m_io(io_out[15]),
+		.wrp(io_out[16]),
+		.opreq(io_out[17]),
+		.rw(io_out[18]),
+		.flag(io_out[19])
 	);
 endmodule
 `default_nettype wire
