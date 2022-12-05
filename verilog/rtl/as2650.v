@@ -1,3 +1,15 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 module as2650(
 	input reset,
 	output [12:0] adr,
@@ -320,7 +332,15 @@ module as2650(
 							*	Misc instructions
 							*/
 							if(cycle == 2) begin
-								if(ins_reg == 'h90 || ins_reg == 'h91) begin //Undocumented instructions that I know execute as NOP on the real CPU
+								if(ins_reg == 'h90 || ins_reg == 'h91) begin //Hijacking undocumented opcodes to add a multiply instruction
+									//(psl[4] ? r123_2[2] : r123[2]);
+									if(psl[4]) begin
+										r123_2[1] <= r0 * r123_2[0];
+										r123_2[2] <= (r0 * r123_2[0]) >> 8;
+									end else begin
+										r123[1] <= r0 * r123[0];
+										r123[2] <= (r0 * r123[0]) >> 8;
+									end
 									cycle <= 0;
 								end else if(ins_reg == 'h12) begin
 									r0 <= psu;
