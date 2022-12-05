@@ -108,7 +108,7 @@ module user_project_wrapper #(
 wrapped_as2650 wrapped_as2650 (
 `ifdef USE_POWER_PINS
     .vdd(vdd),
-    .vss(vss).
+    .vss(vss),
 `endif
     .wb_clk_i(wb_clk_i),
     .wb_rst_i(wb_rst_i),
