@@ -37,7 +37,6 @@ module as2650(
 	reg [7:0] psl;
 	reg [7:0] ins_reg;
 	reg [14:0] stack[7:0];
-	reg [2:0] stack_ptr;
 	reg [7:0] cycle;
 	reg halted;
 	reg [7:0] holding_reg;
@@ -45,7 +44,6 @@ module as2650(
 	reg [1:0] idx_ctrl;
 	
 	assign flag = psu[6];
-	wire [2:0] sp = psu[2:0];
 	
 	reg r_opreq;
 	assign opreq = r_opreq;
@@ -80,6 +78,7 @@ module as2650(
 	wire [7:0] input1 = ins_reg[2:3] == 0 ? holding_reg : instr_reg;
 	wire [7:0] input2 = ins_reg[2:3] == 0 ? instr_reg : holding_reg;
 	wire [7:0] alu_next = alu_step(input1, input2);
+	wire [16:0] mul_res = r0 * (psl[4] ? r123_2[0] : r123[0]);
 
 	always @(posedge clk) begin
 		if(reset) begin
@@ -102,7 +101,6 @@ module as2650(
 			r_wrp <= 0;
 			halted <= 0;
 			idx_ctrl <= 0;
-			stack_ptr <= 0;
 		end else if(!halted) begin
 			psu[7] <= sense;
 			cycle <= cycle + 1;
@@ -155,8 +153,8 @@ module as2650(
 								r_addr <= pc;
 							end else if(cycle == 4) begin
 								if(ins_reg == 'hBF) begin
-									stack[stack_ptr] <= pc;
-									stack_ptr <= stack_ptr + 1;
+									stack[psu[2:0]] <= pc;
+									psu[2:0] <= psu[2:0] + 1;
 								end
 								if(addr_buff[7]) begin //Indirect addressing
 									r_addr <= {addr_buff[4:0], dbus_in};
@@ -253,8 +251,8 @@ module as2650(
 							if(cycle == 2) begin
 								if(ins_reg[1:0] == 'b11 || ins_reg[1:0] == psl[7:6]) begin //Return on condition true
 									//Pop a value of the stack and into PC
-									pc <= stack[stack_ptr - 1];
-									stack_ptr <= stack_ptr - 1;
+									pc <= stack[psu[2:0] - 1];
+									psu[2:0] <= psu[2:0] - 1;
 									if(ins_reg[7:4] == 'h3) begin //Also re-enable interrupts
 										psu[5] <= 0;
 									end
@@ -323,8 +321,9 @@ module as2650(
 								write_reg(rrl, ins_reg[1:0]);
 								cycle <= 0;
 							end
-						end else if(ins_reg[7:4] >= 'h94 && ins_reg[7:4] <= 'h97) begin //Decimal-adjust register. Not implemented, for now.
+						end else if(ins_reg[7:4] >= 'h94 && ins_reg[7:4] <= 'h97) begin //Decimal-adjust register
 							if(cycle == 2) begin
+								write_reg(instr_reg + (psl[0] ? 0 : 'hA0) + (psl[5] ? 0 : 'h0A), ins_reg[1:0]);
 								cycle <= 0;
 							end
 						end else begin
@@ -332,14 +331,38 @@ module as2650(
 							*	Misc instructions
 							*/
 							if(cycle == 2) begin
-								if(ins_reg == 'h90 || ins_reg == 'h91) begin //Using undocumented opcodes to add a multiply instruction
-									//(psl[4] ? r123_2[2] : r123[2]);
+								if(ins_reg == 'h90) begin //Using undocumented opcodes to add a multiply instruction
 									if(psl[4]) begin
-										r123_2[1] <= r0 * r123_2[0];
-										r123_2[2] <= (r0 * r123_2[0]) >> 8;
+										r123_2[1] <= mul_res[7:0];
+										r123_2[2] <= mul_res[15:8];
 									end else begin
-										r123[1] <= r0 * r123[0];
-										r123[2] <= (r0 * r123[0]) >> 8;
+										r123[1] <= mul_res[7:0];
+										r123[2] <= mul_res[15:8];
+									end
+									cycle <= 0;
+								end else if(ins_reg == 'h91) begin //Undocumented opcode, used here as an instruction that swaps r0 and r1
+									if(psl[4]) begin
+										r0 <= r123_2[0];
+										r123_2[0] <= r0;
+									end else begin
+										r0 <= r123[0];
+										r123[0] <= r0;
+									end
+									cycle <= 0;
+								end else if(ins_reg == 'h10) begin //Originally undocumented, used here as a way to read the on-chip stack
+									r0 <= stack[psu[2:0] - 1][7:0];
+									if(psl[4]) begin
+										r123_2[0] <= stack[psu[2:0] - 1][14:8];
+									end else begin
+										r123[0] <= stack[psu[2:0] - 1][14:8];
+									end
+									cycle <= 0;
+								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to modify the on-chip stack
+									stack[psu[2:0] - 1][7:0] <= r0;
+									if(psl[4]) begin
+										stack[psu[2:0] - 1][14:8] <= r123_2[0];
+									end else begin
+										stack[psu[2:0] - 1][14:8] <= r123[0];
 									end
 									cycle <= 0;
 								end else if(ins_reg == 'h12) begin
@@ -537,8 +560,8 @@ module as2650(
 	task push_stack();
 		begin
 			if(ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hB) begin
-				stack[stack_ptr] <= pc;
-				stack_ptr <= stack_ptr + 1;
+				stack[psu[2:0]] <= pc;
+				psu[2:0] <= psu[2:0] + 1;
 			end
 		end
 	endtask

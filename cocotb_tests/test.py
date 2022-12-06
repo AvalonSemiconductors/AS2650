@@ -130,3 +130,5 @@ async def test_cpu(dut):
 	assert memory[8191-69] == 6
 	assert memory[8191-70] == 40
 	assert memory[8191-71] == 40
+	assert memory[8191-72] == 100
+	assert memory[8191-73] == 200

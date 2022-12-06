@@ -373,6 +373,12 @@ sub_2_end:
 	db 0x90
 	stra,r2 mem_end-71
 	
+	lodi,r0 200
+	lodi,r1 100
+	db 0x91 ; Custom instruction, swaps r0 and r1
+	stra,r0 mem_end-72
+	stra,r1 mem_end-73
+	
 	halt
 	
 mul_8x8_8:
