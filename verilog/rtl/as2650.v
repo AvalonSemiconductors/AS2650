@@ -332,7 +332,7 @@ module as2650(
 							*	Misc instructions
 							*/
 							if(cycle == 2) begin
-								if(ins_reg == 'h90 || ins_reg == 'h91) begin //Hijacking undocumented opcodes to add a multiply instruction
+								if(ins_reg == 'h90 || ins_reg == 'h91) begin //Using undocumented opcodes to add a multiply instruction
 									//(psl[4] ? r123_2[2] : r123[2]);
 									if(psl[4]) begin
 										r123_2[1] <= r0 * r123_2[0];
