@@ -102,7 +102,7 @@ jobs:
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
 
           make precheck
-          docker run -v $(PRECHECK_ROOT):$(PRECHECK_ROOT) \
+          cd $PRECHECK_ROOT && docker run -v $(PRECHECK_ROOT):$(PRECHECK_ROOT) \
             -v $(INPUT_DIRECTORY):$(INPUT_DIRECTORY) \
             -v $(PDK_ROOT):$(PDK_ROOT) \
             -e INPUT_DIRECTORY=$(INPUT_DIRECTORY) \
