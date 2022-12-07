@@ -475,7 +475,11 @@ module as2650(
 					*	Store instruction
 					*/
 					else if(cycle == 8) begin
-						r_wrp <= 1;
+						if(ins_reg >= 'hC4 && ins_reg <= 'hC7) begin
+							cycle <= 0;
+						end else begin
+							r_wrp <= 1;
+						end
 					end else if(cycle == 9) begin
 						r_rw <= 0;
 						r_wrp <= 0;

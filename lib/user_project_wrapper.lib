@@ -146,31 +146,31 @@ library (user_project_wrapper) {
       capacitance : 0.0000;
     pin("io_in[37]") {
       direction : input;
-      capacitance : 0.2420;
+      capacitance : 0.2416;
     }
     pin("io_in[36]") {
       direction : input;
-      capacitance : 0.2205;
+      capacitance : 0.2212;
     }
     pin("io_in[35]") {
       direction : input;
-      capacitance : 0.2134;
+      capacitance : 0.2682;
     }
     pin("io_in[34]") {
       direction : input;
-      capacitance : 0.3020;
+      capacitance : 0.2582;
     }
     pin("io_in[33]") {
       direction : input;
-      capacitance : 0.2217;
+      capacitance : 0.2325;
     }
     pin("io_in[32]") {
       direction : input;
-      capacitance : 0.2537;
+      capacitance : 0.2511;
     }
     pin("io_in[31]") {
       direction : input;
-      capacitance : 0.1894;
+      capacitance : 0.1909;
     }
     pin("io_in[30]") {
       direction : input;
@@ -182,47 +182,47 @@ library (user_project_wrapper) {
     }
     pin("io_in[28]") {
       direction : input;
-      capacitance : 0.2182;
+      capacitance : 0.2024;
     }
     pin("io_in[27]") {
       direction : input;
-      capacitance : 0.2336;
+      capacitance : 0.1881;
     }
     pin("io_in[26]") {
       direction : input;
-      capacitance : 0.1942;
+      capacitance : 0.1977;
     }
     pin("io_in[25]") {
       direction : input;
-      capacitance : 0.2103;
+      capacitance : 0.2296;
     }
     pin("io_in[24]") {
       direction : input;
-      capacitance : 0.2480;
+      capacitance : 0.2447;
     }
     pin("io_in[23]") {
       direction : input;
-      capacitance : 0.2033;
+      capacitance : 0.2030;
     }
     pin("io_in[22]") {
       direction : input;
-      capacitance : 0.1901;
+      capacitance : 0.1922;
     }
     pin("io_in[21]") {
       direction : input;
-      capacitance : 0.1481;
+      capacitance : 0.1480;
     }
     pin("io_in[20]") {
       direction : input;
-      capacitance : 0.1512;
+      capacitance : 0.1513;
     }
     pin("io_in[19]") {
       direction : input;
-      capacitance : 0.2448;
+      capacitance : 0.2146;
     }
     pin("io_in[18]") {
       direction : input;
-      capacitance : 0.2067;
+      capacitance : 0.2070;
     }
     pin("io_in[17]") {
       direction : input;
@@ -234,63 +234,63 @@ library (user_project_wrapper) {
     }
     pin("io_in[15]") {
       direction : input;
-      capacitance : 0.5088;
+      capacitance : 0.4304;
     }
     pin("io_in[14]") {
       direction : input;
-      capacitance : 0.4898;
+      capacitance : 0.6529;
     }
     pin("io_in[13]") {
       direction : input;
-      capacitance : 0.3561;
+      capacitance : 0.4268;
     }
     pin("io_in[12]") {
       direction : input;
-      capacitance : 0.3966;
+      capacitance : 0.4173;
     }
     pin("io_in[11]") {
       direction : input;
-      capacitance : 0.3353;
+      capacitance : 0.3777;
     }
     pin("io_in[10]") {
       direction : input;
-      capacitance : 0.2853;
+      capacitance : 0.4859;
     }
     pin("io_in[9]") {
       direction : input;
-      capacitance : 0.2695;
+      capacitance : 0.2778;
     }
     pin("io_in[8]") {
       direction : input;
-      capacitance : 0.2756;
+      capacitance : 0.2585;
     }
     pin("io_in[7]") {
       direction : input;
-      capacitance : 0.2971;
+      capacitance : 0.2545;
     }
     pin("io_in[6]") {
       direction : input;
-      capacitance : 0.3165;
+      capacitance : 0.4406;
     }
     pin("io_in[5]") {
       direction : input;
-      capacitance : 0.3595;
+      capacitance : 0.3606;
     }
     pin("io_in[4]") {
       direction : input;
-      capacitance : 0.3779;
+      capacitance : 0.3775;
     }
     pin("io_in[3]") {
       direction : input;
-      capacitance : 0.4016;
+      capacitance : 0.4034;
     }
     pin("io_in[2]") {
       direction : input;
-      capacitance : 0.4862;
+      capacitance : 0.5731;
     }
     pin("io_in[1]") {
       direction : input;
-      capacitance : 0.5103;
+      capacitance : 0.4948;
     }
     pin("io_in[0]") {
       direction : input;

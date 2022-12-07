@@ -1,0 +1,10 @@
+
+Magic 8.3 revision 105 - Compiled on Mon, 06 Dec 2021 22:32:27 +0200.
+Starting magic under Tcl interpreter
+Using the terminal as the console.
+Using NULL graphics device.
+Processing system .magicrc file
+Loading "/home/lucah/Videos/AS2650/mag/mag2gds_caravel.tcl" from command line.
+Error parsing "/home/lucah/Videos/AS2650/mag/mag2gds_caravel.tcl": invalid command name "random"
+Using technology "minimum", version 0.0
+% 
