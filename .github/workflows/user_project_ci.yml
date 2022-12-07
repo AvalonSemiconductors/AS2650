@@ -149,7 +149,7 @@ jobs:
              
       - uses: actions/upload-artifact@v3
         with:
-        name: glTF
-        path: |
-          /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
-          /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
+          name: glTF
+          path: |
+            /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
+            /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
