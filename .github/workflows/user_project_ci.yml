@@ -68,7 +68,7 @@ jobs:
         run: echo "PDK=gf180mcuC" >> $GITHUB_ENV
 
       - name: Export OPENLANE ROOT
-        run: echo "OPENLANE_ROOT=/home/runner/work/caravel_user_project/openlane" >> $GITHUB_ENV
+        run: echo "OPENLANE_ROOT=/home/runner/work/AS2650/openlane" >> $GITHUB_ENV
 
       - name: Download PDK Tarball
         uses: actions/download-artifact@v2
@@ -120,7 +120,7 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/caravel_user_project/caravel_user_project/mpw_precheck_result/logs/*
+            /home/runner/work/AS2650/AS2650/precheck_results/*
 
   generate_gltf:
     runs-on: ubuntu-latest
@@ -143,4 +143,13 @@ jobs:
       - name: Generate models
         run: |
              echo "chirp"
-             tree
+             pip3 install numpy gdspy triangle pygltflib
+             python3 gds2gltf.py gds/wrapped_as2650.gds
+             python3 gds2gltf.py gds/user_project_wrapper.gds
+             
+      - uses: actions/upload-artifact@v3
+        with:
+        name: glTF
+        path: |
+          /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
+          /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
