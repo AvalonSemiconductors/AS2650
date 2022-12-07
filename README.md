@@ -6,8 +6,13 @@ This is a partial implementation of the abandoned Signetics 2650 CPU architectur
 
 Only a subset of the full feature set is implemented here. The following features are part of the S2650, but missing from the SA2650:
 - Interrupts
-- Decimal Adjust Register (`dar`) instructions
 - Extended I/O (`wrte`, `rede`) instructions
 - Memory paging (address space limited to 8192 bytes, emulating a S2650 that is 'stuck' on page 0)
+
+Some **additional** funcionality is also present, utilizing opcodes that went unused in the original S2650 to add new instructions:
+- `mul` (opcode `'h90`, no arguments) - Multiplies r0 and r1, and stores the 16-bit result in r2 (LSB) and r3 (MSB)
+- `xchg` (opcode `'h91`, no arguments) - Exchanges the values of r0 and r1
+- `strs` (opcode `'h10`, no arguments) - Stores the value on top of the call stack into r0 (LSB) and r1 (MSB)
+- `lods` (opcode `'h11', no arguments) - Loads the value on top of the call stack from r0 (LSB) and r1 (MSB)
 
 Please see [this repository](https://github.com/89Mods/S2650-tools) for Documentation on the CPU architecture, as well as an assembler, emulator and example programs.
