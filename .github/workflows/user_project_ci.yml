@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-    - name: Download GDS Tarball
+      - name: Download GDS Tarball
         uses: actions/download-artifact@v2
         with:
           name: gds-tarball
