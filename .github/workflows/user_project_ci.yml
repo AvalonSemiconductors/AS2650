@@ -96,26 +96,23 @@ jobs:
 
       - name: run precheck
         run: |
-          export INPUT_DIRECTORY=$(pwd)
-          export PRECHECK_ROOT=$INPUT_DIRECTORY/mpw_precheck
-          export OUTPUT_DIRECTORY=$INPUT_DIRECTORY/mpw_precheck_result
-          export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
-
           make precheck
-          cd $PRECHECK_ROOT && docker run -v $(PRECHECK_ROOT):$(PRECHECK_ROOT) \
-            -v $(INPUT_DIRECTORY):$(INPUT_DIRECTORY) \
-            -v $(PDK_ROOT):$(PDK_ROOT) \
-            -e INPUT_DIRECTORY=$(INPUT_DIRECTORY) \
-            -e PDK_PATH=$(PDK_ROOT)/$(PDK) \
-            -e PDK_ROOT=$(PDK_ROOT) \
-            -e PDKPATH=$(PDKPATH) \
-            -u $(shell id -u $(USER)):$(shell id -g $(USER)) \
-            efabless/mpw_precheck:latest bash -c "cd $(PRECHECK_ROOT) ; python3 mpw_precheck.py --input_directory $(INPUT_DIRECTORY) --pdk_path $(PDK_ROOT)/$(PDK)"
+          make run-precheck
 
-          cnt=$(grep -c "All Checks Passed" "$OUTPUT")
+          cnt=$(grep -c "All Checks Passed" precheck_results/*/logs/precheck.log)
           if ! [[ $cnt ]]; then cnt=0; fi
           if [[ $cnt -eq 1 ]]; then exit 0; fi
           exit 2
+          
+      - name: Tarball GDS outputs
+        run: |
+          tar -cf /tmp/gds.tar -C ./gds .
+
+      - name: Upload GDS Tarball
+        uses: actions/upload-artifact@v2
+        with:
+          name: gds-tarball
+          path: /tmp/gds.tar
 
       - name: upload failure logs
         if: failure()
@@ -124,3 +121,26 @@ jobs:
           name: error
           path: |
             /home/runner/work/caravel_user_project/caravel_user_project/mpw_precheck_result/logs/*
+
+  generate_gltf:
+    runs-on: ubuntu-latest
+    needs: [user_project_flow_gf180mcuC]
+    steps:
+      - uses: actions/checkout@v2
+      
+    - name: Download GDS Tarball
+        uses: actions/download-artifact@v2
+        with:
+          name: gds-tarball
+          path: /tmp
+
+      - name: Unpack GDS Tarball
+        run: |
+          sudo mkdir -p ./gds
+          sudo chown -R $USER:$USER ./gds
+          tar -xf /tmp/gds.tar -C ./gds .
+      
+      - name: Generate models
+        run: |
+             echo "chirp"
+             tree
