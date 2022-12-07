@@ -12,3 +12,4 @@ gds2gltf.py
 /deps/timing-scripts/
 /venv/
 /mpw_precheck/
+*.gltf

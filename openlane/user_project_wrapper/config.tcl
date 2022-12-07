@@ -49,7 +49,8 @@ set ::env(MACRO_PLACEMENT_CFG) $::env(DESIGN_DIR)/macro.cfg
 ### Black-box verilog and views
 set ::env(VERILOG_FILES_BLACKBOX) "\
 	$::env(CARAVEL_ROOT)/verilog/rtl/defines.v \
-	$::env(DESIGN_DIR)/../../verilog/rtl/wrapped_as2650.v"
+	$::env(DESIGN_DIR)/../../verilog/rtl/wrapped_as2650.v \
+	$::env(DESIGN_DIR)/../../verilog/rtl/as2650.v"
 
 set ::env(EXTRA_LEFS) "\
 	$::env(DESIGN_DIR)/../../lef/wrapped_as2650.lef"
