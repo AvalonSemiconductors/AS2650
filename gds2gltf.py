@@ -37,13 +37,19 @@ if len(sys.argv) < 2: # sys.argv[0] is the name of the program
     sys.exit(0)
 gdsii_file_path = sys.argv[1]
 
-def extrude(polygons, ra, mp_res, idx):
-    start = ra[0]
-    end = ra[1]
+def extrude(args):
+    polygons = args[0]
+    idx = args[1]
+    print(f'Thread {idx} start')
     positions = []
-    indices = []        
+    indices = []
     indices_offset = 0
-    for i in range(start, end):
+    last_percent = 0
+    for i in range(0, len(polygons)):
+        percent = float(i) / len(polygons) * 100
+        if percent - last_percent > 25:
+            last_percent = percent
+            print(f'Thread {idx}: {last_percent}%')
         poly_data = polygons[i][1]
         clockwise = polygons[i][2]
         
@@ -75,7 +81,7 @@ def extrude(polygons, ra, mp_res, idx):
         else:    
             indices = np.append(indices, p_indices + indices_offset, axis=0)            
         indices_offset += len(p_positions)
-    mp_res[idx] = (positions, indices)
+    return (positions, indices)
 
 def triangulate(polygon):
     polygon = polygon[0]
@@ -318,23 +324,17 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
         indices = []
         
         if portion > 4:
-            print(f'Using {threads} threads')
+            print(f'Using {threads} threads with ~{portion} polys per thread')
             p = Pool(threads)
             
             for i in range(0, threads - 1):
-                ranges.append((i * portion, i * portion + portion))
-            ranges.append(((threads - 1) * portion, len(polygons)))
+                ranges.append((polygons[i * portion : i * portion + portion], i))
+                #ranges.append((i * portion, i * portion + portion))
+            #ranges.append(((threads - 1) * portion, len(polygons)))
+            ranges.append((polygons[(threads - 1) * portion : len(polygons)], threads - 1))
             
-            ths = []
-            mp_res = [None] * threads
-            #mp_res = p.map(extrude, ranges)
-            for i in range(0, threads):
-                ths.append(threading.Thread(target=extrude, args=(polygons, ranges[i], mp_res, i)))
-                ths[i].start()
-                
-            for i in range(0, threads):
-                ths[i].join()
-        
+            mp_res = p.map(extrude, ranges)
+            
             print("Merging thread outputs")
             for i in range(0, threads):
                 print(f'{i + 1}/{threads}')
@@ -354,10 +354,9 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
                     indices = np.append(indices , l_indices, axis=0)
         else:
             print(f'Workload too small ({portion}), forcing single-threaded processing')
-            mp_res = [None] * 1
-            extrude(polygons, (0, len(polygons)), mp_res, 0)
-            positions = mp_res[0][0]
-            indices = mp_res[0][1]
+            a, b = extrude((polygons, 0))
+            positions = a
+            indices = b
         
 
         indices_binary_blob = indices.astype(np.uint32).flatten().tobytes()
