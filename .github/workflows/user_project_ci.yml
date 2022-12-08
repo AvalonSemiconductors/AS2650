@@ -80,6 +80,8 @@ jobs:
 
       - name: Harden using Openlane
         run: |
+          rm -rf gds
+          mkdir gds
           make wrapped_as2650
           make user_project_wrapper
 
