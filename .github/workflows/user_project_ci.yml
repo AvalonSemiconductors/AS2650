@@ -142,3 +142,43 @@ jobs:
           path: |
             /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
             /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
+  generate_svg:
+    runs-on: ubuntu-latest
+    needs: [user_project_flow_gf180mcuC]
+    steps:
+      - name: Download GDS Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: gds-tarball
+          path: /tmp
+      - name: Unpack GDS Tarball
+        run: |
+          sudo mkdir -p /tmp/gds
+          sudo mkdir -p /tmp/svg
+          sudo chown -R $USER:$USER /tmp/gds
+          tar -xf /tmp/gds.tar -C /tmp/gds .
+
+      - name: Install dependencies
+        run: |
+          apt-get install inkscape
+          python -m pip install gdstk
+          
+      - name: Generate SVGs
+        run: |
+          python << EOF
+          import gdstk
+          
+          library = gdstk.read_gds('/tmp/gds/wrapped_as2650.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/wrapped_as2650.svg')
+          
+          library = gdstk.read_gds('/tmp/gds/user_project_wrapper.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/user_project_wrapper.svg')
+          
+      - uses: actions/upload-artifact@v3
+        with:
+          name: SVG
+          path: |
+            /tmp/svg/wrapped_as2650.svg
+            /tmp/gds/user_project_wrapper.svg
