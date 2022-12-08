@@ -27,12 +27,131 @@ import triangle # triangulate polygons
 import pygltflib
 from pygltflib import BufferFormat
 from pygltflib.validator import validate, summary
+from multiprocessing import Pool
 
 # get the input file name
 if len(sys.argv) < 2: # sys.argv[0] is the name of the program
     print("Error: need exactly one file as a command line argument.")
     sys.exit(0)
 gdsii_file_path = sys.argv[1]
+
+def extrude(args):
+    polygons = args[0]
+    start = args[1]
+    end = args[2]
+    positions = []
+    indices = []        
+    indices_offset = 0
+    for i in range(start, end):         
+        a = polygons[i]
+        poly_data = a[1]
+        clockwise = a[2]
+        
+        p_positions_top = np.insert(poly_data['vertices'], 2, zmax, axis=1)
+        p_positions_bottom = np.insert( poly_data['vertices'] , 2, zmin, axis=1)
+        
+        p_positions = np.concatenate( (p_positions_top, p_positions_bottom) )
+        p_indices_top = poly_data['triangles']
+        p_indices_bottom = np.flip ((p_indices_top+len(p_positions_top)), axis=1 )
+        
+        ind_list_top = np.arange(len(p_positions_top))
+        ind_list_bottom = np.arange(len(p_positions_top)) + len(p_positions_top)
+
+        if(clockwise):
+            ind_list_top = np.flip(ind_list_top, axis=0)
+            ind_list_bottom = np.flip(ind_list_bottom, axis=0)
+
+        p_indices_right = np.stack( (ind_list_bottom, np.roll(ind_list_bottom, -1, axis=0) , np.roll(ind_list_top, -1, axis=0)), axis=1 )
+        p_indices_left = np.stack( ( np.roll(ind_list_top, -1, axis=0), ind_list_top , ind_list_bottom ) , axis=1)
+                
+        p_indices = np.concatenate( (p_indices_top, p_indices_bottom, p_indices_right, p_indices_left) )
+
+        if(len(positions)==0):
+            positions = p_positions
+        else:
+            positions = np.append(positions , p_positions, axis=0)
+        if(len(indices)==0):
+            indices = p_indices
+        else:    
+            indices = np.append(indices, p_indices + indices_offset, axis=0)            
+        indices_offset += len(p_positions)
+    return (positions, indices)
+
+def triangulate(polygon):
+    polygon = polygon[0]
+    
+    num_polygon_points = len(polygon)
+
+    # determine whether polygon points are CW or CCW
+    area = 0
+    for i, v1 in enumerate(polygon): # loop through vertices
+        v2 = polygon[(i+1) % num_polygon_points]
+        area += (v2[0]-v1[0])*(v2[1]+v1[1]) # integrate area
+
+    clockwise = area > 0
+
+    # GDSII implements holes in polygons by making the polygon edge
+    # wrap into the hole and back out along the same line. However,
+    # this confuses the triangulation library, which fills the holes
+    # with extra triangles. Avoid this by moving each edge back a
+    # very small amount so that no two edges of the same polygon overlap.
+    delta = 0.00001 # inset each vertex by this much (smaller has broken one file)
+    points_i = polygon # get list of points
+    points_j = np.roll(points_i, -1, axis=0) # shift by 1
+    points_k = np.roll(points_i, 1, axis=0) # shift by -1
+    # calculate normals for each edge of each vertex (in parallel, for speed)
+    normal_ij = np.stack((points_j[:, 1]-points_i[:, 1],
+                        points_i[:, 0]-points_j[:, 0]), axis=1)
+    normal_ik = np.stack((points_i[:, 1]-points_k[:, 1],
+                        points_k[:, 0]-points_i[:, 0]), axis=1)
+    length_ij = np.linalg.norm(normal_ij, axis=1)
+    length_ik = np.linalg.norm(normal_ik, axis=1)
+    normal_ij /= np.stack((length_ij, length_ij), axis=1)
+    normal_ik /= np.stack((length_ik, length_ik), axis=1)
+    if clockwise:
+        normal_ij = -1*normal_ij
+        normal_ik = -1*normal_ik
+    # move each vertex inward along its two edge normals
+    polygon = points_i - delta*normal_ij - delta*normal_ik
+
+    # In an extreme case of the above, the polygon edge doubles back on
+    # itself on the same line, resulting in a zero-width segment. I've
+    # seen this happen, e.g., with a capital "N"-shaped hole, where
+    # the hole split line cuts out the "N" shape but splits apart to
+    # form the triangle cutout in one side of the shape. In any case,
+    # simply moving the polygon edges isn't enough to deal with this;
+    # we'll additionally mark points just outside of each edge, between
+    # the original edge and the delta-shifted edge, as outside the polygon.
+    # These parts will be removed from the triangulation, and this solves
+    # just this case with no adverse affects elsewhere.
+    hole_delta = 0.00001 # small fraction of delta
+    holes = 0.5*(points_j+points_i) - hole_delta*delta*normal_ij
+    # HOWEVER: sometimes this causes a segmentation fault in the triangle
+    # library. I've observed this as a result of certain various polygons.
+    # Frustratingly, the fault can be bypassed by *rotating the polygons*
+    # by like 30 degrees (exact angle seems to depend on delta values) or
+    # moving one specific edge outward a bit. I have absolutely no idea
+    # what is wrong. In the interest of stability over full functionality,
+    # this is disabled. TODO: figure out why this happens and fix it.
+    use_holes = False
+
+    # triangulate: compute triangles to fill polygon
+    point_array = np.arange(num_polygon_points)
+    edges = np.transpose(np.stack((point_array, np.roll(point_array, 1))))
+    if use_holes:
+        triangles = triangle.triangulate(dict(vertices=polygon,
+                                            segments=edges,
+                                            holes=holes), opts='p')
+    else:
+        triangles = triangle.triangulate(dict(vertices=polygon,
+                                            segments=edges), opts='p')
+
+    if not 'triangles' in triangles.keys():
+        triangles['triangles'] = []
+
+    # each line segment will make two triangles (for a rectangle), and the polygon
+    # triangulation will be copied on the top and bottom of the layer.
+    return (polygon, triangles, clockwise)
 
 ########## CONFIGURATION (EDIT THIS PART) #####################################
 
@@ -56,28 +175,6 @@ layerstack = {
     (41,0): {'name':'Via4', 'zmin':4.8661, 'zmax':5.371, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
     (81,0): {'name':'Metal5', 'zmin':5.371, 'zmax':6.6311, 'color':[ 0.4, 0.4, 0.4, 1.0]},
 }
-
-#layerstack = {    
-#    (235,4): {'name':'substrate', 'zmin':-2, 'zmax':0, 'color':[ 0.2, 0.2, 0.2, 1.0]},
-#    (64,20): {'name':'nwell', 'zmin':-0.5, 'zmax':0.01, 'color':[ 0.4, 0.4, 0.4, 1.0]},    
-#    # (65,44): {'name':'tap', 'zmin':0, 'zmax':0.1, 'color':[ 0.4, 0.4, 0.4, 1.0]},    
-#    (65,20): {'name':'diff', 'zmin':-0.12, 'zmax':0.02, 'color':[ 0.9, 0.9, 0.9, 1.0]},    
-#    (66,20): {'name':'poly', 'zmin':0, 'zmax':0.18, 'color':[ 0.75, 0.35, 0.46, 1.0]},    
-#    (66,44): {'name':'licon', 'zmin':0, 'zmax':0.936, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (67,20): {'name':'li1', 'zmin':0.936, 'zmax':1.136, 'color':[ 1.0, 0.81, 0.55, 1.0]},    
-#    (67,44): {'name':'mcon', 'zmin':1.011, 'zmax':1.376, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (68,20): {'name':'met1', 'zmin':1.376, 'zmax':1.736, 'color':[ 0.16, 0.38, 0.83, 1.0]},    
-#    (68,44): {'name':'via', 'zmin':1.736,'zmax':2, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (69,20): {'name':'met2', 'zmin':2, 'zmax':2.36, 'color':[ 0.65, 0.75, 0.9, 1.0]},    
-#    (69,44): {'name':'via2', 'zmin':2.36, 'zmax':2.786, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (70,20): {'name':'met3', 'zmin':2.786, 'zmax':3.631, 'color':[ 0.2, 0.62, 0.86, 1.0]},    
-#    (70,44): {'name':'via3', 'zmin':3.631, 'zmax':4.0211, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (71,20): {'name':'met4', 'zmin':4.0211, 'zmax':4.8661, 'color':[ 0.15, 0.11, 0.38, 1.0]},    
-#    (71,44): {'name':'via4', 'zmin':4.8661, 'zmax':5.371, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
-#    (72,20): {'name':'met5', 'zmin':5.371, 'zmax':6.6311, 'color':[ 0.4, 0.4, 0.4, 1.0]},
-#    # (83,44): { 'zmin':0, 'zmax':0.1, 'name':'text'},
-#}
-
 
 binaryBlob = bytes()
 gltf = pygltflib.GLTF2()
@@ -194,9 +291,7 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
     # triangle (with documentation at https://www.cs.cmu.edu/~quake/triangle.html).
 
     print('\tTriangulating polygons...')
-
-    
-    num_triangles = {} # will store the number of triangles for each layer
+    threads = 4
 
     # loop through all layers
     for layer_number, polygons in layers.items():
@@ -205,128 +300,52 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
         if not layer_number in layerstack.keys():
             continue
 
-        num_triangles[layer_number] = 0
-
-        # loop through polygons in layer
-        for index, (polygon, _, _) in enumerate(polygons):
-
-            num_polygon_points = len(polygon)
-
-            # determine whether polygon points are CW or CCW
-            area = 0
-            for i, v1 in enumerate(polygon): # loop through vertices
-                v2 = polygon[(i+1) % num_polygon_points]
-                area += (v2[0]-v1[0])*(v2[1]+v1[1]) # integrate area
-
-            clockwise = area > 0
-
-            # GDSII implements holes in polygons by making the polygon edge
-            # wrap into the hole and back out along the same line. However,
-            # this confuses the triangulation library, which fills the holes
-            # with extra triangles. Avoid this by moving each edge back a
-            # very small amount so that no two edges of the same polygon overlap.
-            delta = 0.00001 # inset each vertex by this much (smaller has broken one file)
-            points_i = polygon # get list of points
-            points_j = np.roll(points_i, -1, axis=0) # shift by 1
-            points_k = np.roll(points_i, 1, axis=0) # shift by -1
-            # calculate normals for each edge of each vertex (in parallel, for speed)
-            normal_ij = np.stack((points_j[:, 1]-points_i[:, 1],
-                                points_i[:, 0]-points_j[:, 0]), axis=1)
-            normal_ik = np.stack((points_i[:, 1]-points_k[:, 1],
-                                points_k[:, 0]-points_i[:, 0]), axis=1)
-            length_ij = np.linalg.norm(normal_ij, axis=1)
-            length_ik = np.linalg.norm(normal_ik, axis=1)
-            normal_ij /= np.stack((length_ij, length_ij), axis=1)
-            normal_ik /= np.stack((length_ik, length_ik), axis=1)
-            if clockwise:
-                normal_ij = -1*normal_ij
-                normal_ik = -1*normal_ik
-            # move each vertex inward along its two edge normals
-            polygon = points_i - delta*normal_ij - delta*normal_ik
-
-            # In an extreme case of the above, the polygon edge doubles back on
-            # itself on the same line, resulting in a zero-width segment. I've
-            # seen this happen, e.g., with a capital "N"-shaped hole, where
-            # the hole split line cuts out the "N" shape but splits apart to
-            # form the triangle cutout in one side of the shape. In any case,
-            # simply moving the polygon edges isn't enough to deal with this;
-            # we'll additionally mark points just outside of each edge, between
-            # the original edge and the delta-shifted edge, as outside the polygon.
-            # These parts will be removed from the triangulation, and this solves
-            # just this case with no adverse affects elsewhere.
-            hole_delta = 0.00001 # small fraction of delta
-            holes = 0.5*(points_j+points_i) - hole_delta*delta*normal_ij
-            # HOWEVER: sometimes this causes a segmentation fault in the triangle
-            # library. I've observed this as a result of certain various polygons.
-            # Frustratingly, the fault can be bypassed by *rotating the polygons*
-            # by like 30 degrees (exact angle seems to depend on delta values) or
-            # moving one specific edge outward a bit. I have absolutely no idea
-            # what is wrong. In the interest of stability over full functionality,
-            # this is disabled. TODO: figure out why this happens and fix it.
-            use_holes = False
-
-            # triangulate: compute triangles to fill polygon
-            point_array = np.arange(num_polygon_points)
-            edges = np.transpose(np.stack((point_array, np.roll(point_array, 1))))
-            if use_holes:
-                triangles = triangle.triangulate(dict(vertices=polygon,
-                                                    segments=edges,
-                                                    holes=holes), opts='p')
-            else:
-                triangles = triangle.triangulate(dict(vertices=polygon,
-                                                    segments=edges), opts='p')
-
-            if not 'triangles' in triangles.keys():
-                triangles['triangles'] = []
-
-            # each line segment will make two triangles (for a rectangle), and the polygon
-            # triangulation will be copied on the top and bottom of the layer.
-            num_triangles[layer_number] += num_polygon_points*2 + \
-                                        len(triangles['triangles'])*2
-            polygons[index] = (polygon, triangles, clockwise)
-
-
+        p = Pool(threads)
+        polygons = p.map(triangulate, polygons)
 
         zmin = layerstack[layer_number]['zmin']
         zmax = layerstack[layer_number]['zmax']
         layername = layerstack[layer_number]['name']
 
         print("\nProcesing layer " + layername + "\nExtruding polygons and preparing vertices and faces")
+        
+        ranges = []
+        portion = int(len(polygons) / threads)
         positions = []
-        indices = []        
-        indices_offset = 0
-        for i,(_, poly_data, clockwise) in enumerate(polygons):         
-
+        indices = []
+        
+        if portion > 16:
+            p = Pool(threads)
             
-            p_positions_top = np.insert(poly_data['vertices'], 2, zmax, axis=1)
-            p_positions_bottom = np.insert( poly_data['vertices'] , 2, zmin, axis=1)
+            for i in range(0, threads - 1):
+                ranges.append((polygons, i * portion, i * portion + portion))
+                
+            ranges.append((polygons, (threads - 1) * portion, len(polygons)))
             
-            p_positions = np.concatenate( (p_positions_top, p_positions_bottom) )
-            p_indices_top = poly_data['triangles']
-            p_indices_bottom = np.flip ((p_indices_top+len(p_positions_top)), axis=1 )
-            
-            ind_list_top = np.arange(len(p_positions_top))
-            ind_list_bottom = np.arange(len(p_positions_top)) + len(p_positions_top)
-
-            if(clockwise):
-                ind_list_top = np.flip(ind_list_top, axis=0)
-                ind_list_bottom = np.flip(ind_list_bottom, axis=0)
-
-            p_indices_right = np.stack( (ind_list_bottom, np.roll(ind_list_bottom, -1, axis=0) , np.roll(ind_list_top, -1, axis=0)), axis=1 )
-            p_indices_left = np.stack( ( np.roll(ind_list_top, -1, axis=0), ind_list_top , ind_list_bottom ) , axis=1)
-                 
-            p_indices = np.concatenate( (p_indices_top, p_indices_bottom, p_indices_right, p_indices_left) )
-
-            if(len(positions)==0):
-                positions = p_positions
-            else:
-                positions = np.append(positions , p_positions, axis=0)
-            if(len(indices)==0):
-                indices = p_indices
-            else:    
-                indices = np.append(indices, p_indices + indices_offset, axis=0)            
-            indices_offset += len(p_positions)
-      
+            mp_res = p.map(extrude, ranges)
+        
+            print("Merging thread outputs")
+            for i in range(0, threads):
+                print(f'{i + 1}/{threads}')
+                b = len(positions)
+                l_positions, l_indices = mp_res[i]
+                if len(positions) == 0:
+                    positions = l_positions
+                else:
+                    positions = np.append(positions , l_positions, axis=0)
+                for ind in l_indices:
+                    ind[0] += b
+                    ind[1] += b
+                    ind[2] += b
+                if len(indices) == 0:
+                    indices = l_indices
+                else:
+                    indices = np.append(indices , l_indices, axis=0)
+        else:
+            l_positions, l_indices = extrude((polygons, 0, len(polygons)))
+            positions = l_positions
+            indices = l_indices
+        
 
         indices_binary_blob = indices.astype(np.uint32).flatten().tobytes()
         positions_binary_blob = positions.astype(np.float32).tobytes()
