@@ -156,6 +156,7 @@ jobs:
           sudo mkdir -p /tmp/gds
           sudo mkdir -p /tmp/svg
           sudo chown -R $USER:$USER /tmp/gds
+          sudo chown -R $USER:$USER /tmp/svg
           tar -xf /tmp/gds.tar -C /tmp/gds .
 
       - name: Install dependencies

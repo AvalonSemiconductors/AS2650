@@ -23,6 +23,8 @@ import sys # read command-line arguments
 import gdspy # open gds file
 import numpy as np # fast math on lots of points
 import triangle # triangulate polygons
+import threading
+import multiprocessing
 
 import pygltflib
 from pygltflib import BufferFormat
@@ -35,17 +37,15 @@ if len(sys.argv) < 2: # sys.argv[0] is the name of the program
     sys.exit(0)
 gdsii_file_path = sys.argv[1]
 
-def extrude(args):
-    polygons = args[0]
-    start = args[1]
-    end = args[2]
+def extrude(polygons, ra, mp_res, idx):
+    start = ra[0]
+    end = ra[1]
     positions = []
     indices = []        
     indices_offset = 0
-    for i in range(start, end):         
-        a = polygons[i]
-        poly_data = a[1]
-        clockwise = a[2]
+    for i in range(start, end):
+        poly_data = polygons[i][1]
+        clockwise = polygons[i][2]
         
         p_positions_top = np.insert(poly_data['vertices'], 2, zmax, axis=1)
         p_positions_bottom = np.insert( poly_data['vertices'] , 2, zmin, axis=1)
@@ -75,7 +75,7 @@ def extrude(args):
         else:    
             indices = np.append(indices, p_indices + indices_offset, axis=0)            
         indices_offset += len(p_positions)
-    return (positions, indices)
+    mp_res[idx] = (positions, indices)
 
 def triangulate(polygon):
     polygon = polygon[0]
@@ -175,6 +175,7 @@ layerstack = {
     (41,0): {'name':'Via4', 'zmin':4.8661, 'zmax':5.371, 'color':[ 0.2, 0.2, 0.2, 1.0]},    
     (81,0): {'name':'Metal5', 'zmin':5.371, 'zmax':6.6311, 'color':[ 0.4, 0.4, 0.4, 1.0]},
 }
+threads = 4
 
 binaryBlob = bytes()
 gltf = pygltflib.GLTF2()
@@ -224,9 +225,12 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
 
     print ("\nProcessing cell: ", cell.name)
 
-    print("Flatenning")
-
-    cell.flatten()
+    if len(cell.get_dependencies()) != 0:
+        print("Flatenning")
+        cell.flatten()
+        gds_flattened = gdspy.GdsLibrary(gdsii.name, unit=gdsii.unit, precision=gdsii.precision)
+        gds_flattened.add(cell)
+        gds_flattened.write_gds(gdsii_file_path + "_flattened.gds")
     
     # $$$CONTEXT_INFO$$$ is a separate, non-standard compliant cell added
     # optionally by KLayout to store extra information not needed here.
@@ -291,7 +295,6 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
     # triangle (with documentation at https://www.cs.cmu.edu/~quake/triangle.html).
 
     print('\tTriangulating polygons...')
-    threads = 4
 
     # loop through all layers
     for layer_number, polygons in layers.items():
@@ -314,15 +317,23 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
         positions = []
         indices = []
         
-        if portion > 16:
+        if portion > 4:
+            print(f'Using {threads} threads')
             p = Pool(threads)
             
             for i in range(0, threads - 1):
-                ranges.append((polygons, i * portion, i * portion + portion))
-                
-            ranges.append((polygons, (threads - 1) * portion, len(polygons)))
+                ranges.append((i * portion, i * portion + portion))
+            ranges.append(((threads - 1) * portion, len(polygons)))
             
-            mp_res = p.map(extrude, ranges)
+            ths = []
+            mp_res = [None] * threads
+            #mp_res = p.map(extrude, ranges)
+            for i in range(0, threads):
+                ths.append(threading.Thread(target=extrude, args=(polygons, ranges[i], mp_res, i)))
+                ths[i].start()
+                
+            for i in range(0, threads):
+                ths[i].join()
         
             print("Merging thread outputs")
             for i in range(0, threads):
@@ -342,9 +353,11 @@ for cell in gdsii.top_level(): # loop through cells to read paths and polygons
                 else:
                     indices = np.append(indices , l_indices, axis=0)
         else:
-            l_positions, l_indices = extrude((polygons, 0, len(polygons)))
-            positions = l_positions
-            indices = l_indices
+            print(f'Workload too small ({portion}), forcing single-threaded processing')
+            mp_res = [None] * 1
+            extrude(polygons, (0, len(polygons)), mp_res, 0)
+            positions = mp_res[0][0]
+            indices = mp_res[0][1]
         
 
         indices_binary_blob = indices.astype(np.uint32).flatten().tobytes()
