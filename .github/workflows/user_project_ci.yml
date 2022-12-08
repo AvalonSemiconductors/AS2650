@@ -160,7 +160,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get install inkscape
+          sudo apt-get install -y inkscape
           python -m pip install gdstk
           
       - name: Generate SVGs
