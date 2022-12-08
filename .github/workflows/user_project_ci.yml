@@ -39,7 +39,7 @@ jobs:
       - name: populate pdk cache
         uses: actions/cache@v3
         with:
-          path: $PDK_ROOT
+          path: ${{ env.PDK_ROOT }}
           key: ${{ runner.os }}-pdk-${{ github.run_id }}
 
   user_project_flow_gf180mcuC:
@@ -66,10 +66,10 @@ jobs:
       - name: Export OPENLANE ROOT
         run: echo "OPENLANE_ROOT=/home/runner/work/AS2650/openlane" >> $GITHUB_ENV
           
-      - name: restore src cache
+      - name: restore pdk cache
         uses: actions/cache@v3
         with:
-          path: $PDK_ROOT
+          path: ${{ env.PDK_ROOT }}
           key: ${{ runner.os }}-pdk-${{ github.run_id }}
 
       - name: Install dependencies
