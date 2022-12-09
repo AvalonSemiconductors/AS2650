@@ -349,21 +349,23 @@ module as2650(
 										r123[0] <= r0;
 									end
 									cycle <= 0;
-								end else if(ins_reg == 'h10) begin //Originally undocumented, used here as a way to read the on-chip stack
+								end else if(ins_reg == 'h10) begin //Originally undocumented, used here as a way to pop from the on-chip stack
 									r0 <= stack[psu[2:0] - 1][7:0];
 									if(psl[4]) begin
 										r123_2[0] <= stack[psu[2:0] - 1][14:8];
 									end else begin
 										r123[0] <= stack[psu[2:0] - 1][14:8];
 									end
+									psu[2:0] <= psu[2:0] - 1;
 									cycle <= 0;
-								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to modify the on-chip stack
+								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to push to the on-chip stack
 									stack[psu[2:0] - 1][7:0] <= r0;
 									if(psl[4]) begin
-										stack[psu[2:0] - 1][14:8] <= r123_2[0];
+										stack[psu[2:0]][14:8] <= r123_2[0];
 									end else begin
-										stack[psu[2:0] - 1][14:8] <= r123[0];
+										stack[psu[2:0]][14:8] <= r123[0];
 									end
+									psu[2:0] <= psu[2:0] + 1;
 									cycle <= 0;
 								end else if(ins_reg == 'h12) begin
 									r0 <= psu;
