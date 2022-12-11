@@ -1,7 +1,7 @@
 magic
 tech gf180mcuC
 magscale 1 5
-timestamp 1670629593
+timestamp 1670793661
 << obsm1 >>
 rect 672 1471 89320 58785
 << metal2 >>
@@ -529,7 +529,7 @@ string FIXED_BBOX 0 0 90000 60000
 string LEFclass BLOCK
 string LEFview TRUE
 string GDS_END 12862414
-string GDS_FILE /run/media/tholin/Data/MPW/AS2650/openlane/wrapped_as2650/runs/22_12_10_00_43/results/signoff/wrapped_as2650.magic.gds
+string GDS_FILE /run/media/tholin/Data/MPW/AS2650/openlane/wrapped_as2650/runs/22_12_11_22_18/results/signoff/wrapped_as2650.magic.gds
 string GDS_START 401338
 << end >>
 
