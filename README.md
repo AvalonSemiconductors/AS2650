@@ -12,7 +12,7 @@ Only a subset of the full feature set is implemented here. The following feature
 Some **additional** funcionality is also present, utilizing opcodes that went unused in the original S2650 to add new instructions:
 - `mul` (opcode `'h90`, no arguments) - Multiplies r0 and r1, and stores the 16-bit result in r2 (LSB) and r3 (MSB)
 - `xchg` (opcode `'h91`, no arguments) - Exchanges the values of r0 and r1
-- `strs` (opcode `'h10`, no arguments) - Stores the value on top of the call stack into r0 (LSB) and r1 (MSB)
-- `lods` (opcode `'h11', no arguments) - Loads the value on top of the call stack from r0 (LSB) and r1 (MSB)
+- `push` (opcode `'h10`, no arguments) - Pops the value on top of the call stack into r0 (LSB) and r1 (MSB)
+- `pop` (opcode `'h11`, no arguments) - Pushes the values from r0 (LSB) and r1 (MSB) onto the stack
 
 Please see [this repository](https://github.com/89Mods/S2650-tools) for Documentation on the CPU architecture, as well as an assembler, emulator and example programs.
