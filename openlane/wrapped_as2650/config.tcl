@@ -23,6 +23,7 @@ set ::env(VERILOG_FILES) "\
 
 set ::env(DESIGN_IS_CORE) 0
 
+set ::env(CLOCK_NET) "wrapped_as2650.clk"
 set ::env(CLOCK_PORT) "wb_clk_i"
 set ::env(CLOCK_PERIOD) "24.0"
 
