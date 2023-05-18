@@ -1,3 +1,5 @@
+`default_nettype none
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -75,8 +77,8 @@ module as2650(
 	*/
 	wire [7:0] rrr = psl[3] ? {carry, instr_reg[7:1]} : {instr_reg[0], instr_reg[7:1]};
 	wire [7:0] rrl = psl[3] ? {instr_reg[6:0], carry} : {instr_reg[6:0], instr_reg[7]};
-	wire [7:0] input1 = ins_reg[2:3] == 0 ? holding_reg : instr_reg;
-	wire [7:0] input2 = ins_reg[2:3] == 0 ? instr_reg : holding_reg;
+	wire [7:0] input1 = ins_reg[3:2] == 0 ? holding_reg : instr_reg;
+	wire [7:0] input2 = ins_reg[3:2] == 0 ? instr_reg : holding_reg;
 	wire [7:0] alu_next = alu_step(input1, input2);
 	wire [16:0] mul_res = r0 * (psl[4] ? r123_2[0] : r123[0]);
 
@@ -87,9 +89,9 @@ module as2650(
 			r123[0] <= 0;
 			r123[1] <= 0;
 			r123[2] <= 0;
-			r123[4] <= 0;
-			r123[5] <= 0;
-			r123[6] <= 0;
+			r123_2[0] <= 0;
+			r123_2[1] <= 0;
+			r123_2[2] <= 0;
 			psu <= 0;
 			psl <= 0;
 			cycle <= 0;
@@ -101,6 +103,7 @@ module as2650(
 			r_wrp <= 0;
 			halted <= 0;
 			idx_ctrl <= 0;
+			b_buf <= 0;
 		end else if(!halted) begin
 			psu[7] <= sense;
 			cycle <= cycle + 1;
@@ -135,7 +138,7 @@ module as2650(
 									cycle <= 8;
 									ins_reg <= ins_reg == 'h9B ? 'h1B : 'h3B;
 								end else begin //Take the branch
-									pc <= {0, 0, branch_addr[12:0]};
+									pc <= {1'b0, 1'b0, branch_addr[12:0]};
 									r_opreq <= 0;
 									cycle <= 0;
 								end
@@ -209,7 +212,7 @@ module as2650(
 								end
 							end else if(cycle == 3) begin
 								if(!ins_reg[2]) begin //Relative branch
-									if(dbus[7]) begin //Indirect addressing. Need more data.
+									if(dbus_in[7]) begin //Indirect addressing. Need more data.
 										r_addr <= branch_addr[12:0];
 										cycle <= 8;
 									end else begin //Take the branch
@@ -463,7 +466,7 @@ module as2650(
 							end
 						end else begin
 							set_cc_for(alu_next);
-							write_reg(alu_next, idx_ctrl != 0 || ins_reg[2:3] == 0 ? 0 : ins_reg[1:0]);
+							write_reg(alu_next, idx_ctrl != 0 || ins_reg[3:2] == 0 ? 0 : ins_reg[1:0]);
 							if(ins_reg[7:5] == 4 || ins_reg[7:5] == 5) begin
 								psl[5] <= alu_next[4];
 								psl[2] <= input1[7] == input2[7] && alu_next[7] != input1[7];

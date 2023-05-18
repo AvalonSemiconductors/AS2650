@@ -18,7 +18,6 @@ module wrapped_as2650(
 	inout vss,
 `endif
 	input wire wb_clk_i,
-	input wire wb_rst_i,
 
 	input wire [`MPRJ_IO_PADS-1:0] io_in,
 	output wire [`MPRJ_IO_PADS-1:0] io_out,
@@ -26,13 +25,11 @@ module wrapped_as2650(
 );
 
 	wire oeb;
-	assign io_oeb = {19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
+	assign io_oeb = {4'b1111, 1'b1, 19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
 
-	wire reset = wb_rst_i;
-	
 	as2650 as2650(
 		.clk(wb_clk_i),
-		.reset(reset),
+		.reset(io_in[33]),
 		.adr(io_out[32:20]),
 		.dbus_in(io_in[12:5]),
 		.dbus_out(io_out[12:5]),

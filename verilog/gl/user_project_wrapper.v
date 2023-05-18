@@ -1,12 +1,12 @@
 module user_project_wrapper (user_clock2,
+    vdd,
+    vss,
     wb_clk_i,
     wb_rst_i,
     wbs_ack_o,
     wbs_cyc_i,
     wbs_stb_i,
     wbs_we_i,
-    vss,
-    vdd,
     io_in,
     io_oeb,
     io_out,
@@ -19,14 +19,14 @@ module user_project_wrapper (user_clock2,
     wbs_dat_o,
     wbs_sel_i);
  input user_clock2;
+ input vdd;
+ input vss;
  input wb_clk_i;
  input wb_rst_i;
  output wbs_ack_o;
  input wbs_cyc_i;
  input wbs_stb_i;
  input wbs_we_i;
- input vss;
- input vdd;
  input [37:0] io_in;
  output [37:0] io_oeb;
  output [37:0] io_out;
@@ -43,7 +43,6 @@ module user_project_wrapper (user_clock2,
  wrapped_as2650 wrapped_as2650 (.vdd(vdd),
     .vss(vss),
     .wb_clk_i(wb_clk_i),
-    .wb_rst_i(wb_rst_i),
     .io_in({io_in[37],
     io_in[36],
     io_in[35],

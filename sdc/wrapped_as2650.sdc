@@ -1,6 +1,6 @@
 ###############################################################################
 # Created by write_sdc
-# Mon Dec 12 10:12:03 2022
+# Thu May 18 15:17:44 2023
 ###############################################################################
 current_design wrapped_as2650
 ###############################################################################
@@ -48,7 +48,6 @@ set_input_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_
 set_input_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_in[7]}]
 set_input_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_in[8]}]
 set_input_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_in[9]}]
-set_input_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {wb_rst_i}]
 set_output_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_oeb[0]}]
 set_output_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_oeb[10]}]
 set_output_delay 4.8000 -clock [get_clocks {wb_clk_i}] -add_delay [get_ports {io_oeb[11]}]
@@ -205,7 +204,6 @@ set_load -pin_load 0.0729 [get_ports {io_out[2]}]
 set_load -pin_load 0.0729 [get_ports {io_out[1]}]
 set_load -pin_load 0.0729 [get_ports {io_out[0]}]
 set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__inv_4 -pin {ZN} -input_transition_rise 0.0000 -input_transition_fall 0.0000 [get_ports {wb_clk_i}]
-set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__inv_1 -pin {ZN} -input_transition_rise 0.0000 -input_transition_fall 0.0000 [get_ports {wb_rst_i}]
 set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__inv_1 -pin {ZN} -input_transition_rise 0.0000 -input_transition_fall 0.0000 [get_ports {io_in[37]}]
 set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__inv_1 -pin {ZN} -input_transition_rise 0.0000 -input_transition_fall 0.0000 [get_ports {io_in[36]}]
 set_driving_cell -lib_cell gf180mcu_fd_sc_mcu7t5v0__inv_1 -pin {ZN} -input_transition_rise 0.0000 -input_transition_fall 0.0000 [get_ports {io_in[35]}]

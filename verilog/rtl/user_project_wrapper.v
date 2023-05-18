@@ -111,7 +111,6 @@ wrapped_as2650 wrapped_as2650 (
     .vss(vss),
 `endif
     .wb_clk_i(wb_clk_i),
-    .wb_rst_i(wb_rst_i),
     
     .io_in(io_in),
     .io_out(io_out),

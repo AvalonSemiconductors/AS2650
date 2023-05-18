@@ -38,7 +38,6 @@ module user_project_wrapper (user_clock2,
 
 
  wrapped_as2650 wrapped_as2650 (.wb_clk_i(wb_clk_i),
-    .wb_rst_i(wb_rst_i),
     .io_in({io_in[37],
     io_in[36],
     io_in[35],

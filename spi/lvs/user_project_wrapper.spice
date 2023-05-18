@@ -15,7 +15,7 @@
 + io_out[22] io_out[23] io_out[24] io_out[25] io_out[26] io_out[27] io_out[28] io_out[29]
 + io_out[2] io_out[30] io_out[31] io_out[32] io_out[33] io_out[34] io_out[35] io_out[36]
 + io_out[37] io_out[3] io_out[4] io_out[5] io_out[6] io_out[7] io_out[8] io_out[9]
-+ vdd vss wb_clk_i wb_rst_i
++ vdd vss wb_clk_i
 .ends
 
 .subckt user_project_wrapper io_in[0] io_in[10] io_in[11] io_in[12] io_in[13] io_in[14]
@@ -95,6 +95,6 @@ Xwrapped_as2650 io_in[0] io_in[10] io_in[11] io_in[12] io_in[13] io_in[14] io_in
 + io_out[23] io_out[24] io_out[25] io_out[26] io_out[27] io_out[28] io_out[29] io_out[2]
 + io_out[30] io_out[31] io_out[32] io_out[33] io_out[34] io_out[35] io_out[36] io_out[37]
 + io_out[3] io_out[4] io_out[5] io_out[6] io_out[7] io_out[8] io_out[9] vdd vss wb_clk_i
-+ wb_rst_i wrapped_as2650
++ wrapped_as2650
 .ends
 
