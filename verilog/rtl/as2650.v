@@ -27,7 +27,9 @@ module as2650(
 	input sense,
 	output flag,
 	
-	input clk
+	input clk,
+	
+	input opack
 );
 
 	/* CPU registers */
@@ -44,6 +46,12 @@ module as2650(
 	reg [7:0] holding_reg;
 	reg [7:0] addr_buff;
 	reg [1:0] idx_ctrl;
+	
+`ifdef BENCH
+	wire [7:0] r1 = r123[0];
+	wire [7:0] r2 = r123[1];
+	wire [7:0] r3 = r123[2];
+`endif
 	
 	assign flag = psu[6];
 	
@@ -72,15 +80,30 @@ module as2650(
 	wire [14:0] branch_addr = pc + (dbus_in[6:0] >= 64 ? -(64 - (dbus_in[6:0] - 64)) : dbus_in[6:0]);
 	wire carry = psl[0];
 	wire overflow = psl[2];
+	
 	/*
-	*	Shift & ALU wires
+	*	Shift & ALU
 	*/
+	wire [7:0] alu_instr_reg = idx_ctrl != 0 ? r0 : instr_reg;
 	wire [7:0] rrr = psl[3] ? {carry, instr_reg[7:1]} : {instr_reg[0], instr_reg[7:1]};
 	wire [7:0] rrl = psl[3] ? {instr_reg[6:0], carry} : {instr_reg[6:0], instr_reg[7]};
-	wire [7:0] input1 = ins_reg[3:2] == 0 ? holding_reg : instr_reg;
+	wire [7:0] input1 = ins_reg[3:2] == 0 ? holding_reg : alu_instr_reg;
 	wire [7:0] input2 = ins_reg[3:2] == 0 ? instr_reg : holding_reg;
-	wire [7:0] alu_next = alu_step(input1, input2);
+	wire is_mul = ins_reg == 8'h90;
 	wire [16:0] mul_res = r0 * (psl[4] ? r123_2[0] : r123[0]);
+	
+	wire [2:0] alu_op = ins_reg[7:5];
+	reg [8:0] alu_next;
+	always @(*) begin
+		case(alu_op)
+			1: alu_next <= {psl[0], input1 ^ input2};
+			2: alu_next <= {psl[0], input1 & input2};
+			3: alu_next <= {psl[0], input1 | input2};
+			4: alu_next <= {1'b0, input1} + {1'b0, input2} + (psl[3] && psl[0]);
+			5: alu_next <= {1'b0, input1} + {1'b0, ~input2} + (!psl[3] || psl[0]);
+			default: alu_next <= {psl[0], input2};
+		endcase
+	end
 
 	always @(posedge clk) begin
 		if(reset) begin
@@ -259,9 +282,8 @@ module as2650(
 									if(ins_reg[7:4] == 'h3) begin //Also re-enable interrupts
 										psu[5] <= 0;
 									end
-								end else begin //Just continue without returning
-									cycle <= 0;
 								end
+								cycle <= 0;
 							end
 						end else if((ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7) && !ins_reg[2]) begin
 							/*
@@ -334,7 +356,7 @@ module as2650(
 							*	Misc instructions
 							*/
 							if(cycle == 2) begin
-								if(ins_reg == 'h90) begin //Using undocumented opcodes to add a multiply instruction
+								if(is_mul) begin //Using undocumented opcodes to add a multiply instruction
 									if(psl[4]) begin
 										r123_2[1] <= mul_res[7:0];
 										r123_2[2] <= mul_res[15:8];
@@ -362,7 +384,7 @@ module as2650(
 									psu[2:0] <= psu[2:0] - 1;
 									cycle <= 0;
 								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to push to the on-chip stack
-									stack[psu[2:0] - 1][7:0] <= r0;
+									stack[psu[2:0]][7:0] <= r0;
 									if(psl[4]) begin
 										stack[psu[2:0]][14:8] <= r123_2[0];
 									end else begin
@@ -465,12 +487,12 @@ module as2650(
 								psl[7:6] <= input1[7] == input2[7] ? (input1 > input2 ? 'b01 : (input1 < input2 ? 'b10 : 'b00)) : (input1[7] ? 'b10 : 'b01);
 							end
 						end else begin
-							set_cc_for(alu_next);
-							write_reg(alu_next, idx_ctrl != 0 || ins_reg[3:2] == 0 ? 0 : ins_reg[1:0]);
+							set_cc_for(alu_next[7:0]);
+							write_reg(alu_next[7:0], idx_ctrl != 0 || ins_reg[3:2] == 0 ? 0 : ins_reg[1:0]);
 							if(ins_reg[7:5] == 4 || ins_reg[7:5] == 5) begin
-								psl[5] <= alu_next[4];
+								psl[5] <= alu_next[4] != input1[4] ^ (ins_reg[7:5] == 5 ? ~input2[4] : input2[4]);
 								psl[2] <= input1[7] == input2[7] && alu_next[7] != input1[7];
-								psl[0] <= alu_next < input1;
+								psl[0] <= alu_next[8];
 							end
 						end
 						r_opreq <= 0;
@@ -568,7 +590,7 @@ module as2650(
 
 	task push_stack();
 		begin
-			if(ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hB) begin
+			if(ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hB) begin //Is it in one of the rows of subroutine branches?
 				stack[psu[2:0]] <= pc;
 				psu[2:0] <= psu[2:0] + 1;
 			end
@@ -590,22 +612,4 @@ module as2650(
 			end
 		end
 	endtask
-
-	function [7:0] alu_step(input [7:0] input1, input [7:0] input2);
-		begin
-			if(ins_reg[7:5] == 1) begin
-				alu_step = input1 ^ input2;
-			end else if(ins_reg[7:5] == 2) begin
-				alu_step = input1 & input2;
-			end else if(ins_reg[7:5] == 3) begin
-				alu_step = input1 | input2;
-			end else if(ins_reg[7:5] == 4) begin
-				alu_step = input1 + input2 + (psl[3] && psl[0]);
-			end else if(ins_reg[7:5] == 5) begin
-				alu_step = input1 + ~input2 + (!psl[3] || psl[0]);
-			end else begin
-				alu_step = input2;
-			end
-		end
-	endfunction
 endmodule

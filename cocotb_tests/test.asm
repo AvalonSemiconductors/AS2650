@@ -370,17 +370,55 @@ sub_2_end:
 	
 	lodi,r0 5
 	lodi,r1 8
-	db 0x90
+	mul ; Custom instruction, multiplies r0 by r1, result in r2 and r3
 	stra,r2 mem_end-71
 	
 	lodi,r0 200
 	lodi,r1 100
-	db 0x91 ; Custom instruction, swaps r0 and r1
+	xchg ; Custom instruction, swaps r0 and r1
 	stra,r0 mem_end-72
 	stra,r1 mem_end-73
 	
-	halt
+	lodi,r3 0
+	lodi,r0 156
+	adda,r0 data,r3+
+	stra,r0 mem_end-74
 	
+	ppsl PSL_WITH_CARRY+PSL_CARRY_FLAG
+	lodi,r0 0
+	addi,r0 0xFF
+	stra,r0 mem_end-75
+	eorz,r0
+	addz,r0
+	stra,r0 mem_end-76
+	cpsl PSL_WITH_CARRY
+	
+	bstr,un stack_test
+	
+	lodi,r2 2
+	lodi,r0 indir_data>>8%256
+	stra,r0 relative_data_0
+	lodi,r0 indir_data%256
+	stra,r0 relative_data_0+1
+	loda,r0 *relative_data_0,r2+
+	stra,r0 mem_end-77
+	
+	halt
+
+stack_test:
+	pop
+	nop
+	nop
+	nop
+	push
+	retc,un
+
+indir_data:
+	db 0
+	db 0
+	db 0
+	db 69
+
 mul_8x8_8:
 	spsl
 	lodi,r1 8

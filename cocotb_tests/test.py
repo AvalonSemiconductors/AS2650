@@ -55,11 +55,11 @@ async def test_cpu(dut):
 				else:
 					if dut.d_c.value == 1:
 						dut.dbus_in.value = d_counter
-						if tt % 4 == 3:
+						if (tt-1) % 4 == 3:
 							d_counter += 1
 					else:
 						dut.dbus_in.value = c_counter
-						if tt % 4 == 3:
+						if (tt-1) % 4 == 3:
 							c_counter += 2
 	
 	assert memory[8191] == 0x16
@@ -132,3 +132,7 @@ async def test_cpu(dut):
 	assert memory[8191-71] == 40
 	assert memory[8191-72] == 100
 	assert memory[8191-73] == 200
+	assert memory[8191-74] == 162
+	assert memory[8191-75] == 0
+	assert memory[8191-76] == 1
+	assert memory[8191-77] == 69

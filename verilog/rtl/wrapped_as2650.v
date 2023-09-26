@@ -25,7 +25,7 @@ module wrapped_as2650(
 );
 
 	wire oeb;
-	assign io_oeb = {4'b1111, 1'b1, 19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
+	assign io_oeb = {3'b111, 1'b1, 1'b1, 19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
 
 	as2650 as2650(
 		.clk(wb_clk_i),
@@ -40,7 +40,8 @@ module wrapped_as2650(
 		.wrp(io_out[16]),
 		.opreq(io_out[17]),
 		.rw(io_out[18]),
-		.flag(io_out[19])
+		.flag(io_out[19]),
+		.opack(io_in[34])
 	);
 endmodule
 `default_nettype wire

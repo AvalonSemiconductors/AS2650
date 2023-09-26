@@ -38,6 +38,7 @@ module tb (
 		.dbus_in(dbus_in),
 		.dbus_out(dbus_out),
 		.oeb(oeb),
-		.wrp(wrp)
+		.wrp(wrp),
+		.opack(1'b1)
 	);
 endmodule
