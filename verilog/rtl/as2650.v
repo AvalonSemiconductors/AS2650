@@ -41,7 +41,7 @@ module as2650(
 	reg [7:0] psl;
 	reg [7:0] ins_reg;
 	reg [14:0] stack[7:0];
-	reg [7:0] cycle;
+	reg [5:0] cycle;
 	reg halted;
 	reg [7:0] holding_reg;
 	reg [7:0] addr_buff;
@@ -129,7 +129,6 @@ module as2650(
 			b_buf <= 0;
 		end else if(!halted) begin
 			psu[7] <= sense;
-			cycle <= cycle + 1;
 			if(cycle == 0) begin // First instruction cycle. Request memory read from mem[pc]
 				idx_ctrl <= 0;
 				r_m_io <= 1;
@@ -137,9 +136,11 @@ module as2650(
 				r_rw <= 0;
 				r_addr <= pc[12:0];
 				pc <= pc + 1;
+				cycle <= 1;
 			end else if(cycle == 1) begin // Latch received instruction
 				ins_reg <= dbus_in;
-				r_opreq <= 0;
+				r_opreq <= !opack;
+				cycle <= opack ? 2 : 1;
 			end else begin
 				if(ins_reg[4]) begin
 					if(ins_reg[3]) begin
@@ -153,7 +154,8 @@ module as2650(
 								r_addr <= pc[12:0];
 								r_opreq <= 1;
 								r_rw <= 0;
-							end else if(cycle == 3) begin //take the branch
+								cycle <= 3;
+							end else if(cycle == 3 && opack) begin //take the branch
 								if(dbus_in[7]) begin //Indirect addressing. Use ugly hack to force it.
 									r_addr <= branch_addr[12:0];
 									r_opreq <= 1;
@@ -173,27 +175,31 @@ module as2650(
 								r_addr <= pc;
 								r_opreq <= 1;
 								r_rw <= 0;
-							end else if(cycle == 3) begin
+								cycle <= 3;
+							end else if(cycle == 3 && opack) begin
 								addr_buff <= dbus_in;
 								pc <= pc + 1;
 								r_addr <= pc;
-							end else if(cycle == 4) begin
+								cycle <= 4;
+							end else if(cycle == 4 && opack) begin
 								if(ins_reg == 'hBF) begin
 									stack[psu[2:0]] <= pc;
 									psu[2:0] <= psu[2:0] + 1;
 								end
 								if(addr_buff[7]) begin //Indirect addressing
 									r_addr <= {addr_buff[4:0], dbus_in};
+									cycle <= 5;
 								end else begin //Take branch
 									r_opreq <= 0;
 									pc <= {addr_buff[4:0], dbus_in} + (psl[4] ? r123_2[2] : r123[2]);
 									cycle <= 0;
 								end
 							//Do the indirect addressing
-							end else if(cycle == 5) begin
+							end else if(cycle == 5 && opack) begin
 								addr_buff <= dbus_in;
 								r_addr <= r_addr + 1;
-							end else if(cycle == 6) begin
+								cycle <= 6;
+							end else if(cycle == 6 && opack) begin
 								pc <= {addr_buff[6:0], dbus_in};
 								r_opreq <= 0;
 								cycle <= 0;
@@ -212,6 +218,7 @@ module as2650(
 										r_addr <= pc;
 										r_opreq <= 1;
 										r_rw <= 0;
+										cycle <= 3;
 									end
 								end else begin
 									//These will compare the CC to decide wether to branch or not
@@ -231,9 +238,10 @@ module as2650(
 										r_addr <= pc;
 										r_opreq <= 1;
 										r_rw <= 0;
+										cycle <= 3;
 									end
 								end
-							end else if(cycle == 3) begin
+							end else if(cycle == 3 && opack) begin
 								if(!ins_reg[2]) begin //Relative branch
 									if(dbus_in[7]) begin //Indirect addressing. Need more data.
 										r_addr <= branch_addr[12:0];
@@ -248,8 +256,9 @@ module as2650(
 									addr_buff <= dbus_in;
 									pc <= pc + 1;
 									r_addr <= pc;
+									cycle <= 4;
 								end
-							end else if(cycle == 4) begin //Getting the second byte of absolute branch
+							end else if(cycle == 4 && opack) begin //Getting the second byte of absolute branch
 								if(addr_buff[7]) begin //Indirect addressing. Need more data.
 									r_addr <= {addr_buff[4:0], dbus_in};
 									cycle <= 8;
@@ -259,10 +268,11 @@ module as2650(
 									r_opreq <= 0;
 									cycle <= 0;
 								end
-							end else if(cycle == 8) begin //Indirect addressing, first byte
+							end else if(cycle == 8 && opack) begin //Indirect addressing, first byte
 								addr_buff <= dbus_in;
 								r_addr <= r_addr + 1;
-							end else if(cycle == 9) begin //Indirect addressing, second byte, finally take branch
+								cycle <= 9;
+							end else if(cycle == 9 && opack) begin //Indirect addressing, second byte, finally take branch
 								push_stack();
 								pc <= {dbus_in[4:0], addr_buff};
 								r_opreq <= 0;
@@ -294,7 +304,8 @@ module as2650(
 								r_rw <= 0;
 								r_m_io <= 0;
 								r_d_c <= ins_reg[7:4] == 'h7 ? 1 : 0;
-							end else if(cycle == 3) begin
+								cycle <= 3;
+							end else if(cycle == 3 && opack) begin
 								set_cc_for(dbus_in);
 								write_reg(dbus_in, ins_reg[1:0]);
 								r_opreq <= 0;
@@ -311,9 +322,11 @@ module as2650(
 								b_buf <= instr_reg;
 								r_m_io <= 0;
 								r_d_c <= ins_reg[7:4] == 'hF ? 1 : 0;
+								cycle <= 3;
 							end else if(cycle == 3) begin
 								r_wrp <= 1;
-							end else if(cycle == 4) begin
+								cycle <= 4;
+							end else if(cycle == 4 && opack) begin
 								r_wrp <= 0;
 								r_opreq <= 0;
 								r_rw <= 0;
@@ -402,15 +415,18 @@ module as2650(
 									cycle <= 0;
 								end else if(ins_reg == 'h92) begin
 									psu <= r0;
+									cycle <= 0;
 								end else if(ins_reg == 'h93) begin
 									psl <= r0;
+									cycle <= 0;
 								end else begin
 									r_rw <= 0;
 									r_opreq <= 1;
 									pc <= pc + 1;
 									r_addr <= pc;
+									cycle <= 3;
 								end
-							end else if(cycle == 3) begin
+							end else if(cycle == 3 && opack) begin
 								if(ins_reg == 'h74) begin
 									psu <= psu & ~dbus_in;
 								end else if(ins_reg == 'h75) begin
@@ -465,18 +481,19 @@ module as2650(
 								* Immediate-addressed instructions only load one byte, with no further address computation, so we can take a shortcut for those.
 								* No need to 'branch' to complex address-computation. Just go to cycle 3 where the second operand is loaded from the bus.
 								*/
-								if(ins_reg[3:2] == 1) begin
-									cycle <= 3;
-								end else if(ins_reg[3:2] == 2) begin
-									cycle <= 'b10_000000;
+								if(ins_reg[3:2] == 2) begin
+									cycle <= 'b10_0000;
 								end else if(ins_reg[3:2] == 3) begin
-									cycle <= 'b11_000000;
+									cycle <= 'b11_0000;
+								end else begin
+									cycle <= 3;
 								end
 							end
 						end
-					end else if(cycle == 3) begin
+					end else if(cycle == 3 && opack) begin
 						r_opreq <= 0;
 						holding_reg <= dbus_in;
+						cycle <= 4;
 					end else if(cycle == 4) begin
 						if(ins_reg[7:5] == 7) begin
 							if(psl[1]) begin
@@ -506,8 +523,9 @@ module as2650(
 							cycle <= 0;
 						end else begin
 							r_wrp <= 1;
+							cycle <= 9;
 						end
-					end else if(cycle == 9) begin
+					end else if(cycle == 9 && opack) begin
 						r_rw <= 0;
 						r_wrp <= 0;
 						r_opreq <= 0;
@@ -517,8 +535,8 @@ module as2650(
 					/*
 					*	Relative-addressing
 					*/
-					else if(cycle == 'b10_000000) begin
-						cycle <= dbus_in[7] ? 'b01_000000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
+					else if(cycle == 'b10_0000 && opack) begin
+						cycle <= dbus_in[7] ? 'b01_0000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
 						r_addr <= pc[12:0] + 1 + (dbus_in[6:0] >= 64 ? -(64 - (dbus_in[6:0] - 64)) : dbus_in[6:0]); //Apply address change
 						if(!dbus_in[7]) begin
 							setup_read();
@@ -527,12 +545,13 @@ module as2650(
 					/*
 					*	Absolute-addressing
 					*/
-					else if(cycle == 'b11_000000) begin
+					else if(cycle == 'b11_0000 && opack) begin
 						addr_buff <= dbus_in; //Read MSB
 						r_addr <= r_addr + 1; //Read next byte
 						pc <= pc + 1;
-					end else if(cycle == 'b11_000001) begin
-						cycle <= addr_buff[7] ? 'b01_000000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
+						cycle <= 'b11_0001;
+					end else if(cycle == 'b11_0001 && opack) begin
+						cycle <= addr_buff[7] ? 'b01_0000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
 						idx_ctrl <= addr_buff[6:5];
 						if(!addr_buff[7]) begin
 							/*
@@ -552,10 +571,11 @@ module as2650(
 					/*
 					*	Indirect addressing (follows relative or absolute)
 					*/
-					else if(cycle == 'b01_000000) begin
+					else if(cycle == 'b01_0000 && opack) begin
 						addr_buff <= dbus_in; //Read MSB
 						r_addr <= r_addr + 1; //Read next byte
-					end else if(cycle == 'b01_000001) begin
+						cycle <= 'b01_0001;
+					end else if(cycle == 'b01_0001) begin
 						if(idx_ctrl == 0) begin
 							r_addr <= {addr_buff[4:0], dbus_in};
 						end else begin
