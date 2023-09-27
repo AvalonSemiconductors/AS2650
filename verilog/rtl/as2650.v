@@ -29,7 +29,10 @@ module as2650(
 	
 	input clk,
 	
-	input opack
+	input opack,
+	input intr,
+	
+	output [63:0] la_data_out
 );
 
 	/* CPU registers */
@@ -40,12 +43,21 @@ module as2650(
 	reg [7:0] psu;
 	reg [7:0] psl;
 	reg [7:0] ins_reg;
-	reg [14:0] stack[7:0];
+	reg [14:0] stack[15:0];
 	reg [5:0] cycle;
 	reg halted;
 	reg [7:0] holding_reg;
 	reg [7:0] addr_buff;
 	reg [1:0] idx_ctrl;
+	reg prefixed;
+	reg last_intr;
+	reg [7:0] ivec;
+	
+	assign la_data_out[7:0] = psu;
+	assign la_data_out[15:8] = psl;
+	assign la_data_out[30:16] = pc;
+	assign la_data_out[31] = halted;
+	assign la_data_out[63:32] = 32'hAAAA5555;
 	
 `ifdef BENCH
 	wire [7:0] r1 = r123[0];
@@ -115,7 +127,7 @@ module as2650(
 			r123_2[0] <= 0;
 			r123_2[1] <= 0;
 			r123_2[2] <= 0;
-			psu <= 0;
+			psu <= 8'h20; //Interrupts OFF by default
 			psl <= 0;
 			cycle <= 0;
 			r_opreq <= 0;
@@ -127,22 +139,54 @@ module as2650(
 			halted <= 0;
 			idx_ctrl <= 0;
 			b_buf <= 0;
-		end else if(!halted) begin
+			last_intr <= 0;
+			prefixed <= 0;
+		end else begin
 			psu[7] <= sense;
-			if(cycle == 0) begin // First instruction cycle. Request memory read from mem[pc]
-				idx_ctrl <= 0;
-				r_m_io <= 1;
-				r_opreq <= 1;
-				r_rw <= 0;
-				r_addr <= pc[12:0];
-				pc <= pc + 1;
-				cycle <= 1;
+			if(cycle == 0 || halted) begin // First instruction cycle. Request memory read from mem[pc]
+				last_intr <= intr;
+				if(intr && !last_intr && !psu[5]) begin
+					stack[psu[3:0]] <= pc;
+					psu[3:0] <= psu[3:0] + 1;
+					pc <= {2'h0, ivec, 5'h00}; //Subroutine branch to ivec * 4
+					psu[5] <= 1'b1;
+					halted <= 1'b0;
+				end else if(!halted) begin
+					idx_ctrl <= 0;
+					r_m_io <= 1;
+					r_opreq <= 1;
+					r_rw <= 0;
+					r_addr <= pc[12:0];
+					pc <= pc + 1;
+					cycle <= 1;
+				end
 			end else if(cycle == 1) begin // Latch received instruction
 				ins_reg <= dbus_in;
 				r_opreq <= !opack;
 				cycle <= opack ? 2 : 1;
 			end else begin
-				if(ins_reg[4]) begin
+				if(ins_reg == 8'hC4) begin // Prefix for extended ISA
+					prefixed <= 1;
+					cycle <= 0;
+				end else if(prefixed) begin
+					// Execute an extended instruction
+					if(ins_reg == 8'h00) begin
+						//save (puts r0, PSL on internal stack)
+						stack[psu[3:0]] <= r0;
+						stack[psu[3:0]+1] <= psl;
+						psu[3:0] <= psu[3:0] + 2;
+					end else if(ins_reg == 8'h01) begin
+						//restore (pops r0, PSL from internal stack)
+						psl <= stack[psu[3:0]-1];
+						r0 <= stack[psu[3:0]-2];
+						psu[3:0] <= psu[3:0] - 2;
+					end else if(ins_reg == 8'h02) begin
+						//load interrupt vector from r0
+						ivec <= r0;
+					end
+					prefixed <= 0;
+					cycle <= 0;
+				end else if(ins_reg[4]) begin
 					if(ins_reg[3]) begin
 						/*
 						*	Branch instructions
@@ -183,8 +227,8 @@ module as2650(
 								cycle <= 4;
 							end else if(cycle == 4 && opack) begin
 								if(ins_reg == 'hBF) begin
-									stack[psu[2:0]] <= pc;
-									psu[2:0] <= psu[2:0] + 1;
+									stack[psu[3:0]] <= pc;
+									psu[3:0] <= psu[3:0] + 1;
 								end
 								if(addr_buff[7]) begin //Indirect addressing
 									r_addr <= {addr_buff[4:0], dbus_in};
@@ -287,8 +331,8 @@ module as2650(
 							if(cycle == 2) begin
 								if(ins_reg[1:0] == 'b11 || ins_reg[1:0] == psl[7:6]) begin //Return on condition true
 									//Pop a value of the stack and into PC
-									pc <= stack[psu[2:0] - 1];
-									psu[2:0] <= psu[2:0] - 1;
+									pc <= stack[psu[3:0] - 1];
+									psu[3:0] <= psu[3:0] - 1;
 									if(ins_reg[7:4] == 'h3) begin //Also re-enable interrupts
 										psu[5] <= 0;
 									end
@@ -388,22 +432,22 @@ module as2650(
 									end
 									cycle <= 0;
 								end else if(ins_reg == 'h10) begin //Originally undocumented, used here as a way to pop from the on-chip stack
-									r0 <= stack[psu[2:0] - 1][7:0];
+									r0 <= stack[psu[3:0] - 1][7:0];
 									if(psl[4]) begin
-										r123_2[0] <= stack[psu[2:0] - 1][14:8];
+										r123_2[0] <= {1'b0, stack[psu[3:0] - 1][14:8]};
 									end else begin
-										r123[0] <= stack[psu[2:0] - 1][14:8];
+										r123[0] <= {1'b0, stack[psu[3:0] - 1][14:8]};
 									end
-									psu[2:0] <= psu[2:0] - 1;
+									psu[3:0] <= psu[3:0] - 1;
 									cycle <= 0;
 								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to push to the on-chip stack
-									stack[psu[2:0]][7:0] <= r0;
+									stack[psu[3:0]][7:0] <= r0;
 									if(psl[4]) begin
-										stack[psu[2:0]][14:8] <= r123_2[0];
+										stack[psu[3:0]][14:8] <= r123_2[0][6:0];
 									end else begin
-										stack[psu[2:0]][14:8] <= r123[0];
+										stack[psu[3:0]][14:8] <= r123[0][6:0];
 									end
-									psu[2:0] <= psu[2:0] + 1;
+									psu[3:0] <= psu[3:0] + 1;
 									cycle <= 0;
 								end else if(ins_reg == 'h12) begin
 									r0 <= psu;
@@ -611,8 +655,8 @@ module as2650(
 	task push_stack();
 		begin
 			if(ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hB) begin //Is it in one of the rows of subroutine branches?
-				stack[psu[2:0]] <= pc;
-				psu[2:0] <= psu[2:0] + 1;
+				stack[psu[3:0]] <= pc;
+				psu[3:0] <= psu[3:0] + 1;
 			end
 		end
 	endtask

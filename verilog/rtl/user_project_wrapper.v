@@ -114,7 +114,8 @@ wrapped_as2650 wrapped_as2650 (
     
     .io_in(io_in),
     .io_out(io_out),
-    .io_oeb(io_oeb)
+    .io_oeb(io_oeb),
+    .la_data_out(la_data_out)
 );
 
 endmodule	// user_project_wrapper
