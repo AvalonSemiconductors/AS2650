@@ -71,7 +71,7 @@ Starting your project
 
 #. To start the project you first need to create a new repository based on the `caravel_user_project <https://github.com/efabless/caravel_user_project/>`_ and make sure your repo is public and includes a README.
 
-# NOTE:  You cannoty use the create from template feature as this points to main branch based on SKY130.
+# NOTE:  You cannot use the create from template feature as this points to main branch based on SKY130.
 
    *   Create a blank repo for your project on github.  Copy the URL for the new project from github.
    
@@ -79,7 +79,7 @@ Starting your project
    
        .. code:: bash
         
-    	git clone -b gfmpw-0b https://github.com/efabless/caravel_user_project.git <my_project>
+    	git clone -b gfmpw-0d https://github.com/efabless/caravel_user_project.git <my_project>
 	
 	cd <my_project>
 	
@@ -495,11 +495,9 @@ This will run all the precheck checks on your project and will produce the logs 
 Running Timing Analysis on Existing Projects
 ========================================================
 
-Start by updating the Makefile for your project.  Starting in the project root...
+Starting in the project root...
 
 .. code:: bash
-  
-   curl -k https://raw.githubusercontent.com/efabless/caravel_user_project/main/Makefile > Makefile
    
    make setup-timing-scripts
    
@@ -510,8 +508,14 @@ Start by updating the Makefile for your project.  Starting in the project root..
 
 This will update Caravel design files and install the scripts for running timing. 
 
+Then, you need to extract the caravel macros parasitics if they are not available. this step is only required once. run the following...
 
-Then, you can run then run timing by the following...
+.. code:: bash
+
+   make caravel-extract-parasitics
+
+
+Then, you can run timing by the following...
 
 .. code:: bash
 
@@ -520,7 +524,7 @@ Then, you can run then run timing by the following...
    make create-spef-mapping
    
    make caravel-sta
-   
+
 
 A summary of timing results is provided at the end of the flow. 
 

@@ -25,6 +25,9 @@ module wrapped_as2650(
 	output wire [`MPRJ_IO_PADS-1:0] io_oeb
 );
 
+	assign io_out[4:0] = 5'h00;
+	assign io_out[13] = 1'b0;
+	assign io_out[37:33] = 5'h00;
 	wire oeb;
 	assign io_oeb = {2'b11, 1'b1, 1'b1, 1'b1, 19'b0000000000000000000, 1'b1, oeb, oeb, oeb, oeb, oeb, oeb, oeb, oeb, 5'b11111};
 

@@ -25,7 +25,7 @@ jobs:
         run: echo "OPENLANE_ROOT=/home/runner/work/caravel_user_project/openlane" >> $GITHUB_ENV
 
       - name: Export PDK
-        run: echo "PDK=gf180mcuC" >> $GITHUB_ENV
+        run: echo "PDK=gf180mcuD" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |

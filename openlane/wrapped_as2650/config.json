@@ -1,0 +1,32 @@
+{
+	"PDK": "gf180mcuD",
+	"STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+	"DESIGN_NAME": "wrapped_as2650",
+	"VERILOG_FILES": [
+		"dir::../../verilog/rtl/defines.v",
+		"dir::../../verilog/rtl/wrapped_as2650.v",
+		"dir::../../verilog/rtl/as2650.v"
+	],
+	"DESIGN_IS_CORE": 0,
+	"CLOCK_PORT": "wb_clk_i",
+	"CLOCK_NET": "wrapped_as2650.clk",
+	"CLOCK_PERIOD": "24.0",
+	"FP_SIZING": "absolute",
+	"DIE_AREA": "0 0 1100 800",
+	"FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+	"PL_BASIC_PLACEMENT": 0,
+	"PL_TARGET_DENSITY": 0.35,
+	"FP_CORE_UTIL": 40,
+	"MAX_FANOUT_CONSTRAINT": 4,
+	"RT_MAX_LAYER": "Metal4",
+	"VDD_NETS": [
+		"vdd"
+	],
+	"GND_NETS": [
+		"vss"
+	],
+    "BASE_SDC_FILE": "dir::base_wrapped_as2650.sdc",
+	"RUN_HEURISTIC_DIODE_INSERTION": 1,
+	"RUN_CVC": 1,
+	"QUIT_ON_LINTER_ERRORS": 0
+}

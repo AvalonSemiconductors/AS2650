@@ -1,4 +1,4 @@
-* NGSPICE file created from user_project_wrapper.ext - technology: gf180mcuC
+* NGSPICE file created from user_project_wrapper.ext - technology: gf180mcuD
 
 * Black-box entry subcircuit for wrapped_as2650 abstract view
 .subckt wrapped_as2650 io_in[0] io_in[10] io_in[11] io_in[12] io_in[13] io_in[14]
