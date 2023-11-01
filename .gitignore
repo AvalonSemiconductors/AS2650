@@ -8,7 +8,7 @@
 *.gtkw
 /caravel/
 /mgmt_core_wrapper/
-/deps/timing-scripts/
+/dependencies/timing-scripts/
 /venv/
 /mpw_precheck/
 *.gltf
