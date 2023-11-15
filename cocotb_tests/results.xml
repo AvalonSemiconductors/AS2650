@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1695812504" />
-    <testcase name="test_cpu" classname="test" file="/home/lucah/Desktop/AS2650/cocotb_tests/test.py" lineno="6" time="0.922461748123169" sim_time_ns="2185250.001" ratio_time="2368932.918298333" />
-  </testsuite>
-</testsuites>

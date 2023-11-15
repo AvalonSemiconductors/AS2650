@@ -11,10 +11,17 @@
 	"CLOCK_PERIOD": 25,
 	"MACRO_PLACEMENT_CFG": "dir::macro.cfg",
 	"VERILOG_FILES_BLACKBOX": [
-		"dir::../../verilog/gl/wrapped_as2650.v"
+		"dir::../../verilog/gl/wrapped_as2650.v",
+		"dir::../../verilog/rtl/avali_logo.v"
 	],
-	"EXTRA_LEFS": "dir::../../lef/wrapped_as2650.lef",
-	"EXTRA_GDS_FILES": "dir::../../gds/wrapped_as2650.gds",
+	"EXTRA_LEFS": [
+		"dir::../../lef/wrapped_as2650.lef",
+		"dir::../../lef/avali_logo.lef"
+	],
+	"EXTRA_GDS_FILES": [
+		"dir::../../gds/wrapped_as2650.gds",
+		"dir::../../gds/avali_logo.gds"
+	],
 	"EXTRA_LIBS": "dir::../../lib/wrapped_as2650.lib",
 	"EXTRA_SPEFS": [
 		"wrapped_as2650",
@@ -22,7 +29,7 @@
 		"dir::../../spef/multicorner/wrapped_as2650.nom.spef",
 		"dir::../../spef/multicorner/wrapped_as2650.max.spef"
 	],
-	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss",
+	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss, avali_logo vdd vss vdd vss",
 	"QUIT_ON_SYNTH_CHECKS": 0,
 	"FP_PDN_CHECK_NODES": 0,
 	"SYNTH_ELABORATE_ONLY": 1,

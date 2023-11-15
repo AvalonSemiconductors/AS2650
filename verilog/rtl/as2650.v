@@ -1,679 +1,497 @@
 `default_nettype none
 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 module as2650(
-	input reset,
-	output [12:0] adr,
-	input [7:0] dbus_in,
-	output [7:0] dbus_out,
-	output oeb,
-	output rw,
-	output opreq,
-	output wrp,
-	output m_io,
-	output d_c,
-	
-	input sense,
-	output flag,
-	
 	input clk,
+	input rst,
 	
-	input opack,
-	input intr,
+	input [7:0] bus_in,
+	output [7:0] bus_out,
+	output le_lo,
+	output le_hi,
 	
-	output [63:0] la_data_out
+	output OEb,
+	output WEb,
+	output bus_dir,
+	output IOC,
+	output IOD,
+	
+	input irq,
+	
+	output flag,
+	input sense,
+	
+	output [7:0] debug_psl,
+	output [7:0] debug_psu,
+	
+	output [32:0] la_data_out
 );
 
-	/* CPU registers */
-	reg [7:0] r0;
-	reg [7:0] r123[2:0];
-	reg [7:0] r123_2[2:0];
-	reg [14:0] pc;
-	reg [7:0] psu;
-	reg [7:0] psl;
-	reg [7:0] ins_reg;
-	reg [14:0] stack[15:0];
-	reg [5:0] cycle;
-	reg halted;
-	reg [7:0] holding_reg;
-	reg [7:0] addr_buff;
-	reg [1:0] idx_ctrl;
-	reg prefixed;
-	reg last_intr;
-	reg [7:0] ivec;
-	
-	assign la_data_out[7:0] = psu;
-	assign la_data_out[15:8] = psl;
-	assign la_data_out[30:16] = pc;
-	assign la_data_out[31] = halted;
-	assign la_data_out[63:32] = 32'hAAAA5555;
-	
-`ifdef BENCH
-	wire [7:0] r1 = r123[0];
-	wire [7:0] r2 = r123[1];
-	wire [7:0] r3 = r123[2];
+reg [7:0] regs [7:0];
+
+`ifdef SIM
+wire [7:0] r0 = regs[0];
+wire r0_broken = regs[0] != regs[4];
+wire [7:0] r1 = regs[1];
+wire [7:0] r2 = regs[2];
+wire [7:0] r3 =  regs[3];
+wire [7:0] r1_2 = regs[5];
+wire [7:0] r2_2 = regs[6];
+wire [7:0] r3_2 = regs[7];
 `endif
-	
-	assign flag = psu[6];
-	
-	reg r_opreq;
-	assign opreq = r_opreq;
-	reg r_rw;
-	assign rw = r_rw;
-	reg [12:0] r_addr;
-	assign adr = r_addr;
-	reg r_m_io;
-	assign m_io = r_m_io;
-	reg r_d_c;
-	assign d_c = r_d_c;
-	reg r_wrp;
-	assign wrp = r_wrp;
-	reg [7:0] b_buf;
-	assign oeb = r_rw ? 0 : 1;
-	assign dbus_out = b_buf;
 
-	/*
-	*	Some common values defined as wires
-	*/
-	wire [7:0] instr_reg = ins_reg[1:0] == 0 ? r0 : (psl[4] ? r123_2[ins_reg[1:0] - 1] : r123[ins_reg[1:0] - 1]);
-	wire [7:0] instr_reg_p1 = instr_reg + 1;
-	wire [7:0] instr_reg_m1 = instr_reg - 1;
-	wire [14:0] branch_addr = pc + (dbus_in[6:0] >= 64 ? -(64 - (dbus_in[6:0] - 64)) : dbus_in[6:0]);
-	wire carry = psl[0];
-	wire overflow = psl[2];
-	
-	/*
-	*	Shift & ALU
-	*/
-	wire [7:0] alu_instr_reg = idx_ctrl != 0 ? r0 : instr_reg;
-	wire [7:0] rrr = psl[3] ? {carry, instr_reg[7:1]} : {instr_reg[0], instr_reg[7:1]};
-	wire [7:0] rrl = psl[3] ? {instr_reg[6:0], carry} : {instr_reg[6:0], instr_reg[7]};
-	wire [7:0] input1 = ins_reg[3:2] == 0 ? holding_reg : alu_instr_reg;
-	wire [7:0] input2 = ins_reg[3:2] == 0 ? instr_reg : holding_reg;
-	wire is_mul = ins_reg == 8'h90;
-	wire [16:0] mul_res = r0 * (psl[4] ? r123_2[0] : r123[0]);
-	
-	wire [2:0] alu_op = ins_reg[7:5];
-	reg [8:0] alu_next;
-	always @(*) begin
-		case(alu_op)
-			1: alu_next <= {psl[0], input1 ^ input2};
-			2: alu_next <= {psl[0], input1 & input2};
-			3: alu_next <= {psl[0], input1 | input2};
-			4: alu_next <= {1'b0, input1} + {1'b0, input2} + (psl[3] && psl[0]);
-			5: alu_next <= {1'b0, input1} + {1'b0, ~input2} + (!psl[3] || psl[0]);
-			default: alu_next <= {psl[0], input2};
-		endcase
-	end
+/*
+ *  ---------------------------------
+ *  |  7|  6|  5|  4|  3|  2|  1|  0|
+ *  ---------------------------------
+ *  |  S|  F| II| NC|SP3|SP2|SP1|SP0|
+ *  ---------------------------------
+ */
+reg [7:0] psu;
+assign debug_psu = psu;
+assign flag = psu[6];
 
-	always @(posedge clk) begin
-		if(reset) begin
-			pc <= 0;
-			r0 <= 0;
-			r123[0] <= 0;
-			r123[1] <= 0;
-			r123[2] <= 0;
-			r123_2[0] <= 0;
-			r123_2[1] <= 0;
-			r123_2[2] <= 0;
-			psu <= 8'h20; //Interrupts OFF by default
-			psl <= 0;
-			cycle <= 0;
-			r_opreq <= 0;
-			r_rw <= 0;
-			r_addr <= 0;
-			r_m_io <= 1;
-			r_d_c <= 0;
-			r_wrp <= 0;
-			halted <= 0;
-			idx_ctrl <= 0;
-			b_buf <= 0;
-			last_intr <= 0;
-			prefixed <= 0;
-		end else begin
-			psu[7] <= sense;
-			if(cycle == 0 || halted) begin // First instruction cycle. Request memory read from mem[pc]
-				last_intr <= intr;
-				if(intr && !last_intr && !psu[5]) begin
-					stack[psu[3:0]] <= pc;
-					psu[3:0] <= psu[3:0] + 1;
-					pc <= {2'h0, ivec, 5'h00}; //Subroutine branch to ivec * 4
-					psu[5] <= 1'b1;
-					halted <= 1'b0;
-				end else if(!halted) begin
-					idx_ctrl <= 0;
-					r_m_io <= 1;
-					r_opreq <= 1;
-					r_rw <= 0;
-					r_addr <= pc[12:0];
-					pc <= pc + 1;
-					cycle <= 1;
-				end
-			end else if(cycle == 1) begin // Latch received instruction
-				ins_reg <= dbus_in;
-				r_opreq <= !opack;
-				cycle <= opack ? 2 : 1;
-			end else begin
-				if(ins_reg == 8'hC4) begin // Prefix for extended ISA
-					prefixed <= 1;
-					cycle <= 0;
-				end else if(prefixed) begin
-					// Execute an extended instruction
-					if(ins_reg == 8'h00) begin
-						//save (puts r0, PSL on internal stack)
-						stack[psu[3:0]] <= r0;
-						stack[psu[3:0]+1] <= psl;
-						psu[3:0] <= psu[3:0] + 2;
-					end else if(ins_reg == 8'h01) begin
-						//restore (pops r0, PSL from internal stack)
-						psl <= stack[psu[3:0]-1];
-						r0 <= stack[psu[3:0]-2];
-						psu[3:0] <= psu[3:0] - 2;
-					end else if(ins_reg == 8'h02) begin
-						//load interrupt vector from r0
-						ivec <= r0;
-					end
-					prefixed <= 0;
-					cycle <= 0;
-				end else if(ins_reg[4]) begin
-					if(ins_reg[3]) begin
-						/*
-						*	Branch instructions
-						*/
-						if(ins_reg == 'h9B || ins_reg == 'hBB) begin
-							//zbrr, zbsr
-							if(cycle == 2) begin //Read instruction argument
-								pc <= pc + 1;
-								r_addr <= pc[12:0];
-								r_opreq <= 1;
-								r_rw <= 0;
-								cycle <= 3;
-							end else if(cycle == 3 && opack) begin //take the branch
-								if(dbus_in[7]) begin //Indirect addressing. Use ugly hack to force it.
-									r_addr <= branch_addr[12:0];
-									r_opreq <= 1;
-									r_rw <= 0;
-									cycle <= 8;
-									ins_reg <= ins_reg == 'h9B ? 'h1B : 'h3B;
-								end else begin //Take the branch
-									pc <= {1'b0, 1'b0, branch_addr[12:0]};
-									r_opreq <= 0;
-									cycle <= 0;
-								end
-							end
-						end else if(ins_reg == 'h9F || ins_reg == 'hBF) begin
-							//bxa, bsxa
-							if(cycle == 2) begin
-								pc <= pc + 1;
-								r_addr <= pc;
-								r_opreq <= 1;
-								r_rw <= 0;
-								cycle <= 3;
-							end else if(cycle == 3 && opack) begin
-								addr_buff <= dbus_in;
-								pc <= pc + 1;
-								r_addr <= pc;
-								cycle <= 4;
-							end else if(cycle == 4 && opack) begin
-								if(ins_reg == 'hBF) begin
-									stack[psu[3:0]] <= pc;
-									psu[3:0] <= psu[3:0] + 1;
-								end
-								if(addr_buff[7]) begin //Indirect addressing
-									r_addr <= {addr_buff[4:0], dbus_in};
-									cycle <= 5;
-								end else begin //Take branch
-									r_opreq <= 0;
-									pc <= {addr_buff[4:0], dbus_in} + (psl[4] ? r123_2[2] : r123[2]);
-									cycle <= 0;
-								end
-							//Do the indirect addressing
-							end else if(cycle == 5 && opack) begin
-								addr_buff <= dbus_in;
-								r_addr <= r_addr + 1;
-								cycle <= 6;
-							end else if(cycle == 6 && opack) begin
-								pc <= {addr_buff[6:0], dbus_in};
-								r_opreq <= 0;
-								cycle <= 0;
-							end
-						end else begin
-							if(cycle == 2) begin
-								//Decide if the branch will be taken or not
-								if(ins_reg[7:4] == 'h5 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hD || ins_reg[7:4] == 'hF) begin
-									//These branch if a register is non-zero. May increment or decrement the reg.
-									write_reg(ins_reg[7:4] == 'hD ? instr_reg_p1 : (ins_reg[7:4] == 'hF ? instr_reg_m1 : instr_reg), ins_reg[1:0]);
-									if((ins_reg[7:4] == 'hD ? instr_reg_p1 : (ins_reg[7:4] == 'hF ? instr_reg_m1 : instr_reg)) == 0) begin //Branch is not taken
-										pc <= pc + (ins_reg[2] ? 2 : 1);
-										cycle <= 0;
-									end else begin
-										pc <= pc + 1;
-										r_addr <= pc;
-										r_opreq <= 1;
-										r_rw <= 0;
-										cycle <= 3;
-									end
-								end else begin
-									//These will compare the CC to decide wether to branch or not
-									if(
-										((ins_reg[7:4] == 'h1 || ins_reg[7:4] == 'h3)
-										&&
-										(ins_reg[1:0] != 'b11 && ins_reg[1:0] != psl[7:6]))
-										||
-										((ins_reg[7:4] == 'h9 || ins_reg[7:4] == 'hB)
-										&&
-										(ins_reg[1:0] == psl[7:6]))
-										) begin //Branch is not taken
-										pc <= pc + (ins_reg[2] ? 2 : 1);
-										cycle <= 0;
-									end else begin
-										pc <= pc + 1;
-										r_addr <= pc;
-										r_opreq <= 1;
-										r_rw <= 0;
-										cycle <= 3;
-									end
-								end
-							end else if(cycle == 3 && opack) begin
-								if(!ins_reg[2]) begin //Relative branch
-									if(dbus_in[7]) begin //Indirect addressing. Need more data.
-										r_addr <= branch_addr[12:0];
-										cycle <= 8;
-									end else begin //Take the branch
-										push_stack();
-										pc <= branch_addr[12:0];
-										r_opreq <= 0;
-										cycle <= 0;
-									end
-								end else begin //Absolute branch, need one more byte
-									addr_buff <= dbus_in;
-									pc <= pc + 1;
-									r_addr <= pc;
-									cycle <= 4;
-								end
-							end else if(cycle == 4 && opack) begin //Getting the second byte of absolute branch
-								if(addr_buff[7]) begin //Indirect addressing. Need more data.
-									r_addr <= {addr_buff[4:0], dbus_in};
-									cycle <= 8;
-								end else begin //Take the branch
-									push_stack();
-									pc <= {addr_buff[6:0], dbus_in};
-									r_opreq <= 0;
-									cycle <= 0;
-								end
-							end else if(cycle == 8 && opack) begin //Indirect addressing, first byte
-								addr_buff <= dbus_in;
-								r_addr <= r_addr + 1;
-								cycle <= 9;
-							end else if(cycle == 9 && opack) begin //Indirect addressing, second byte, finally take branch
-								push_stack();
-								pc <= {dbus_in[4:0], addr_buff};
-								r_opreq <= 0;
-								cycle <= 0;
-							end
+/*
+ *  ---------------------------------
+ *  |  7|  6|  5|  4|  3|  2|  1|  0|
+ *  ---------------------------------
+ *  |CC1|CC0|IDC| RS| WC|OVF|COM|  C|
+ *  ---------------------------------
+ */
+reg [7:0] psl;
+assign debug_psl = psl;
+
+reg [15:0] stack [15:0];
+wire [15:0] TOS = stack[psu[3:0] - 1];
+reg [12:0] PC;
+reg [2:0] page_reg; 
+reg [15:0] ivectors_base;
+
+reg [15:0] last_addr;
+reg [2:0] cycle;
+reg [7:0] insin;
+reg [15:0] instruction_args_latch;
+wire [15:0] instruction_args = {
+	cycle == PARAM1 && last_addr == requested_addr && !reset ? bus_in : instruction_args_latch[15:8],
+	cycle == PARAM2 && last_addr == requested_addr && !reset ? bus_in : instruction_args_latch[7:0]
+};
+reg extend;
+reg [1:0] warmup;
+reg halted;
+wire reset = rst || warmup;
+
+reg indirect_cyc;
+reg [1:0] indexed_cyc;
+reg [15:0] indirect_target;
+reg relative_cyc;
+
+wire [7:0] instruction = cycle == FETCH ? bus_in : insin;
+
+localparam FETCH = 0;
+localparam PARAM1 = 1;
+localparam PARAM2 = 2;
+localparam DATA1 = 3;
+localparam IO1 = 4;
+localparam IO2 = 5;
+localparam HALT = 7;
+
+/*
+ * Memory bus signals
+ */
+wire [7:0] reg_plus_1 = instr_reg_v + 1;
+wire [7:0] reg_minus_1 = instr_reg_v - 1;
+wire [1:0] index_control = extend ? 2'b11 : (indexed_cyc != 0 ? indexed_cyc : instruction_args_latch[14:13]);
+wire [7:0] index = index_control== 2'b01 ? reg_plus_1 : (index_control == 2'b10 ? reg_minus_1 : regs[instr_reg_a]);
+wire is_data_fetch_cycle = relative_cyc || indirect_cyc || cycle == DATA1;
+wire is_instr_fetch_cycle = (cycle == FETCH || cycle == PARAM1 || cycle == PARAM2) && !is_data_fetch_cycle;
+wire le_lo_act = (is_instr_fetch_cycle || is_data_fetch_cycle) && (requested_addr[7:0] != last_addr[7:0] && requested_addr[15:8] == last_addr[15:8]) && !IO_cyc;
+assign le_lo = le_lo_act && clk && !reset;
+wire le_hi_act = (is_instr_fetch_cycle || is_data_fetch_cycle) && (requested_addr[15:8] != last_addr[15:8]) && !IO_cyc;
+assign le_hi = le_hi_act && clk && !reset;
+
+wire [15:0] requested_addr = (cycle == DATA1 ? (indirect_cyc || extend ? instruction_args_latch : {page_reg, instruction_args_latch[12:0]}) : (is_instr_fetch_cycle ? {page_reg, PC} : (indirect_cyc || relative_cyc ? indirect_target : 0)) + (!is_instr_fetch_cycle && cycle == PARAM2 ? 1 : 0)) + (((is_indexed && !indirect_cyc) || (indexed_cyc != 0 && cycle == DATA1)) && is_data_fetch_cycle ? index : 0);
+
+wire write_cyc = cycle == DATA1 && is_store || (cycle == PARAM1 && relative_cyc && is_store);
+
+assign OEb = !(((is_instr_fetch_cycle || is_data_fetch_cycle) && last_addr == requested_addr) || (IO_cyc && is_IO_READ)) || reset || write_cyc;
+assign WEb = !(write_cyc || (is_IO_WRITE && cycle == IO1)) || reset || (last_addr != requested_addr && !IO_cyc);
+assign bus_out = is_IO_WRITE && IO_cyc ? instr_reg_v : (le_lo_act ? requested_addr[7:0] : (le_hi_act ? requested_addr[15:8] : alu_instr_reg));
+assign bus_dir = !(!WEb || le_lo_act || le_hi_act || (is_IO_WRITE && IO_cyc)) || reset;
+wire IO_cyc = cycle == IO1 || cycle == IO2;
+assign IOC = IO_cyc && !instruction[6];
+assign IOD = IO_cyc && instruction[6];
+
+/*
+ * Instruction decode
+ */
+wire is_RETURN = (instruction[7:2] == 6'b000101 || instruction[7:2] == 6'b001101) && !extend;
+wire is_DAR = instruction[7:2] == 6'b100101 && !extend;
+wire is_CLR = instruction[7:2] == 6'h31 && !extend;
+wire is_EXT = instruction == 8'hB7 && !extend;
+wire is_HALT = instruction == 8'h40 && !extend;
+wire is_NOP = instruction == 8'hC0 && !extend;
+wire is_XCHG = instruction == 8'h91 && !extend;
+wire is_MUL = instruction == 8'h90 && !extend;
+wire is_ZBR = (instruction == 8'h9B || instruction == 8'hBB) && !extend;
+wire is_BXA = (instruction == 8'h9F || instruction == 8'hBF) && !extend;
+wire is_LPS = instruction[7:1] == 7'h49 && !extend;
+wire is_SPS = instruction[7:1] == 7'h09 && !extend;
+wire is_BRANCH = instruction[4:3] == 2'b11;
+wire needs_param = (instruction[3:2] == 2'b01 || instruction[3:2] == 2'b10) && !is_RETURN && !is_DAR && !is_CLR && !is_EXT && !extend;
+wire needs_2_param = instruction[3:2] == 2'b11 || (extend && instruction[3:2] == 2'b10);
+wire is_indexed = ((instruction[3:2] == 2'b11 && instruction_args_latch[14:13] != 2'b00) && !is_BRANCH && !indirect_cyc && !extend) || (extend && (instruction[7:2] == 6'h03 || instruction[7:2] == 6'h33));
+wire is_indirect = (instruction[3:2] == 2'b10 || instruction[3:2] == 2'b11) && instruction_args[15] && !indirect_cyc && !extend;
+wire is_store = (instruction[7:4] == 4'hC && !is_NOP && !extend) || (instruction[7:3] == 5'h19 && extend);
+wire is_COM = instruction[7:4] == 4'hE && !extend;
+wire is_ALU_op = !instruction[4] && !is_store && !is_HALT && !is_COM && (!extend || instruction[3] == 1);
+wire is_immediate = instruction[3:2] == 2'b01;
+wire is_zero_reg = instruction[3:2] == 2'b00;
+wire is_add_sub = instruction[7:5] == 3'h4 || instruction[7:5] == 3'h5;
+wire is_relative = instruction[3:2] == 2'b10;
+wire is_PUSH = instruction == 8'h10 && !extend;
+wire is_POP = instruction == 8'h11 && !extend;
+wire is_TPS = instruction[7:1] == 7'h5A && !extend;
+wire is_CPS = instruction[7:1] == 7'h3A && !extend;
+wire is_PPS = instruction[7:1] == 7'h3B && !extend;
+wire is_RRR = instruction[7:2] == 6'h14 && !extend;
+wire is_RRL = instruction[7:2] == 6'h34 && !extend;
+wire is_TMI = instruction[7:2] == 6'h3D && !extend;
+wire is_IO_READ = (instruction[7:2] == 6'h0C || instruction[7:2] == 6'h1C) && !extend;
+wire is_IO_WRITE = (instruction[7:2] == 6'h2C || instruction[7:2] == 6'h3C) && !extend;
+wire is_CPL = instruction[7:2] == 6'h38 && extend;
+wire is_PSHS = instruction == 8'h10 && extend;
+wire is_POPS = instruction == 8'h11 && extend;
+wire is_SVB = instruction == 8'h12 && extend;
+wire is_CHRP = instruction == 8'h13 && extend;
+
+wire [2:0] instr_reg_a = {psl[4], instruction[1:0]};
+wire [7:0] instr_reg_v = regs[instr_reg_a];
+
+wire [12:0] relative_eff_address_pre = PC + 1 + {instruction_args[14], instruction_args[14], instruction_args[14], instruction_args[14], instruction_args[14], instruction_args[14], instruction_args[14:8]};
+wire [15:0] relative_eff_address = {page_reg, relative_eff_address_pre};
+
+//Branch instr decode
+wire is_CC_BRANCH = instruction[7:4] == 4'h1 || instruction[7:4] == 4'h3 || instruction[7:4] == 4'h9 || instruction[7:4] == 4'hB;
+wire is_REG_BRANCH = !is_CC_BRANCH;
+wire is_BRANCH_SUB = instruction[7:4] != 4'hF && instruction[5:4] == 2'b11;
+wire [7:0] branch_compare_reg = instruction[7:4] == 4'hD ? reg_plus_1 : (instruction[7:4] == 4'hF ? reg_minus_1 : instr_reg_v);
+wire should_branch = (is_CC_BRANCH && instruction[7] && psl[7:6] != instruction[1:0]) || (is_CC_BRANCH && !instruction[7] && instruction[1:0] == 2'b11) || (is_CC_BRANCH && !instruction[7] && psl[7:6] == instruction[1:0] || (is_REG_BRANCH && branch_compare_reg != 8'h00)) || is_ZBR || is_BXA;
+wire [15:0] zbr_target = {(bus_in[6] ? 10'b0000000111 : 10'h000), bus_in[5:0]};
+
+/*
+ * ALU
+ */
+wire [2:0] r0_a = {psl[4], 2'b00};
+wire [2:0] r1_a = {psl[4], 2'b01};
+wire [2:0] r2_a = {psl[4], 2'b10};
+wire [2:0] r3_a = {psl[4], 2'b11};
+assign la_data_out = {halted, regs[r3_a], regs[r2_a], regs[r1_a], regs[r0_a]};
+wire [15:0] mul_res = regs[r0_a] * regs[r1_a];
+wire [7:0] rrr = psl[3] ? {psl[0], instr_reg_v[7:1]} : {instr_reg_v[0], instr_reg_v[7:1]};
+wire [7:0] rrl = psl[3] ? {instr_reg_v[6:0], psl[0]} : {instr_reg_v[6:0], instr_reg_v[7]};
+
+wire indexed_data1 = ((is_indexed && !indirect_cyc) || indexed_cyc != 0) && cycle == DATA1;
+wire [7:0] alu_instr_reg = indexed_data1 ? (instr_reg_a[1:0] == 2'b00 ? index : regs[r0_a]) : instr_reg_v;
+wire [7:0] alu_input1 = is_zero_reg ? regs[r0_a] : alu_instr_reg;
+wire [7:0] alu_input2 = is_zero_reg ? alu_instr_reg : bus_in;
+wire [2:0] alu_op = instruction[7:5];
+reg [8:0] alu_next;
+always @(*) begin
+	case(alu_op)
+		1: alu_next = {psl[0], alu_input1 ^ alu_input2};
+		2: alu_next = {psl[0], alu_input1 & alu_input2};
+		3: alu_next = {psl[0], alu_input1 | alu_input2};
+		4: alu_next = {1'b0, alu_input1} + {1'b0, alu_input2} + {8'h00, (psl[3] && psl[0])};
+		5: alu_next = {1'b0, alu_input1} + {1'b0, ~alu_input2} + {8'h00, (!psl[3] || psl[0])};
+		default: alu_next = {psl[0], alu_input2};
+	endcase
+end
+wire next_idc = alu_next[4] != alu_input1[4] ^ (instruction[7:5] == 5 ? ~alu_input2[4] : alu_input2[4]);
+wire next_ovf = alu_input1[7] == alu_input2[7] && alu_next[7] != alu_input1[7];
+
+always @(posedge clk) begin
+	if(rst || (warmup != 0)) begin
+		psl <= 8'h00;
+		psu <= 8'h20; //Interrupts globally disabled on reset
+		cycle <= 3'h0;
+		last_addr <= 16'hAAAA;
+		insin <= 8'h00;
+		instruction_args_latch <= 16'h0000;
+		PC <= 13'h0000;
+		extend <= 1'b0;
+		warmup <= rst ? 2'b11 : warmup - 1;
+		halted <= 1'b0;
+		indirect_cyc <= 1'b0;
+		indirect_target <= 16'h0000;
+		relative_cyc <= 1'b0;
+		regs[0] <= 8'h00;
+		regs[1] <= 8'h00;
+		regs[2] <= 8'h00;
+		regs[3] <= 8'h00;
+		regs[4] <= 8'h00;
+		regs[5] <= 8'h00;
+		regs[6] <= 8'h00;
+		regs[7] <= 8'h00;
+		indexed_cyc <= 2'b00;
+		page_reg <= 3'b000;
+		ivectors_base <= 16'h0000;
+		chirp_ptr <= 3'b000;
+	end else begin
+		psu[7] <= sense;
+		//r0 is always the same, no matter the RS value
+		if(psl[4]) regs[3'b000] <= regs[3'b100];
+		else regs[3'b100] <= regs[3'b000];
+
+		if(le_lo_act) last_addr[7:0] <= requested_addr[7:0];
+		if(le_hi_act) last_addr[15:8] <= requested_addr[15:8];
+		if(cycle == FETCH) begin
+			indirect_cyc <= 1'b0;
+			relative_cyc <= 1'b0;
+			indexed_cyc <= 2'b00;
+			instruction_args_latch <= 16'h0000;
+			if(last_addr == requested_addr) begin
+				PC <= PC + 1;
+				insin <= bus_in;
+				if(needs_param || needs_2_param) begin
+					if(is_BRANCH && !should_branch) begin
+						PC <= PC + (needs_2_param ? 3 : 2);
+						cycle <= FETCH;
+						if(is_REG_BRANCH) regs[instr_reg_a] <= branch_compare_reg;
+					end else cycle <= PARAM1;
+				end else begin
+					//Hidden EXEC0 state. Some instructions can be quickly executed right away
+					//Special case some stuff
+					if(!is_EXT) extend <= 1'b0;
+					if(is_HALT) halted <= 1'b1;
+					else if(is_EXT) begin
+						extend <= 1'b1;
+					end else if(is_NOP || is_IO_READ || is_IO_WRITE) begin
+					end else if(is_CPL) begin
+						regs[instr_reg_a] <= ~instr_reg_v;
+					end else if(is_XCHG) begin
+						regs[r0_a] <= regs[r1_a];
+						regs[r1_a] <= regs[r0_a];
+					end else if(is_PUSH) begin
+						stack[psu[3:0]] <= {regs[r1_a], regs[r0_a]};
+						psu[3:0] <= psu[3:0] + 1;
+					end else if(is_POP) begin
+						regs[r0_a] <= TOS[7:0];
+						regs[r1_a] <= TOS[15:8];
+						psu[3:0] <= psu[3:0] - 1;
+					end else if(is_PSHS) begin
+						stack[psu[3:0]] <= {psu, psl};
+						psu[3:0] <= psu[3:0] + 1;
+					end else if(is_POPS) begin
+						psl <= TOS[7:0];
+						psu <= {TOS[15:12], psu[3:0] - 4'b0001};
+					end else if(is_SVB) begin
+						ivectors_base <= {regs[r1_a], regs[r0_a]};
+					end else if(is_CHRP) begin
+						regs[r0_a] <= {1'b0, chirpchar};
+						chirp_ptr <= chirp_ptr + 1;
+						psl[7:6] <= 2'b01;
+					end else if(is_CLR) begin
+						regs[instr_reg_a] <= 8'h00;
+					end else if(is_RETURN) begin
+						if(instruction[1:0] == 2'b11 || instruction[1:0] == psl[7:6]) begin
+							PC <= TOS[12:0];
+							page_reg <= TOS[15:13];
+							psu[3:0] <= psu[3:0] - 1;
+							if(instruction[5]) psu[5] <= 1'b0;
 						end
+					end else if(is_MUL) begin
+						regs[r0_a] <= mul_res[7:0];
+						regs[r1_a] <= mul_res[15:8];
+						psl[7:6] <= mul_res > 32767 ? 'b10 : (mul_res != 0 ? 'b01 : 'b00);
+					end else if(is_COM && is_zero_reg) begin
+						perform_compare(regs[r0_a], regs[instr_reg_a]);
+					end else if(is_ALU_op && is_zero_reg) begin
+						perform_alu_op(r0_a);
+					end else if(is_store && is_zero_reg) begin
+						regs[instr_reg_a] <= regs[r0_a];
+						set_cc_for(regs[r0_a]);
+					end else if(is_DAR) begin
+						regs[instr_reg_a] <= {regs[instr_reg_a][7:4] + (psl[0] ? 4'h0 : 4'hA), regs[instr_reg_a][3:0] + (psl[5] ? 4'h0 : 4'hA)};
+					end else if(is_RRR) begin
+						if(psl[3]) begin
+							psl[0] <= instr_reg_v[0];
+							psl[5] <= instr_reg_v[6];
+						end
+						set_cc_for(rrr);
+						regs[instr_reg_a] <= rrr;
+					end else if(is_RRL) begin
+						if(psl[3]) begin
+							psl[0] <= instr_reg_v[7];
+							psl[5] <= instr_reg_v[4];
+						end
+						set_cc_for(rrl);
+						regs[instr_reg_a] <= rrl;
+					end else if(is_LPS) begin
+						if(instruction[0]) psl <= regs[r0_a];
+						else psu <= regs[r0_a];
+					end else if(is_SPS) begin
+						if(instruction[0]) begin
+							regs[r0_a] <= psl;
+							set_cc_for(psl);
+						end else begin
+							regs[r0_a] <= psu;
+							set_cc_for(psu);
+						end
+					end
+
+					cycle <= is_HALT ? HALT : (is_IO_READ || is_IO_WRITE ? IO1 : FETCH);
+				end
+			end
+		end
+		if(cycle == PARAM1) begin
+			if(last_addr == requested_addr) begin
+				if(is_instr_fetch_cycle) PC <= PC + 1;
+				if(is_immediate || relative_cyc) begin
+					//Immediate mode and relative mode instructions
+					if(is_store) begin
+					end else if(is_TPS) begin
+						if(((instruction[0] ? psl : psu) & bus_in) == bus_in) psl[7:6] <= 2'b00;
+						else psl[7:6] <= 2'b01;
+					end else if(is_CPS) begin
+						if(instruction[0]) psl <= psl & ~bus_in;
+						else psu <= psu & ~bus_in;
+					end else if(is_PPS) begin
+						if(instruction[0]) psl <= psl | bus_in;
+						else psu <= psu | bus_in;
+					end else if(is_COM) begin
+						perform_compare(alu_instr_reg, bus_in);
+					end else if(is_TMI) begin
+						if((instr_reg_v & bus_in) == instr_reg_v) psl[7:6] <= 2'b00;
+						else psl[7:6] <= 2'b01;
+					end else if(is_ALU_op) begin
+						perform_alu_op(instr_reg_a);
+					end
+					cycle <= FETCH;
+					extend <= 1'b0;
+					relative_cyc <= 1'b0;
+				end else if(needs_2_param || indirect_cyc) begin
+					cycle <= PARAM2;
+				end else if(is_relative && is_indirect) begin
+					indirect_target <= is_ZBR ? zbr_target : relative_eff_address;
+					indirect_cyc <= 1'b1;
+				end else if(is_relative && !is_indirect) begin
+					if(is_BRANCH) begin
+						if(is_ZBR) perform_branch(zbr_target);
+						else perform_branch(relative_eff_address);
+						extend <= 1'b0;
+						cycle <= FETCH;
 					end else begin
-						if((ins_reg[7:4] == 'h1 || ins_reg[7:4] == 'h3) && ins_reg[2]) begin
-							/*
-							*	Subroutine returns
-							*/
-							if(cycle == 2) begin
-								if(ins_reg[1:0] == 'b11 || ins_reg[1:0] == psl[7:6]) begin //Return on condition true
-									//Pop a value of the stack and into PC
-									pc <= stack[psu[3:0] - 1];
-									psu[3:0] <= psu[3:0] - 1;
-									if(ins_reg[7:4] == 'h3) begin //Also re-enable interrupts
-										psu[5] <= 0;
-									end
-								end
-								cycle <= 0;
-							end
-						end else if((ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7) && !ins_reg[2]) begin
-							/*
-							*	Basic I/O read
-							*/
-							if(cycle == 2) begin
-								r_opreq <= 1;
-								r_rw <= 0;
-								r_m_io <= 0;
-								r_d_c <= ins_reg[7:4] == 'h7 ? 1 : 0;
-								cycle <= 3;
-							end else if(cycle == 3 && opack) begin
-								set_cc_for(dbus_in);
-								write_reg(dbus_in, ins_reg[1:0]);
-								r_opreq <= 0;
-								r_m_io <= 1;
-								cycle <= 0;
-							end
-						end else if((ins_reg[7:4] == 'hB || ins_reg[7:4] == 'hF) && !ins_reg[2]) begin
-							/*
-							*	Basic I/O write
-							*/
-							if(cycle == 2) begin
-								r_opreq <= 1;
-								r_rw <= 1;
-								b_buf <= instr_reg;
-								r_m_io <= 0;
-								r_d_c <= ins_reg[7:4] == 'hF ? 1 : 0;
-								cycle <= 3;
-							end else if(cycle == 3) begin
-								r_wrp <= 1;
-								cycle <= 4;
-							end else if(cycle == 4 && opack) begin
-								r_wrp <= 0;
-								r_opreq <= 0;
-								r_rw <= 0;
-								r_m_io <= 1;
-								cycle <= 0;
-							end
-						end else if(ins_reg[7:4] == 'h5 && !ins_reg[2]) begin
-							/*
-							*	rrr
-							*/
-							if(cycle == 2) begin
-								if(psl[3]) begin
-									psl[0] <= instr_reg[0];
-									psl[5] <= instr_reg[6];
-								end
-								set_cc_for(rrr);
-								write_reg(rrr, ins_reg[1:0]);
-								cycle <= 0;
-							end
-						end else if(ins_reg[7:4] == 'hD && !ins_reg[2]) begin
-							/*
-							*	rrl
-							*/
-							if(cycle == 2) begin
-								if(psl[3]) begin
-									psl[0] <= instr_reg[7];
-									psl[5] <= instr_reg[4];
-								end
-								set_cc_for(rrl);
-								write_reg(rrl, ins_reg[1:0]);
-								cycle <= 0;
-							end
-						end else if(ins_reg[7:4] >= 'h94 && ins_reg[7:4] <= 'h97) begin //Decimal-adjust register
-							if(cycle == 2) begin
-								write_reg(instr_reg + (psl[0] ? 0 : 'hA0) + (psl[5] ? 0 : 'h0A), ins_reg[1:0]);
-								cycle <= 0;
-							end
-						end else begin
-							/*
-							*	Misc instructions
-							*/
-							if(cycle == 2) begin
-								if(is_mul) begin //Using undocumented opcodes to add a multiply instruction
-									if(psl[4]) begin
-										r123_2[1] <= mul_res[7:0];
-										r123_2[2] <= mul_res[15:8];
-									end else begin
-										r123[1] <= mul_res[7:0];
-										r123[2] <= mul_res[15:8];
-									end
-									cycle <= 0;
-								end else if(ins_reg == 'h91) begin //Undocumented opcode, used here as an instruction that swaps r0 and r1
-									if(psl[4]) begin
-										r0 <= r123_2[0];
-										r123_2[0] <= r0;
-									end else begin
-										r0 <= r123[0];
-										r123[0] <= r0;
-									end
-									cycle <= 0;
-								end else if(ins_reg == 'h10) begin //Originally undocumented, used here as a way to pop from the on-chip stack
-									r0 <= stack[psu[3:0] - 1][7:0];
-									if(psl[4]) begin
-										r123_2[0] <= {1'b0, stack[psu[3:0] - 1][14:8]};
-									end else begin
-										r123[0] <= {1'b0, stack[psu[3:0] - 1][14:8]};
-									end
-									psu[3:0] <= psu[3:0] - 1;
-									cycle <= 0;
-								end else if(ins_reg == 'h11) begin //Originally undocumented, used here as a way to push to the on-chip stack
-									stack[psu[3:0]][7:0] <= r0;
-									if(psl[4]) begin
-										stack[psu[3:0]][14:8] <= r123_2[0][6:0];
-									end else begin
-										stack[psu[3:0]][14:8] <= r123[0][6:0];
-									end
-									psu[3:0] <= psu[3:0] + 1;
-									cycle <= 0;
-								end else if(ins_reg == 'h12) begin
-									r0 <= psu;
-									set_cc_for(r0);
-									cycle <= 0;
-								end else if(ins_reg == 'h13) begin
-									r0 <= psl;
-									set_cc_for(r0);
-									cycle <= 0;
-								end else if(ins_reg == 'h92) begin
-									psu <= r0;
-									cycle <= 0;
-								end else if(ins_reg == 'h93) begin
-									psl <= r0;
-									cycle <= 0;
-								end else begin
-									r_rw <= 0;
-									r_opreq <= 1;
-									pc <= pc + 1;
-									r_addr <= pc;
-									cycle <= 3;
-								end
-							end else if(cycle == 3 && opack) begin
-								if(ins_reg == 'h74) begin
-									psu <= psu & ~dbus_in;
-								end else if(ins_reg == 'h75) begin
-									psl <= psl & ~dbus_in;
-								end else if(ins_reg == 'h76) begin
-									psu <= psu | dbus_in;
-								end else if(ins_reg == 'h77) begin
-									psl <= psl | dbus_in;
-								end else if(ins_reg == 'hB4 || ins_reg == 'hB6) begin
-									psl[7:6] <= (psu & dbus_in) == dbus_in ? 0 : 2;
-								end else if(ins_reg == 'hB5 || ins_reg == 'hB7) begin
-									psl[7:6] <= (psl & dbus_in) == dbus_in ? 0 : 2;
-								end else if(ins_reg >= 'hF4 && ins_reg <= 'hF7) begin //tmi
-									psl[7:6] <= (instr_reg & dbus_in) == dbus_in ? 0 : 2;
-								end
-								r_opreq <= 0;
-								cycle <= 0;
-							end
-						end
-					end
-				end else begin
-					/*
-					*	ALU or load/store instruction, or 'halt' or 'nop'
-					*/
-					if(cycle == 2) begin
-						if(ins_reg == 'h40) begin //halt
-							halted <= 1;
-							cycle <= 0;
-						end else if(ins_reg == 'hC0) begin //nop
-							cycle <= 0;
-						end else begin
-							if(ins_reg[3:2] == 0) begin //Zero-addressed instruction
-								if(ins_reg[7:4] == 0) begin //lodz instruction can complete immediately
-									r0 <= instr_reg;
-									set_cc_for(instr_reg);
-									cycle <= 0;
-								end else if(ins_reg[7:4] == 'hC && ins_reg[3:2] == 0) begin //strz instruction can complete immediately
-									write_reg(r0, ins_reg[1:0]);
-									set_cc_for(r0);
-									cycle <= 0;
-								end else begin //'zero' addressing mode can load immediately
-									holding_reg <= r0;
-									cycle <= 4;
-								end
-							end else begin
-								//All other addressing modes need to read at least one more byte of instruction argument
-								r_opreq <= 1;
-								r_rw <= 0;
-								r_addr <= pc[12:0];
-								pc <= pc + 1;
-								/*
-								* Immediate-addressed instructions only load one byte, with no further address computation, so we can take a shortcut for those.
-								* No need to 'branch' to complex address-computation. Just go to cycle 3 where the second operand is loaded from the bus.
-								*/
-								if(ins_reg[3:2] == 2) begin
-									cycle <= 'b10_0000;
-								end else if(ins_reg[3:2] == 3) begin
-									cycle <= 'b11_0000;
-								end else begin
-									cycle <= 3;
-								end
-							end
-						end
-					end else if(cycle == 3 && opack) begin
-						r_opreq <= 0;
-						holding_reg <= dbus_in;
-						cycle <= 4;
-					end else if(cycle == 4) begin
-						if(ins_reg[7:5] == 7) begin
-							if(psl[1]) begin
-								//Logical compare
-								psl[7:6] <= input1 > input2 ? 'b01 : (input1 < input2 ? 'b10 : 'b00);
-							end else begin
-								//Arithmetic compare
-								psl[7:6] <= input1[7] == input2[7] ? (input1 > input2 ? 'b01 : (input1 < input2 ? 'b10 : 'b00)) : (input1[7] ? 'b10 : 'b01);
-							end
-						end else begin
-							set_cc_for(alu_next[7:0]);
-							write_reg(alu_next[7:0], idx_ctrl != 0 || ins_reg[3:2] == 0 ? 0 : ins_reg[1:0]);
-							if(ins_reg[7:5] == 4 || ins_reg[7:5] == 5) begin
-								psl[5] <= alu_next[4] != input1[4] ^ (ins_reg[7:5] == 5 ? ~input2[4] : input2[4]);
-								psl[2] <= input1[7] == input2[7] && alu_next[7] != input1[7];
-								psl[0] <= alu_next[8];
-							end
-						end
-						r_opreq <= 0;
-						cycle <= 0;
-					end
-					/*
-					*	Store instruction
-					*/
-					else if(cycle == 8) begin
-						if(ins_reg >= 'hC4 && ins_reg <= 'hC7) begin
-							cycle <= 0;
-						end else begin
-							r_wrp <= 1;
-							cycle <= 9;
-						end
-					end else if(cycle == 9 && opack) begin
-						r_rw <= 0;
-						r_wrp <= 0;
-						r_opreq <= 0;
-						cycle <= 0;
-					end
-					
-					/*
-					*	Relative-addressing
-					*/
-					else if(cycle == 'b10_0000 && opack) begin
-						cycle <= dbus_in[7] ? 'b01_0000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
-						r_addr <= pc[12:0] + 1 + (dbus_in[6:0] >= 64 ? -(64 - (dbus_in[6:0] - 64)) : dbus_in[6:0]); //Apply address change
-						if(!dbus_in[7]) begin
-							setup_read();
-						end
-					end
-					/*
-					*	Absolute-addressing
-					*/
-					else if(cycle == 'b11_0000 && opack) begin
-						addr_buff <= dbus_in; //Read MSB
-						r_addr <= r_addr + 1; //Read next byte
-						pc <= pc + 1;
-						cycle <= 'b11_0001;
-					end else if(cycle == 'b11_0001 && opack) begin
-						cycle <= addr_buff[7] ? 'b01_0000 : (ins_reg[7:5] == 6 ? 8 : 3); //Detect if indirect load, and detect if store
-						idx_ctrl <= addr_buff[6:5];
-						if(!addr_buff[7]) begin
-							/*
-							*	Offset address by register value for indexed addressing
-							*/
-							if(addr_buff[6:5] == 0) begin
-								r_addr <= {addr_buff[4:0], dbus_in};
-							end else begin
-								r_addr <= {addr_buff[4:0], dbus_in} + (addr_buff[6:5] == 1 ? instr_reg_p1 : (addr_buff[6:5] == 2 ? instr_reg_m1 : instr_reg));
-								write_reg(addr_buff[6:5] == 1 ? instr_reg_p1 : (addr_buff[6:5] == 2 ? instr_reg_m1 : instr_reg), ins_reg[1:0]);
-							end
-							setup_read();
-						end else begin
-							r_addr <= {addr_buff[4:0], dbus_in};
-						end
-					end
-					/*
-					*	Indirect addressing (follows relative or absolute)
-					*/
-					else if(cycle == 'b01_0000 && opack) begin
-						addr_buff <= dbus_in; //Read MSB
-						r_addr <= r_addr + 1; //Read next byte
-						cycle <= 'b01_0001;
-					end else if(cycle == 'b01_0001) begin
-						if(idx_ctrl == 0) begin
-							r_addr <= {addr_buff[4:0], dbus_in};
-						end else begin
-							/*
-							*	Offset address by register value for indexed addressing
-							*/
-							r_addr <= {addr_buff[4:0], dbus_in} + (idx_ctrl[1:0] == 1 ? instr_reg_p1 : (idx_ctrl[1:0] == 2 ? instr_reg_m1 : instr_reg));
-							write_reg(idx_ctrl[1:0] == 1 ? instr_reg_p1 : (idx_ctrl[1:0] == 2 ? instr_reg_m1 : instr_reg), ins_reg[1:0]);
-						end
-						cycle <= ins_reg[7:5] == 6 ? 8 : 3; //Detect if store
-						setup_read();
+						relative_cyc <= 1'b1;
+						indirect_target <= relative_eff_address;
 					end
 				end
+				instruction_args_latch[15:8] <= bus_in;
 			end
+		end
+		if(cycle == PARAM2) begin
+			if(last_addr == requested_addr) begin
+				if(is_instr_fetch_cycle) PC <= PC + 1;
+				if(is_indirect && !indirect_cyc) begin
+					indirect_cyc <= 1'b1;
+					indirect_target <= is_BRANCH ? {page_reg[2], instruction_args[14:0]} : {page_reg, instruction_args[12:0]};
+					indexed_cyc <= index_control;
+					cycle <= PARAM1;
+				end else if(is_BRANCH) begin
+					perform_branch((indirect_cyc || extend ? instruction_args : {page_reg[2], instruction_args[14:0]}) + (is_BXA ? {8'h00, regs[r3_a]} : 16'h0000));
+					cycle <= FETCH;
+					extend <= 1'b0;
+				end else cycle <= DATA1;
+				instruction_args_latch[7:0] <= bus_in;
+			end
+		end
+		if(cycle == DATA1) begin
+			if(last_addr == requested_addr) begin
+				if(indexed_data1) regs[instr_reg_a] <= index;
+				indirect_cyc <= 1'b0;
+				indexed_cyc <= 2'b00;
+				instruction_args_latch <= 16'h0000;
+				if(is_store) begin
+				end else if(is_COM) begin
+					perform_compare(alu_instr_reg, bus_in);
+				end else if(is_ALU_op) begin
+					perform_alu_op(indexed_data1 ? r0_a : instr_reg_a);
+				end
+				cycle <= FETCH;
+				extend <= 1'b0;
+			end
+		end
+		if(cycle == IO1) begin
+			cycle <= IO2;
+		end
+		if(cycle == IO2) begin
+			if(is_IO_READ) begin
+				regs[instr_reg_a] <= bus_in;
+				psl[7:6] <= bus_in > 127 ? 2'b10 : (bus_in == 0 ? 2'b00 : 2'b01);
+			end
+			cycle <= FETCH;
+		end
+
+		if(cycle == HALT) begin
+
 		end
 	end
+end
 
-	task write_reg(input [7:0] data, input [1:0] r_addr);
-		begin
-			if(r_addr == 0) begin
-				r0 <= data;
-			end else begin
-				if(psl[4]) begin
-					r123_2[r_addr - 1] <= data;
-				end else begin
-					r123[r_addr - 1] <= data;
-				end
-				
-			end
+task set_cc_for(input [7:0] val);
+	begin
+		psl[7:6] <= val > 127 ? 'b10 : (val != 0 ? 'b01 : 'b00);
+	end
+endtask
+
+task perform_alu_op(input [2:0] targ_reg);
+	begin
+		regs[targ_reg] <= alu_next[7:0];
+		psl[0] <= alu_next[8];
+		set_cc_for(alu_next[7:0]);
+		if(is_add_sub) begin
+			psl[5] <= next_idc;
+			psl[2] <= next_ovf;
 		end
-	endtask
+	end
+endtask
 
-	task push_stack();
-		begin
-			if(ins_reg[7:4] == 'h3 || ins_reg[7:4] == 'h7 || ins_reg[7:4] == 'hB) begin //Is it in one of the rows of subroutine branches?
-				stack[psu[3:0]] <= pc;
+task perform_compare(input [7:0] in1, input [7:0] in2);
+	begin
+		if(in1 == in2) psl[7:6] <= 2'b00;
+		else if(psl[1] || in1[7] == in2[7]) begin
+			if(in1 > in2) psl[7:6] <= 2'b01;
+			else if(in1 < in2) psl[7:6] <= 2'b10;
+		end else psl[7:6] <= in1[7] ? 2'b10 : 2'b01;
+	end
+endtask
+
+task perform_branch(input [15:0] target);
+	begin
+		if(should_branch) begin
+			if(is_BRANCH_SUB) begin
+				//Push return address onto stack
+				stack[psu[3:0]] <= {page_reg, indirect_cyc ? PC : PC + 13'h0001};
 				psu[3:0] <= psu[3:0] + 1;
 			end
+			PC <= target[12:0];
+			page_reg <= target[15:13];
 		end
-	endtask
+		if(is_REG_BRANCH) regs[instr_reg_a] <= branch_compare_reg;
+	end
+endtask
 
-	task set_cc_for(input [7:0] val);
-		begin
-			psl[7:6] <= val > 127 ? 'b10 : (val != 0 ? 'b01 : 'b00);
-		end
-	endtask
+reg [2:0] chirp_ptr;
+reg [6:0] chirpchar;
+always @(*) begin
+	case(chirp_ptr)
+		0: chirpchar = 7'h43;
+		1: chirpchar = 7'h68;
+		2: chirpchar = 7'h69;
+		3: chirpchar = 7'h72;
+		4: chirpchar = 7'h70;
+		5: chirpchar = 7'h21;
+		6: chirpchar = 13;
+		7: chirpchar = 10;
+	endcase
+end
 
-	task setup_read();
-		begin
-			if(ins_reg[7:4] == 'hC) begin
-				r_rw <= 1;
-				b_buf <= addr_buff[6:5] != 0 ? r0 : instr_reg; //Account for indexed addressing always using r0
-				cycle <= 8;
-			end
-		end
-	endtask
 endmodule
