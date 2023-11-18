@@ -1,0 +1,15 @@
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/bin/Debug/net7.0/2650Tools
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/bin/Debug/net7.0/2650Tools.deps.json
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/bin/Debug/net7.0/2650Tools.runtimeconfig.json
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/bin/Debug/net7.0/2650Tools.dll
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/bin/Debug/net7.0/2650Tools.pdb
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.csproj.AssemblyReference.cache
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.GeneratedMSBuildEditorConfig.editorconfig
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.AssemblyInfoInputs.cache
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.AssemblyInfo.cs
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.csproj.CoreCompileInputs.cache
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.dll
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/refint/2650Tools.dll
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.pdb
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/2650Tools.genruntimeconfig.cache
+/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/Debug/net7.0/ref/2650Tools.dll

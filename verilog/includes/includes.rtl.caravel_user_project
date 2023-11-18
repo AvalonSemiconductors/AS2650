@@ -3,3 +3,9 @@
 -v $(USER_PROJECT_VERILOG)/rtl/wrapped_as2650.v
 -v $(USER_PROJECT_VERILOG)/rtl/as2650.v
 -v $(USER_PROJECT_VERILOG)/rtl/avali_logo.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/gpios.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/timers.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/serial_ports.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/spi.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/uart.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/boot_rom.v

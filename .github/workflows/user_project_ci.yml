@@ -92,6 +92,10 @@ jobs:
           make verify-rrr_rrl_dar-rtl
           make verify-branches-rtl
           make verify-extended_isa-rtl
+          make verify-gpios-rtl
+          make verify-timers-rtl
+          make verify-serial_ports-rtl
+          make verify-boot_rom-rtl
 
   user_project_flow_gf180mcuD:
     runs-on: ubuntu-latest
@@ -116,7 +120,7 @@ jobs:
 
       - name: Export OPENLANE ROOT
         run: echo "OPENLANE_ROOT=/home/runner/work/AS2650/openlane" >> $GITHUB_ENV
-          
+
       - name: restore pdk cache
         uses: actions/cache@v3
         with:
@@ -135,13 +139,21 @@ jobs:
           make uncompress
           make wrapped_as2650
           rm -rf openlane/wrapped_as2650/runs
+          make gpios
+          rm -rf openlane/gpios/runs
+          make timers
+          rm -rf openlane/timers/runs
+          make serial_ports
+          rm -rf openlane/serial_ports/runs
+          make boot_rom
+          rm -rf openlane/boot_rom/runs
           make user_project_wrapper
           rm -rf openlane/user_project_wrapper/runs
 
       - name: Patch Caravel
         run: |
           cp patches/simple_por.v caravel/verilog/rtl/simple_por.v
-          
+
       - name: run GL tests
         run: |
           make verify-memory_cycles-gl
@@ -152,6 +164,10 @@ jobs:
           make verify-rrr_rrl_dar-gl
           make verify-branches-gl
           make verify-extended_isa-gl
+          make verify-gpios-gl
+          make verify-timers-gl
+          make verify-serial_ports-gl
+          make verify-boot_rom-gl
 
       - name: run precheck
         run: |

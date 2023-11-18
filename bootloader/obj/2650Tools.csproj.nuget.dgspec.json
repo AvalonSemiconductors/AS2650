@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "restore": {
+    "/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/2650Tools.csproj": {}
+  },
+  "projects": {
+    "/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/2650Tools.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/2650Tools.csproj",
+        "projectName": "2650Tools",
+        "projectPath": "/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/2650Tools.csproj",
+        "packagesPath": "/home/lucah/.nuget/packages/",
+        "outputPath": "/media/lucah/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/bootloader/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/lucah/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.114/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -5,9 +5,9 @@ module wrapped_as2650(
 	inout vdd,
 	inout vss,
 `endif
-	input [37:0] io_in,
-	output [37:0] io_out,
-	output [37:0] io_oeb,
+	input [18:0] io_in,
+	output [18:0] io_out,
+	output [18:0] io_oeb,
 	
 	input wb_clk_i,
 	input wb_rst_i,
@@ -20,9 +20,34 @@ module wrapped_as2650(
 	input wbs_stb_i,
 	output wbs_ack_o,
 	
-	output [63:0] la_data_out,
+	output [55:0] la_data_out,
+	input [6:0] irqs,
 	
-	output [2:0] irq
+	output [7:0] bus_data_out,
+	output bus_cyc,
+	output [5:0] bus_addr,
+	
+	output bus_we_gpios,
+	input [7:0] bus_in_gpios,
+	
+	output bus_we_timers,
+	input [7:0] bus_in_timers,
+	
+	output bus_we_serial_ports,
+	input [7:0] bus_in_serial_ports,
+	
+	output [2:0] irq,
+	output reset_out,
+	
+	output WEb_raw,
+	output le_lo_act,
+	output le_hi_act,
+	output reg [15:0] RAM_start_addr,
+	output reg [15:0] RAM_end_addr,
+	output reg [2:0] cs_port,
+	output boot_rom_en,
+	output [7:0] rom_bus_out,
+	input [7:0] rom_bus_in
 );
 assign irq = 3'b000;
 
@@ -38,6 +63,13 @@ wire wb_valid = wbs_cyc_i && wbs_stb_i;
 reg wb_debug_cc;
 reg wb_debug_carry;
 reg [1:0] web_behavior;
+reg wb_reset_override_en;
+reg wb_reset_override;
+reg wb_io3_test;
+reg wb_io3_state;
+reg wb_hidden_rom_enable;
+
+assign boot_rom_en = wb_hidden_rom_enable && cpu_hidden_rom_enable;
 
 always @(posedge wb_clk_i) begin
 	if(wb_rst_i) begin
@@ -48,6 +80,11 @@ always @(posedge wb_clk_i) begin
 		wb_debug_cc <= 0;
 		wb_debug_carry <= 0;
 		web_behavior <= 0;
+		wb_reset_override_en <= 0;
+		wb_reset_override <= 0;
+		wb_io3_test <= 0;
+		wb_io3_state <= 0;
+		wb_hidden_rom_enable <= 0;
 	end else begin
 		wb_counter <= wb_counter + 1;
 		if(wb_valid && !wb_feedback_delay) begin
@@ -59,8 +96,24 @@ always @(posedge wb_clk_i) begin
 					wb_debug_cc <= wbs_dat_i[0];
 					wb_debug_carry <= wbs_dat_i[1];
 					web_behavior <= wbs_dat_i[3:2];
+					wb_reset_override_en <= wbs_dat_i[4];
+					wb_reset_override <= wbs_dat_i[5];
+					wb_io3_test <= wbs_dat_i[6];
+					wb_io3_state <= wbs_dat_i[7];
 				end
 				wbs_o_buff <= {16'h0000, debug_psu, debug_psl};
+			end else if(wbs_adr_i[20] && wbs_adr_i[19]) begin
+				if(wbs_we_i) begin
+					wb_hidden_rom_enable <= wbs_dat_i[31];
+					cs_port <= wbs_dat_i[2:0];
+				end
+				wbs_o_buff <= {wb_hidden_rom_enable, 28'h6210000, cs_port};
+			end else if(wbs_adr_i[20] && !wbs_adr_i[19]) begin
+				if(wbs_we_i) begin
+					RAM_start_addr <= wbs_dat_i[15:0];
+					RAM_end_addr <= wbs_dat_i[31:16];
+				end
+				wbs_o_buff <= {RAM_end_addr, RAM_start_addr};
 			end else begin
 				wbs_o_buff <= 32'hFFFFFFFF;
 			end
@@ -81,12 +134,15 @@ wire [7:0] debug_psl;
 wire flag;
 wire IOC;
 wire IOD;
+wire cpu_hidden_rom_enable;
+assign WEb_raw = WEb;
 
 assign io_out[0] = 1'b0;
 assign io_oeb[0] = 1'b1;
 assign io_out[1] = bus_dir;
 assign io_oeb[1] = 1'b0;
 assign io_out[12:5] = bus_out;
+assign rom_bus_out = bus_out;
 assign io_oeb[12:5] = {8{bus_dir}};
 assign io_out[13] = le_lo;
 assign io_out[14] = le_hi;
@@ -98,36 +154,71 @@ assign io_oeb[2] = 1'b0;
 assign io_out[4] = 1'b0;
 assign io_oeb[4] = 1'b1;
 
-//TODO: do something with this
-assign io_out[3] = 1'b0;
-assign io_oeb[3] = 1'b1;
+assign io_out[3] = wb_io3_state;
+assign io_oeb[3] = !wb_io3_test;
 
 assign io_out[18:17] = wb_debug_carry ? {debug_psl[5], debug_psl[0]} : (wb_debug_cc ? debug_psl[7:6] : {IOC, IOD});
 assign io_oeb[18:17] = 2'b00;
 
-//TEMP
-assign la_data_out[63:33] = 31'h7F00FF00;
-assign io_oeb[37:19] = 19'h7FFFF;
-assign io_out[37:19] = 19'h00000;
+assign la_data_out[55:33] = 23'h7F00FF; //TEMP
+wire the_reset = (wb_reset_override_en ? wb_reset_override : (!io_in[0])) || wb_rst_i;
+assign reset_out = the_reset;
+
+/*
+ * Internal IO multiplexing
+ */
+wire [7:0] full_io_addr;
+assign bus_addr = full_io_addr[5:0];
+wire io_bus_we;
+wire [1:0] device_addr = full_io_addr[7:6];
+
+reg [7:0] bus_in_plexed;
+always @(*) begin
+	case(device_addr)
+		default: bus_in_plexed = 8'h00;
+		0: bus_in_plexed = bus_in_gpios;
+		1: bus_in_plexed = bus_in_timers;
+		2: bus_in_plexed = bus_in_serial_ports;
+	endcase
+end
+assign bus_we_gpios = io_bus_we && device_addr == 0;
+assign bus_we_timers = io_bus_we && device_addr == 1;
+assign bus_we_serial_ports = io_bus_we && device_addr == 2;
+
+wire [15:0] requested_addr;
+wire [7:0] bus_in = boot_rom_en ? rom_bus_in : io_in[12:5];
 
 as2650 as2650(
 	.clk(wb_clk_i),
-	.rst((!io_in[0]) || wb_rst_i),
-	.bus_in(io_in[12:5]),
+	.rst(the_reset),
+	.bus_in(bus_in),
 	.bus_out(bus_out),
 	.le_lo(le_lo),
 	.le_hi(le_hi),
 	.OEb(OEb),
 	.WEb(WEb),
 	.bus_dir(bus_dir),
-	.irq(1'b0),
+	.irqs(irqs),
 	.debug_psu(debug_psu),
 	.debug_psl(debug_psl),
 	.flag(flag),
 	.sense(io_in[4]),
 	.IOC(IOC),
 	.IOD(IOD),
-	.la_data_out(la_data_out[32:0])
+	.la_data_out(la_data_out[32:0]),
+	
+	.ext_io_addr(full_io_addr),
+	.io_bus_cyc(bus_cyc),
+	.io_bus_we(io_bus_we),
+	.io_bus_out(bus_data_out),
+	.io_bus_in(bus_in_plexed),
+	
+	.wb_hidden_rom_enable(wb_hidden_rom_enable),
+	.cpu_hidden_rom_enable(cpu_hidden_rom_enable),
+	
+	.le_lo_act_o(le_lo_act),
+	.le_hi_act_o(le_hi_act),
+	.requested_addr_o(requested_addr)
 );
 
 endmodule

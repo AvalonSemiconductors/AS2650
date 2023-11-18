@@ -15,16 +15,32 @@ module as2650(
 	output IOC,
 	output IOD,
 	
-	input irq,
+	input [6:0] irqs,
 	
 	output flag,
 	input sense,
 	
+	output reg [7:0] ext_io_addr,
+	output reg io_bus_cyc,
+	output reg io_bus_we,
+	output reg [7:0] io_bus_out,
+	input [7:0] io_bus_in,
+	
 	output [7:0] debug_psl,
 	output [7:0] debug_psu,
 	
-	output [32:0] la_data_out
+	output [32:0] la_data_out,
+	
+	input wb_hidden_rom_enable,
+	output reg cpu_hidden_rom_enable,
+	output le_lo_act_o,
+	output le_hi_act_o,
+	output [15:0] requested_addr_o
 );
+
+reg trap;
+reg [7:0] irqs_latch;
+wire [2:0] irq_num = irqs_latch[7] ? 3'h7 : (irqs_latch[6] ? 3'h6 : (irqs_latch[5] ? 3'h5 : (irqs_latch[4] ? 3'h4 : (irqs_latch[3] ? 3'h3 : (irqs_latch[2] ? 3'h2 : (irqs_latch[1] ? 3'h1 : 3'h0))))));
 
 reg [7:0] regs [7:0];
 
@@ -64,10 +80,10 @@ reg [15:0] stack [15:0];
 wire [15:0] TOS = stack[psu[3:0] - 1];
 reg [12:0] PC;
 reg [2:0] page_reg; 
-reg [15:0] ivectors_base;
+reg [11:0] ivectors_base;
 
 reg [15:0] last_addr;
-reg [2:0] cycle;
+reg [3:0] cycle;
 reg [7:0] insin;
 reg [15:0] instruction_args_latch;
 wire [15:0] instruction_args = {
@@ -92,7 +108,14 @@ localparam PARAM2 = 2;
 localparam DATA1 = 3;
 localparam IO1 = 4;
 localparam IO2 = 5;
+localparam INVALID = 6;
 localparam HALT = 7;
+localparam EXT_IO1 = 8;
+localparam EXT_IO2 = 9;
+localparam EXT_IO3 = 10;
+localparam EXT_IO4 = 11;
+localparam INTERRUPT_ACTION1 = 12;
+localparam INTERRUPT_ACTION2 = 13;
 
 /*
  * Memory bus signals
@@ -101,14 +124,16 @@ wire [7:0] reg_plus_1 = instr_reg_v + 1;
 wire [7:0] reg_minus_1 = instr_reg_v - 1;
 wire [1:0] index_control = extend ? 2'b11 : (indexed_cyc != 0 ? indexed_cyc : instruction_args_latch[14:13]);
 wire [7:0] index = index_control== 2'b01 ? reg_plus_1 : (index_control == 2'b10 ? reg_minus_1 : regs[instr_reg_a]);
-wire is_data_fetch_cycle = relative_cyc || indirect_cyc || cycle == DATA1;
+wire is_data_fetch_cycle = relative_cyc || indirect_cyc || cycle == DATA1 || is_interrupt_cycle;
+wire is_interrupt_cycle = cycle == INTERRUPT_ACTION1 || cycle == INTERRUPT_ACTION2;
 wire is_instr_fetch_cycle = (cycle == FETCH || cycle == PARAM1 || cycle == PARAM2) && !is_data_fetch_cycle;
 wire le_lo_act = (is_instr_fetch_cycle || is_data_fetch_cycle) && (requested_addr[7:0] != last_addr[7:0] && requested_addr[15:8] == last_addr[15:8]) && !IO_cyc;
 assign le_lo = le_lo_act && clk && !reset;
 wire le_hi_act = (is_instr_fetch_cycle || is_data_fetch_cycle) && (requested_addr[15:8] != last_addr[15:8]) && !IO_cyc;
 assign le_hi = le_hi_act && clk && !reset;
 
-wire [15:0] requested_addr = (cycle == DATA1 ? (indirect_cyc || extend ? instruction_args_latch : {page_reg, instruction_args_latch[12:0]}) : (is_instr_fetch_cycle ? {page_reg, PC} : (indirect_cyc || relative_cyc ? indirect_target : 0)) + (!is_instr_fetch_cycle && cycle == PARAM2 ? 1 : 0)) + (((is_indexed && !indirect_cyc) || (indexed_cyc != 0 && cycle == DATA1)) && is_data_fetch_cycle ? index : 0);
+wire [15:0] requested_addr = is_interrupt_cycle ? {ivectors_base, irq_num, cycle[0]} : ((cycle == DATA1 ? (indirect_cyc || extend ? instruction_args_latch : {page_reg, instruction_args_latch[12:0]}) : (is_instr_fetch_cycle ? {page_reg, PC} : (indirect_cyc || relative_cyc ? indirect_target : 0)) + (!is_instr_fetch_cycle && cycle == PARAM2 ? 1 : 0)) + (((is_indexed && !indirect_cyc) || (indexed_cyc != 0 && cycle == DATA1)) && is_data_fetch_cycle ? index : 0));
+assign requested_addr_o = requested_addr;
 
 wire write_cyc = cycle == DATA1 && is_store || (cycle == PARAM1 && relative_cyc && is_store);
 
@@ -162,6 +187,9 @@ wire is_PSHS = instruction == 8'h10 && extend;
 wire is_POPS = instruction == 8'h11 && extend;
 wire is_SVB = instruction == 8'h12 && extend;
 wire is_CHRP = instruction == 8'h13 && extend;
+wire is_EXT_IO = (instruction[7:2] == 6'h15 || instruction[7:2] == 6'h35) && !extend;
+wire is_TRAP = instruction == 8'h90 && extend;
+wire is_CLRT = instruction == 8'h91 && extend;
 
 wire [2:0] instr_reg_a = {psl[4], instruction[1:0]};
 wire [7:0] instr_reg_v = regs[instr_reg_a];
@@ -172,10 +200,13 @@ wire [15:0] relative_eff_address = {page_reg, relative_eff_address_pre};
 //Branch instr decode
 wire is_CC_BRANCH = instruction[7:4] == 4'h1 || instruction[7:4] == 4'h3 || instruction[7:4] == 4'h9 || instruction[7:4] == 4'hB;
 wire is_REG_BRANCH = !is_CC_BRANCH;
-wire is_BRANCH_SUB = instruction[7:4] != 4'hF && instruction[5:4] == 2'b11;
+wire is_BRANCH_SUB = (instruction[7:4] != 4'hF && instruction[5:4] == 2'b11) || cycle == INTERRUPT_ACTION2;
 wire [7:0] branch_compare_reg = instruction[7:4] == 4'hD ? reg_plus_1 : (instruction[7:4] == 4'hF ? reg_minus_1 : instr_reg_v);
-wire should_branch = (is_CC_BRANCH && instruction[7] && psl[7:6] != instruction[1:0]) || (is_CC_BRANCH && !instruction[7] && instruction[1:0] == 2'b11) || (is_CC_BRANCH && !instruction[7] && psl[7:6] == instruction[1:0] || (is_REG_BRANCH && branch_compare_reg != 8'h00)) || is_ZBR || is_BXA;
+wire should_branch = (is_CC_BRANCH && instruction[7] && psl[7:6] != instruction[1:0]) || (is_CC_BRANCH && !instruction[7] && instruction[1:0] == 2'b11) || (is_CC_BRANCH && !instruction[7] && psl[7:6] == instruction[1:0] || (is_REG_BRANCH && branch_compare_reg != 8'h00)) || is_ZBR || is_BXA || is_interrupt_cycle;
 wire [15:0] zbr_target = {(bus_in[6] ? 10'b0000000111 : 10'h000), bus_in[5:0]};
+
+assign le_lo_act_o = le_lo_act;
+assign le_hi_act_o = le_hi_act;
 
 /*
  * ALU
@@ -212,7 +243,7 @@ always @(posedge clk) begin
 	if(rst || (warmup != 0)) begin
 		psl <= 8'h00;
 		psu <= 8'h20; //Interrupts globally disabled on reset
-		cycle <= 3'h0;
+		cycle <= 4'h0;
 		last_addr <= 16'hAAAA;
 		insin <= 8'h00;
 		instruction_args_latch <= 16'h0000;
@@ -233,8 +264,14 @@ always @(posedge clk) begin
 		regs[7] <= 8'h00;
 		indexed_cyc <= 2'b00;
 		page_reg <= 3'b000;
-		ivectors_base <= 16'h0000;
+		ivectors_base <= 12'h000;
 		chirp_ptr <= 3'b000;
+		ext_io_addr <= 8'h00;
+		io_bus_cyc <= 1'b0;
+		io_bus_we <= 1'b0;
+		io_bus_out <= 8'h00;
+		trap <= 1'b0;
+		cpu_hidden_rom_enable <= wb_hidden_rom_enable;
 	end else begin
 		psu[7] <= sense;
 		//r0 is always the same, no matter the RS value
@@ -267,6 +304,10 @@ always @(posedge clk) begin
 					end else if(is_NOP || is_IO_READ || is_IO_WRITE) begin
 					end else if(is_CPL) begin
 						regs[instr_reg_a] <= ~instr_reg_v;
+					end else if(is_TRAP) begin
+						trap <= 1'b1;
+					end else if(is_CLRT) begin
+						trap <= 1'b0;
 					end else if(is_XCHG) begin
 						regs[r0_a] <= regs[r1_a];
 						regs[r1_a] <= regs[r0_a];
@@ -284,7 +325,7 @@ always @(posedge clk) begin
 						psl <= TOS[7:0];
 						psu <= {TOS[15:12], psu[3:0] - 4'b0001};
 					end else if(is_SVB) begin
-						ivectors_base <= {regs[r1_a], regs[r0_a]};
+						ivectors_base <= {regs[r1_a], regs[r0_a][7:4]};
 					end else if(is_CHRP) begin
 						regs[r0_a] <= {1'b0, chirpchar};
 						chirp_ptr <= chirp_ptr + 1;
@@ -357,6 +398,8 @@ always @(posedge clk) begin
 					end else if(is_PPS) begin
 						if(instruction[0]) psl <= psl | bus_in;
 						else psu <= psu | bus_in;
+					end else if(is_EXT_IO) begin
+						ext_io_addr <= bus_in;
 					end else if(is_COM) begin
 						perform_compare(alu_instr_reg, bus_in);
 					end else if(is_TMI) begin
@@ -365,7 +408,7 @@ always @(posedge clk) begin
 					end else if(is_ALU_op) begin
 						perform_alu_op(instr_reg_a);
 					end
-					cycle <= FETCH;
+					cycle <= is_EXT_IO ? EXT_IO1 : FETCH;
 					extend <= 1'b0;
 					relative_cyc <= 1'b0;
 				end else if(needs_2_param || indirect_cyc) begin
@@ -396,6 +439,7 @@ always @(posedge clk) begin
 					indexed_cyc <= index_control;
 					cycle <= PARAM1;
 				end else if(is_BRANCH) begin
+					if(instruction == 8'h1F) cpu_hidden_rom_enable <= 1'b0;
 					perform_branch((indirect_cyc || extend ? instruction_args : {page_reg[2], instruction_args[14:0]}) + (is_BXA ? {8'h00, regs[r3_a]} : 16'h0000));
 					cycle <= FETCH;
 					extend <= 1'b0;
@@ -429,9 +473,50 @@ always @(posedge clk) begin
 			end
 			cycle <= FETCH;
 		end
+		
+		if(cycle == EXT_IO1) begin
+			io_bus_cyc <= 1'b0;
+			io_bus_out <= instr_reg_v;
+			io_bus_we <= instruction[7];
+			cycle <= EXT_IO2;
+		end
+		if(cycle == EXT_IO2) begin
+			io_bus_cyc <= 1'b1;
+			cycle <= EXT_IO3;
+		end
+		if(cycle == EXT_IO3) begin
+			cycle <= EXT_IO4;
+		end
+		if(cycle == EXT_IO4) begin
+			io_bus_cyc <= 1'b0;
+			if(!instruction[7]) begin
+				regs[instr_reg_a] <= io_bus_in;
+				set_cc_for(io_bus_in);
+			end
+			io_bus_we <= 1'b0;
+			cycle <= FETCH;
+		end
+		
+		if(cycle == INTERRUPT_ACTION1) begin
+			if(last_addr == requested_addr) begin
+				instruction_args_latch[15:8] <= bus_in;
+				cycle <= INTERRUPT_ACTION2;
+				halted <= 1'b0;
+			end
+		end
+		if(cycle == INTERRUPT_ACTION2) begin
+			if(last_addr == requested_addr) begin
+				psu[5] <= 1'b1;
+				perform_branch({instruction_args_latch[15:8], bus_in});
+				cycle <= FETCH;
+			end
+		end
 
-		if(cycle == HALT) begin
-
+		if(cycle == HALT || (cycle == FETCH && last_addr != requested_addr)) begin
+			if(irqs != 0 && !psu[5]) begin
+				irqs_latch <= {irqs[6], irqs[5], irqs[4], trap, irqs[3], irqs[2], irqs[1], irqs[0]};
+				cycle <= INTERRUPT_ACTION1;
+			end
 		end
 	end
 end
@@ -469,13 +554,13 @@ task perform_branch(input [15:0] target);
 		if(should_branch) begin
 			if(is_BRANCH_SUB) begin
 				//Push return address onto stack
-				stack[psu[3:0]] <= {page_reg, indirect_cyc ? PC : PC + 13'h0001};
+				stack[psu[3:0]] <= {page_reg, indirect_cyc || is_interrupt_cycle ? PC : PC + 13'h0001};
 				psu[3:0] <= psu[3:0] + 1;
 			end
 			PC <= target[12:0];
 			page_reg <= target[15:13];
 		end
-		if(is_REG_BRANCH) regs[instr_reg_a] <= branch_compare_reg;
+		if(is_REG_BRANCH && !is_interrupt_cycle) regs[instr_reg_a] <= branch_compare_reg;
 	end
 endtask
 

@@ -551,8 +551,8 @@ The following table summarizes the ISA of the AS2650-2. Hover over table entries
             </tr>
             <tr>
                 <th>9</th>
-                <td desc=""></td>
-                <td desc=""></td>
+                <td desc="----|1|F|F|_|Sets the internal trap flag to trigger software interrupt.">trap</td>
+                <td desc="----|1|F|F|_|Clears internal trap flag. Interrupt request clear for trap interrupt.">clrt</td>
                 <td desc=""></td>
                 <td desc=""></td>
                 <td desc=""></td>
