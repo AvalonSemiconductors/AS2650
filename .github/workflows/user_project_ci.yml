@@ -96,6 +96,7 @@ jobs:
           make verify-timers-rtl
           make verify-serial_ports-rtl
           make verify-boot_rom-rtl
+          make verify-sid-rtl
 
   user_project_flow_gf180mcuD:
     runs-on: ubuntu-latest
@@ -147,6 +148,8 @@ jobs:
           rm -rf openlane/serial_ports/runs
           make boot_rom
           rm -rf openlane/boot_rom/runs
+          make SID
+          rm -rf openlane/SID/runs
           make user_project_wrapper
           rm -rf openlane/user_project_wrapper/runs
 
@@ -168,6 +171,7 @@ jobs:
           make verify-timers-gl
           make verify-serial_ports-gl
           make verify-boot_rom-gl
+          make verify-sid-gl
 
       - name: run precheck
         run: |

@@ -8,7 +8,7 @@
 	],
 	"CLOCK_PORT": "wb_clk_i",
 	"CLOCK_NET": "wb_clk_i",
-	"CLOCK_PERIOD": 28,
+	"CLOCK_PERIOD": 30,
 	"MACRO_PLACEMENT_CFG": "dir::macro.cfg",
 	"VERILOG_FILES_BLACKBOX": [
 		"dir::../../verilog/gl/wrapped_as2650.v",
@@ -16,7 +16,8 @@
 		"dir::../../verilog/gl/gpios.v",
 		"dir::../../verilog/gl/timers.v",
 		"dir::../../verilog/gl/serial_ports.v",
-		"dir::../../verilog/gl/boot_rom.v"
+		"dir::../../verilog/gl/boot_rom.v",
+		"dir::../../verilog/gl/sid_top.v"
 	],
 	"EXTRA_LEFS": [
 		"dir::../../lef/wrapped_as2650.lef",
@@ -24,7 +25,8 @@
 		"dir::../../lef/gpios.lef",
 		"dir::../../lef/timers.lef",
 		"dir::../../lef/serial_ports.lef",
-		"dir::../../lef/boot_rom.lef"
+		"dir::../../lef/boot_rom.lef",
+		"dir::../../lef/sid_top.lef"
 	],
 	"EXTRA_GDS_FILES": [
 		"dir::../../gds/wrapped_as2650.gds",
@@ -32,14 +34,16 @@
 		"dir::../../gds/gpios.gds",
 		"dir::../../gds/timers.gds",
 		"dir::../../gds/serial_ports.gds",
-		"dir::../../gds/boot_rom.gds"
+		"dir::../../gds/boot_rom.gds",
+		"dir::../../gds/sid_top.gds"
 	],
 	"EXTRA_LIBS": [
 		"dir::../../lib/wrapped_as2650.lib",
 		"dir::../../lib/gpios.lib",
 		"dir::../../lib/timers.lib",
 		"dir::../../lib/serial_ports.lib",
-		"dir::../../lib/boot_rom.lib"
+		"dir::../../lib/boot_rom.lib",
+		"dir::../../lib/sid_top.lib"
 	],
 	"EXTRA_SPEFS": [
 		"wrapped_as2650",
@@ -65,9 +69,14 @@
 		"boot_rom",
 		"dir::../../spef/multicorner/boot_rom.min.spef",
 		"dir::../../spef/multicorner/boot_rom.nom.spef",
-		"dir::../../spef/multicorner/boot_rom.max.spef"
+		"dir::../../spef/multicorner/boot_rom.max.spef",
+		
+		"sid_top",
+		"dir::../../spef/multicorner/sid_top.min.spef",
+		"dir::../../spef/multicorner/sid_top.nom.spef",
+		"dir::../../spef/multicorner/sid_top.max.spef"
 	],
-	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss, avali_logo vdd vss vdd vss, gpios vdd vss vdd vss, timers vdd vss vdd vss, serial_ports vdd vss vdd vss, boot_rom vdd vss vdd vss",
+	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss, avali_logo vdd vss vdd vss, gpios vdd vss vdd vss, timers vdd vss vdd vss, serial_ports vdd vss vdd vss, boot_rom vdd vss vdd vss, sid vdd vss vdd vss",
 	"QUIT_ON_SYNTH_CHECKS": 0,
 	"FP_PDN_CHECK_NODES": 0,
 	"SYNTH_ELABORATE_ONLY": 1,

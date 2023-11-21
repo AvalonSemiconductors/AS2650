@@ -254,7 +254,7 @@ module add_sub_tb;
 			if(failures == 0) repeat(256) begin
 				immediate_exec(8'h77, 1);
 				lodi_exec(0, in2);
-				expected = {1'b1, in2} - {1'b1, in1};
+				expected = {1'b1, in2} - {1'b0, in1};
 				implied_exec(8'hA1);
 
 				wait(full_addr == address_counter && OEb == 0);
@@ -268,6 +268,7 @@ module add_sub_tb;
 				#3;
 				failures += bus_out != expected[7:0];
 				failures += carry != expected[8];
+				if(failures != 0) $display("%b %b %b %b %b %b", in2, in1, expected[7:0], bus_out, expected[8], carry);
 				@(posedge clock);
 
 				in2 = in2 + 1;
@@ -284,7 +285,7 @@ module add_sub_tb;
 			if(failures == 0) repeat(256) begin
 				lodi_exec(0, in2);
 				immediate_exec(8'h75, 1);
-				expected = {1'b1, in2} - {1'b1, in1} - 9'h001;
+				expected = {1'b1, in2} - {1'b0, in1} - 9'h001;
 				implied_exec(8'h81);
 
 				wait(full_addr == address_counter && OEb == 0);

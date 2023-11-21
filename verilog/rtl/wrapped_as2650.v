@@ -36,6 +36,9 @@ module wrapped_as2650(
 	output bus_we_serial_ports,
 	input [7:0] bus_in_serial_ports,
 	
+	output bus_we_sid,
+	input [7:0] bus_in_sid,
+	
 	output [2:0] irq,
 	output reset_out,
 	
@@ -175,15 +178,17 @@ wire [1:0] device_addr = full_io_addr[7:6];
 reg [7:0] bus_in_plexed;
 always @(*) begin
 	case(device_addr)
-		default: bus_in_plexed = 8'h00;
 		0: bus_in_plexed = bus_in_gpios;
 		1: bus_in_plexed = bus_in_timers;
 		2: bus_in_plexed = bus_in_serial_ports;
+		3: bus_in_plexed = bus_in_sid;
+		default: bus_in_plexed = 8'h00;
 	endcase
 end
 assign bus_we_gpios = io_bus_we && device_addr == 0;
 assign bus_we_timers = io_bus_we && device_addr == 1;
 assign bus_we_serial_ports = io_bus_we && device_addr == 2;
+assign bus_we_sid = io_bus_we && device_addr == 3;
 
 wire [15:0] requested_addr;
 wire [7:0] bus_in = boot_rom_en ? rom_bus_in : io_in[12:5];

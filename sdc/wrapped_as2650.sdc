@@ -1,6 +1,6 @@
 ###############################################################################
 # Created by write_sdc
-# Fri Nov 17 22:46:00 2023
+# Tue Nov 21 00:16:55 2023
 ###############################################################################
 current_design wrapped_as2650
 ###############################################################################
@@ -347,6 +347,7 @@ set_load -pin_load 0.1900 [get_ports {boot_rom_en}]
 set_load -pin_load 0.1900 [get_ports {bus_cyc}]
 set_load -pin_load 0.1900 [get_ports {bus_we_gpios}]
 set_load -pin_load 0.1900 [get_ports {bus_we_serial_ports}]
+set_load -pin_load 0.1900 [get_ports {bus_we_sid}]
 set_load -pin_load 0.1900 [get_ports {bus_we_timers}]
 set_load -pin_load 0.1900 [get_ports {le_hi_act}]
 set_load -pin_load 0.1900 [get_ports {le_lo_act}]

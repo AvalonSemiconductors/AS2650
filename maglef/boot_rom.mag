@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1700263341
+timestamp 1700515030
 << obsm1 >>
 rect 672 1538 29288 28321
 << metal2 >>
@@ -31,7 +31,7 @@ rect 26096 29600 26152 30000
 rect 27216 29600 27272 30000
 rect 28336 29600 28392 30000
 << obsm2 >>
-rect 462 29570 1426 29600
+rect 518 29570 1426 29600
 rect 1542 29570 2546 29600
 rect 2662 29570 3666 29600
 rect 3782 29570 4786 29600
@@ -56,7 +56,7 @@ rect 23942 29570 24946 29600
 rect 25062 29570 26066 29600
 rect 26182 29570 27186 29600
 rect 27302 29570 28306 29600
-rect 462 1017 28378 29570
+rect 518 1017 28378 29570
 << metal3 >>
 rect 0 28784 400 28840
 rect 0 27888 400 27944
@@ -160,9 +160,9 @@ rect 9904 1538 10064 28254
 rect 17584 1538 17744 28254
 rect 25264 1538 25424 28254
 << obsm4 >>
-rect 910 10817 2194 25191
-rect 2414 10817 9874 25191
-rect 10094 10817 15834 25191
+rect 1414 10817 2194 24183
+rect 2414 10817 9874 24183
+rect 10094 10817 14042 24183
 << labels >>
 rlabel metal2 s 3696 29600 3752 30000 6 WEb_raw
 port 1 nsew signal input
@@ -290,8 +290,8 @@ port 59 nsew signal input
 string FIXED_BBOX 0 0 30000 30000
 string LEFclass BLOCK
 string LEFview TRUE
-string GDS_END 1732428
-string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/boot_rom/runs/23_11_18_00_19/results/signoff/boot_rom.magic.gds
+string GDS_END 1731568
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/boot_rom/runs/23_11_20_22_14/results/signoff/boot_rom.magic.gds
 string GDS_START 327016
 << end >>
 

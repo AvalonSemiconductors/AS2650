@@ -32,6 +32,11 @@ module gpios(
 	input TXD,
 	output RXD,
 	
+	input DAC_clk,
+	input DAC_le,
+	input DAC_d1,
+	input DAC_d2,
+	
 	output reg [7:0] la_data_out
 );
 
@@ -86,18 +91,18 @@ assign io_out[8] = SPB[0] ? 1'b0 : PORTB[0];
 assign io_out[9] = SPB[1] ? pwm2 : PORTB[1];
 assign io_out[10] = SPB[2] ? 1'b0 : PORTB[2];
 assign io_out[11] = SPB[3] ? 1'b0 : PORTB[3];
-assign io_out[12] = SPB[4] ? 1'b0 : PORTB[4];
-assign io_out[13] = SPB[5] ? 1'b0 : PORTB[5];
-assign io_out[14] = SPB[6] ? 1'b0 : PORTB[6];
-assign io_out[15] = SPB[7] ? 1'b0 : PORTB[7];
+assign io_out[12] = SPB[4] ? DAC_d2 : PORTB[4];
+assign io_out[13] = SPB[5] ? DAC_d1 : PORTB[5];
+assign io_out[14] = SPB[6] ? DAC_le : PORTB[6];
+assign io_out[15] = SPB[7] ? DAC_clk : PORTB[7];
 assign io_oeb[8] = SPB[0] ? 1'b1 : !DDRB[0];
 assign io_oeb[9] = SPB[1] ? 1'b0 : !DDRB[1];
 assign io_oeb[10] = SPB[2] ? 1'b1 : !DDRB[2];
 assign io_oeb[11] = SPB[3] ? 1'b1 : !DDRB[3];
-assign io_oeb[12] = SPB[4] ? 1'b1 : !DDRB[4];
-assign io_oeb[13] = SPB[5] ? 1'b1 : !DDRB[5];
-assign io_oeb[14] = SPB[6] ? 1'b1 : !DDRB[6];
-assign io_oeb[15] = SPB[7] ? 1'b1 : !DDRB[7];
+assign io_oeb[12] = SPB[4] ? 1'b0 : !DDRB[4];
+assign io_oeb[13] = SPB[5] ? 1'b0 : !DDRB[5];
+assign io_oeb[14] = SPB[6] ? 1'b0 : !DDRB[6];
+assign io_oeb[15] = SPB[7] ? 1'b0 : !DDRB[7];
 
 reg last_irq0_trigger;
 reg last_irg6_trigger;

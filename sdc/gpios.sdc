@@ -1,12 +1,12 @@
 ###############################################################################
 # Created by write_sdc
-# Fri Nov 17 14:05:27 2023
+# Mon Nov 20 20:40:33 2023
 ###############################################################################
 current_design gpios
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name clk -period 25.0000 [get_ports {wb_clk_i}]
+create_clock -name clk -period 28.0000 [get_ports {wb_clk_i}]
 set_clock_transition 0.1500 [get_clocks {clk}]
 set_clock_uncertainty 0.2500 clk
 set_propagated_clock [get_clocks {clk}]

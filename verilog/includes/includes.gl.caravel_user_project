@@ -6,3 +6,4 @@
 -v $(USER_PROJECT_VERILOG)/gl/timers.v
 -v $(USER_PROJECT_VERILOG)/gl/serial_ports.v
 -v $(USER_PROJECT_VERILOG)/gl/boot_rom.v
+-v $(USER_PROJECT_VERILOG)/gl/sid_top.v

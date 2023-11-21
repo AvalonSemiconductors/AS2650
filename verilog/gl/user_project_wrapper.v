@@ -39,6 +39,10 @@ module user_project_wrapper (user_clock2,
  output [31:0] wbs_dat_o;
  input [3:0] wbs_sel_i;
 
+ wire DAC_clk;
+ wire DAC_d1;
+ wire DAC_d2;
+ wire DAC_le;
  wire \RAM_end_addr[0] ;
  wire \RAM_end_addr[10] ;
  wire \RAM_end_addr[11] ;
@@ -106,6 +110,14 @@ module user_project_wrapper (user_clock2,
  wire \bus_data_serial_ports[5] ;
  wire \bus_data_serial_ports[6] ;
  wire \bus_data_serial_ports[7] ;
+ wire \bus_data_sid[0] ;
+ wire \bus_data_sid[1] ;
+ wire \bus_data_sid[2] ;
+ wire \bus_data_sid[3] ;
+ wire \bus_data_sid[4] ;
+ wire \bus_data_sid[5] ;
+ wire \bus_data_sid[6] ;
+ wire \bus_data_sid[7] ;
  wire \bus_data_timers[0] ;
  wire \bus_data_timers[1] ;
  wire \bus_data_timers[2] ;
@@ -116,6 +128,7 @@ module user_project_wrapper (user_clock2,
  wire \bus_data_timers[7] ;
  wire bus_we_gpios;
  wire bus_we_serial_ports;
+ wire bus_we_sid;
  wire bus_we_timers;
  wire \cs_port[0] ;
  wire \cs_port[1] ;
@@ -215,7 +228,11 @@ module user_project_wrapper (user_clock2,
     \RAM_start_addr[2] ,
     \RAM_start_addr[1] ,
     \RAM_start_addr[0] }));
- gpios gpios (.RXD(RXD),
+ gpios gpios (.DAC_clk(DAC_clk),
+    .DAC_d1(DAC_d1),
+    .DAC_d2(DAC_d2),
+    .DAC_le(DAC_le),
+    .RXD(RXD),
     .TXD(TXD),
     .bus_cyc(bus_cyc),
     .bus_we(bus_we_gpios),
@@ -344,6 +361,37 @@ module user_project_wrapper (user_clock2,
     .io_out({io_out[37],
     io_out[36],
     io_out[35]}));
+ sid_top sid (.DAC_clk(DAC_clk),
+    .DAC_dat_1(DAC_d1),
+    .DAC_dat_2(DAC_d2),
+    .DAC_le(DAC_le),
+    .bus_cyc(bus_cyc),
+    .bus_we(bus_we_sid),
+    .clk(wb_clk_i),
+    .rst(reset),
+    .vdd(vdd),
+    .vss(vss),
+    .addr({\bus_addr[4] ,
+    \bus_addr[3] ,
+    \bus_addr[2] ,
+    \bus_addr[1] ,
+    \bus_addr[0] }),
+    .bus_in({\bus_data_out[7] ,
+    \bus_data_out[6] ,
+    \bus_data_out[5] ,
+    \bus_data_out[4] ,
+    \bus_data_out[3] ,
+    \bus_data_out[2] ,
+    \bus_data_out[1] ,
+    \bus_data_out[0] }),
+    .bus_out({\bus_data_sid[7] ,
+    \bus_data_sid[6] ,
+    \bus_data_sid[5] ,
+    \bus_data_sid[4] ,
+    \bus_data_sid[3] ,
+    \bus_data_sid[2] ,
+    \bus_data_sid[1] ,
+    \bus_data_sid[0] }));
  timers timers (.bus_cyc(bus_cyc),
     .bus_we(bus_we_timers),
     .irq1(irq1),
@@ -387,6 +435,7 @@ module user_project_wrapper (user_clock2,
     .bus_cyc(bus_cyc),
     .bus_we_gpios(bus_we_gpios),
     .bus_we_serial_ports(bus_we_serial_ports),
+    .bus_we_sid(bus_we_sid),
     .bus_we_timers(bus_we_timers),
     .le_hi_act(le_hi_act),
     .le_lo_act(le_lo_act),
@@ -461,6 +510,14 @@ module user_project_wrapper (user_clock2,
     \bus_data_serial_ports[2] ,
     \bus_data_serial_ports[1] ,
     \bus_data_serial_ports[0] }),
+    .bus_in_sid({\bus_data_sid[7] ,
+    \bus_data_sid[6] ,
+    \bus_data_sid[5] ,
+    \bus_data_sid[4] ,
+    \bus_data_sid[3] ,
+    \bus_data_sid[2] ,
+    \bus_data_sid[1] ,
+    \bus_data_sid[0] }),
     .bus_in_timers({\bus_data_timers[7] ,
     \bus_data_timers[6] ,
     \bus_data_timers[5] ,

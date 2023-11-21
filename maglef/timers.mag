@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1700266336
+timestamp 1700513141
 << obsm1 >>
 rect 672 1538 41776 40798
 << metal2 >>
@@ -112,11 +112,11 @@ rect 25264 1538 25424 40798
 rect 32944 1538 33104 40798
 rect 40624 1538 40784 40798
 << obsm4 >>
-rect 2422 2977 9874 38519
-rect 10094 2977 17554 38519
-rect 17774 2977 25234 38519
-rect 25454 2977 32914 38519
-rect 33134 2977 39074 38519
+rect 2646 2585 9874 37063
+rect 10094 2585 17554 37063
+rect 17774 2585 25234 37063
+rect 25454 2585 32914 37063
+rect 33134 2585 39018 37063
 << labels >>
 rlabel metal3 s 0 1568 400 1624 6 addr[0]
 port 1 nsew signal input
@@ -206,8 +206,8 @@ port 38 nsew signal input
 string FIXED_BBOX 0 0 42500 42500
 string LEFclass BLOCK
 string LEFview TRUE
-string GDS_END 5203538
-string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/timers/runs/23_11_18_01_08/results/signoff/timers.magic.gds
+string GDS_END 5194936
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/timers/runs/23_11_20_21_41/results/signoff/timers.magic.gds
 string GDS_START 439076
 << end >>
 

@@ -86,6 +86,8 @@ wire [7:0] bus_data_timers;
 wire bus_we_timers;
 wire [7:0] bus_data_serial_ports;
 wire bus_we_serial_ports;
+wire [7:0] bus_data_sid;
+wire bus_we_sid;
 wire WEb_raw;
 wire le_lo_act;
 wire le_hi_act;
@@ -126,6 +128,8 @@ wrapped_as2650 wrapped_as2650 (
     .bus_we_timers(bus_we_timers),
     .bus_in_serial_ports(bus_data_serial_ports),
     .bus_we_serial_ports(bus_we_serial_ports),
+    .bus_in_sid(bus_data_sid),
+    .bus_we_sid(bus_we_sid),
     .WEb_raw(WEb_raw),
     .le_lo_act(le_lo_act),
     .le_hi_act(le_hi_act),
@@ -146,6 +150,11 @@ wire TXD;
 wire RXD;
 wire tmr0_clk;
 wire tmr1_clk;
+wire DAC_clk;
+wire DAC_le;
+wire DAC_d1;
+wire DAC_d2;
+
 gpios gpios(
 `ifdef USE_POWER_PINS
     .vdd(vdd),
@@ -174,6 +183,10 @@ gpios gpios(
     .tmr1_clk(tmr1_clk),
     .TXD(TXD),
     .RXD(RXD),
+    .DAC_clk(DAC_clk),
+    .DAC_le(DAC_le),
+    .DAC_d1(DAC_d1),
+    .DAC_d2(DAC_d2),
     
     .la_data_out(la_data_out[63:56])
 );
@@ -238,6 +251,24 @@ boot_rom boot_rom(
     .ram_start(RAM_start_addr),
     .ram_end(RAM_end_addr),
     .cs_port(cs_port)
+);
+
+sid_top sid(
+`ifdef USE_POWER_PINS
+    .vdd(vdd),
+    .vss(vss),
+`endif
+    .clk(wb_clk_i),
+    .rst(reset),
+    .DAC_clk(DAC_clk),
+    .DAC_le(DAC_le),
+    .DAC_dat_1(DAC_d1),
+    .DAC_dat_2(DAC_d2),
+    .addr(bus_addr[4:0]),
+    .bus_in(bus_data_out),
+    .bus_out(bus_data_sid),
+    .bus_cyc(bus_cyc),
+    .bus_we(bus_we_sid)
 );
 
 avali_logo avali_logo (
