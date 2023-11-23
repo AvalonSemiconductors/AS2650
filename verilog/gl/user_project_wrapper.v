@@ -39,10 +39,100 @@ module user_project_wrapper (user_clock2,
  output [31:0] wbs_dat_o;
  input [3:0] wbs_sel_i;
 
+ wire \A_all[0] ;
+ wire \A_all[1] ;
+ wire \A_all[2] ;
+ wire \A_all[3] ;
+ wire \A_all[4] ;
+ wire \A_all[5] ;
+ wire \A_all[6] ;
+ wire \A_all[7] ;
+ wire \A_all[8] ;
+ wire CEN_all;
  wire DAC_clk;
  wire DAC_d1;
  wire DAC_d2;
  wire DAC_le;
+ wire \D_all[0] ;
+ wire \D_all[1] ;
+ wire \D_all[2] ;
+ wire \D_all[3] ;
+ wire \D_all[4] ;
+ wire \D_all[5] ;
+ wire \D_all[6] ;
+ wire \D_all[7] ;
+ wire GWEN_0;
+ wire GWEN_1;
+ wire GWEN_2;
+ wire GWEN_3;
+ wire GWEN_4;
+ wire GWEN_5;
+ wire GWEN_6;
+ wire GWEN_7;
+ wire \Q0[0] ;
+ wire \Q0[1] ;
+ wire \Q0[2] ;
+ wire \Q0[3] ;
+ wire \Q0[4] ;
+ wire \Q0[5] ;
+ wire \Q0[6] ;
+ wire \Q0[7] ;
+ wire \Q1[0] ;
+ wire \Q1[1] ;
+ wire \Q1[2] ;
+ wire \Q1[3] ;
+ wire \Q1[4] ;
+ wire \Q1[5] ;
+ wire \Q1[6] ;
+ wire \Q1[7] ;
+ wire \Q2[0] ;
+ wire \Q2[1] ;
+ wire \Q2[2] ;
+ wire \Q2[3] ;
+ wire \Q2[4] ;
+ wire \Q2[5] ;
+ wire \Q2[6] ;
+ wire \Q2[7] ;
+ wire \Q3[0] ;
+ wire \Q3[1] ;
+ wire \Q3[2] ;
+ wire \Q3[3] ;
+ wire \Q3[4] ;
+ wire \Q3[5] ;
+ wire \Q3[6] ;
+ wire \Q3[7] ;
+ wire \Q4[0] ;
+ wire \Q4[1] ;
+ wire \Q4[2] ;
+ wire \Q4[3] ;
+ wire \Q4[4] ;
+ wire \Q4[5] ;
+ wire \Q4[6] ;
+ wire \Q4[7] ;
+ wire \Q5[0] ;
+ wire \Q5[1] ;
+ wire \Q5[2] ;
+ wire \Q5[3] ;
+ wire \Q5[4] ;
+ wire \Q5[5] ;
+ wire \Q5[6] ;
+ wire \Q5[7] ;
+ wire \Q6[0] ;
+ wire \Q6[1] ;
+ wire \Q6[2] ;
+ wire \Q6[3] ;
+ wire \Q6[4] ;
+ wire \Q6[5] ;
+ wire \Q6[6] ;
+ wire \Q6[7] ;
+ wire \Q7[0] ;
+ wire \Q7[1] ;
+ wire \Q7[2] ;
+ wire \Q7[3] ;
+ wire \Q7[4] ;
+ wire \Q7[5] ;
+ wire \Q7[6] ;
+ wire \Q7[7] ;
  wire \RAM_end_addr[0] ;
  wire \RAM_end_addr[10] ;
  wire \RAM_end_addr[11] ;
@@ -77,6 +167,14 @@ module user_project_wrapper (user_clock2,
  wire \RAM_start_addr[9] ;
  wire RXD;
  wire TXD;
+ wire \WEN_all[0] ;
+ wire \WEN_all[1] ;
+ wire \WEN_all[2] ;
+ wire \WEN_all[3] ;
+ wire \WEN_all[4] ;
+ wire \WEN_all[5] ;
+ wire \WEN_all[6] ;
+ wire \WEN_all[7] ;
  wire WEb_raw;
  wire boot_rom_en;
  wire \bus_addr[0] ;
@@ -140,11 +238,52 @@ module user_project_wrapper (user_clock2,
  wire irq5;
  wire irq6;
  wire irq7;
+ wire \last_addr[0] ;
+ wire \last_addr[10] ;
+ wire \last_addr[11] ;
+ wire \last_addr[12] ;
+ wire \last_addr[13] ;
+ wire \last_addr[14] ;
+ wire \last_addr[15] ;
+ wire \last_addr[1] ;
+ wire \last_addr[2] ;
+ wire \last_addr[3] ;
+ wire \last_addr[4] ;
+ wire \last_addr[5] ;
+ wire \last_addr[6] ;
+ wire \last_addr[7] ;
+ wire \last_addr[8] ;
+ wire \last_addr[9] ;
  wire le_hi_act;
  wire le_lo_act;
  wire pwm0;
  wire pwm1;
  wire pwm2;
+ wire \ram_bus_in[0] ;
+ wire \ram_bus_in[1] ;
+ wire \ram_bus_in[2] ;
+ wire \ram_bus_in[3] ;
+ wire \ram_bus_in[4] ;
+ wire \ram_bus_in[5] ;
+ wire \ram_bus_in[6] ;
+ wire \ram_bus_in[7] ;
+ wire ram_enabled;
+ wire \requested_addr[0] ;
+ wire \requested_addr[10] ;
+ wire \requested_addr[11] ;
+ wire \requested_addr[12] ;
+ wire \requested_addr[13] ;
+ wire \requested_addr[14] ;
+ wire \requested_addr[15] ;
+ wire \requested_addr[1] ;
+ wire \requested_addr[2] ;
+ wire \requested_addr[3] ;
+ wire \requested_addr[4] ;
+ wire \requested_addr[5] ;
+ wire \requested_addr[6] ;
+ wire \requested_addr[7] ;
+ wire \requested_addr[8] ;
+ wire \requested_addr[9] ;
  wire reset;
  wire \rom_bus_in[0] ;
  wire \rom_bus_in[1] ;
@@ -169,22 +308,9 @@ module user_project_wrapper (user_clock2,
 
  avali_logo avali_logo (.vss(vss),
     .vdd(vdd));
- boot_rom boot_rom (.WEb_raw(WEb_raw),
-    .le_hi_act(le_hi_act),
-    .le_lo_act(le_lo_act),
-    .rom_enabled(boot_rom_en),
-    .rst(reset),
-    .vdd(vdd),
+ boot_rom boot_rom (.vdd(vdd),
     .vss(vss),
     .wb_clk_i(wb_clk_i),
-    .bus_in({\rom_bus_out[7] ,
-    \rom_bus_out[6] ,
-    \rom_bus_out[5] ,
-    \rom_bus_out[4] ,
-    \rom_bus_out[3] ,
-    \rom_bus_out[2] ,
-    \rom_bus_out[1] ,
-    \rom_bus_out[0] }),
     .bus_out({\rom_bus_in[7] ,
     \rom_bus_in[6] ,
     \rom_bus_in[5] ,
@@ -196,6 +322,14 @@ module user_project_wrapper (user_clock2,
     .cs_port({\cs_port[2] ,
     \cs_port[1] ,
     \cs_port[0] }),
+    .last_addr({\last_addr[7] ,
+    \last_addr[6] ,
+    \last_addr[5] ,
+    \last_addr[4] ,
+    \last_addr[3] ,
+    \last_addr[2] ,
+    \last_addr[1] ,
+    \last_addr[0] }),
     .ram_end({\RAM_end_addr[15] ,
     \RAM_end_addr[14] ,
     \RAM_end_addr[13] ,
@@ -326,6 +460,142 @@ module user_project_wrapper (user_clock2,
     la_data_out[58],
     la_data_out[57],
     la_data_out[56]}));
+ ram_controller ram_controller (.CEN_all(CEN_all),
+    .GWEN_0(GWEN_0),
+    .GWEN_1(GWEN_1),
+    .GWEN_2(GWEN_2),
+    .GWEN_3(GWEN_3),
+    .GWEN_4(GWEN_4),
+    .GWEN_5(GWEN_5),
+    .GWEN_6(GWEN_6),
+    .GWEN_7(GWEN_7),
+    .WEb_raw(WEb_raw),
+    .ram_enabled(ram_enabled),
+    .rst(reset),
+    .vdd(vdd),
+    .vss(vss),
+    .wb_clk_i(wb_clk_i),
+    .A_all({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D_all({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q0({\Q0[7] ,
+    \Q0[6] ,
+    \Q0[5] ,
+    \Q0[4] ,
+    \Q0[3] ,
+    \Q0[2] ,
+    \Q0[1] ,
+    \Q0[0] }),
+    .Q1({\Q1[7] ,
+    \Q1[6] ,
+    \Q1[5] ,
+    \Q1[4] ,
+    \Q1[3] ,
+    \Q1[2] ,
+    \Q1[1] ,
+    \Q1[0] }),
+    .Q2({\Q2[7] ,
+    \Q2[6] ,
+    \Q2[5] ,
+    \Q2[4] ,
+    \Q2[3] ,
+    \Q2[2] ,
+    \Q2[1] ,
+    \Q2[0] }),
+    .Q3({\Q3[7] ,
+    \Q3[6] ,
+    \Q3[5] ,
+    \Q3[4] ,
+    \Q3[3] ,
+    \Q3[2] ,
+    \Q3[1] ,
+    \Q3[0] }),
+    .Q4({\Q4[7] ,
+    \Q4[6] ,
+    \Q4[5] ,
+    \Q4[4] ,
+    \Q4[3] ,
+    \Q4[2] ,
+    \Q4[1] ,
+    \Q4[0] }),
+    .Q5({\Q5[7] ,
+    \Q5[6] ,
+    \Q5[5] ,
+    \Q5[4] ,
+    \Q5[3] ,
+    \Q5[2] ,
+    \Q5[1] ,
+    \Q5[0] }),
+    .Q6({\Q6[7] ,
+    \Q6[6] ,
+    \Q6[5] ,
+    \Q6[4] ,
+    \Q6[3] ,
+    \Q6[2] ,
+    \Q6[1] ,
+    \Q6[0] }),
+    .Q7({\Q7[7] ,
+    \Q7[6] ,
+    \Q7[5] ,
+    \Q7[4] ,
+    \Q7[3] ,
+    \Q7[2] ,
+    \Q7[1] ,
+    \Q7[0] }),
+    .WEN_all({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }),
+    .bus_in({\rom_bus_out[7] ,
+    \rom_bus_out[6] ,
+    \rom_bus_out[5] ,
+    \rom_bus_out[4] ,
+    \rom_bus_out[3] ,
+    \rom_bus_out[2] ,
+    \rom_bus_out[1] ,
+    \rom_bus_out[0] }),
+    .bus_out({\ram_bus_in[7] ,
+    \ram_bus_in[6] ,
+    \ram_bus_in[5] ,
+    \ram_bus_in[4] ,
+    \ram_bus_in[3] ,
+    \ram_bus_in[2] ,
+    \ram_bus_in[1] ,
+    \ram_bus_in[0] }),
+    .requested_addr({\requested_addr[15] ,
+    \requested_addr[14] ,
+    \requested_addr[13] ,
+    \requested_addr[12] ,
+    \requested_addr[11] ,
+    \requested_addr[10] ,
+    \requested_addr[9] ,
+    \requested_addr[8] ,
+    \requested_addr[7] ,
+    \requested_addr[6] ,
+    \requested_addr[5] ,
+    \requested_addr[4] ,
+    \requested_addr[3] ,
+    \requested_addr[2] ,
+    \requested_addr[1] ,
+    \requested_addr[0] }));
  serial_ports serial_ports (.RXD(RXD),
     .TXD(TXD),
     .bus_cyc(bus_cyc),
@@ -392,6 +662,310 @@ module user_project_wrapper (user_clock2,
     \bus_data_sid[2] ,
     \bus_data_sid[1] ,
     \bus_data_sid[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram0 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_0),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q0[7] ,
+    \Q0[6] ,
+    \Q0[5] ,
+    \Q0[4] ,
+    \Q0[3] ,
+    \Q0[2] ,
+    \Q0[1] ,
+    \Q0[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram1 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_1),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q1[7] ,
+    \Q1[6] ,
+    \Q1[5] ,
+    \Q1[4] ,
+    \Q1[3] ,
+    \Q1[2] ,
+    \Q1[1] ,
+    \Q1[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram2 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_2),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q2[7] ,
+    \Q2[6] ,
+    \Q2[5] ,
+    \Q2[4] ,
+    \Q2[3] ,
+    \Q2[2] ,
+    \Q2[1] ,
+    \Q2[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram3 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_3),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q3[7] ,
+    \Q3[6] ,
+    \Q3[5] ,
+    \Q3[4] ,
+    \Q3[3] ,
+    \Q3[2] ,
+    \Q3[1] ,
+    \Q3[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram4 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_4),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q4[7] ,
+    \Q4[6] ,
+    \Q4[5] ,
+    \Q4[4] ,
+    \Q4[3] ,
+    \Q4[2] ,
+    \Q4[1] ,
+    \Q4[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram5 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_5),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q5[7] ,
+    \Q5[6] ,
+    \Q5[5] ,
+    \Q5[4] ,
+    \Q5[3] ,
+    \Q5[2] ,
+    \Q5[1] ,
+    \Q5[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram6 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_6),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q6[7] ,
+    \Q6[6] ,
+    \Q6[5] ,
+    \Q6[4] ,
+    \Q6[3] ,
+    \Q6[2] ,
+    \Q6[1] ,
+    \Q6[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
+ gf180_ram_512x8_wrapper_as2650 sram7 (.CEN(CEN_all),
+    .CLK(wb_clk_i),
+    .GWEN(GWEN_7),
+    .VDD(vdd),
+    .VSS(vss),
+    .A({\A_all[8] ,
+    \A_all[7] ,
+    \A_all[6] ,
+    \A_all[5] ,
+    \A_all[4] ,
+    \A_all[3] ,
+    \A_all[2] ,
+    \A_all[1] ,
+    \A_all[0] }),
+    .D({\D_all[7] ,
+    \D_all[6] ,
+    \D_all[5] ,
+    \D_all[4] ,
+    \D_all[3] ,
+    \D_all[2] ,
+    \D_all[1] ,
+    \D_all[0] }),
+    .Q({\Q7[7] ,
+    \Q7[6] ,
+    \Q7[5] ,
+    \Q7[4] ,
+    \Q7[3] ,
+    \Q7[2] ,
+    \Q7[1] ,
+    \Q7[0] }),
+    .WEN({\WEN_all[7] ,
+    \WEN_all[6] ,
+    \WEN_all[5] ,
+    \WEN_all[4] ,
+    \WEN_all[3] ,
+    \WEN_all[2] ,
+    \WEN_all[1] ,
+    \WEN_all[0] }));
  timers timers (.bus_cyc(bus_cyc),
     .bus_we(bus_we_timers),
     .irq1(irq1),
@@ -439,6 +1013,7 @@ module user_project_wrapper (user_clock2,
     .bus_we_timers(bus_we_timers),
     .le_hi_act(le_hi_act),
     .le_lo_act(le_lo_act),
+    .ram_enabled(ram_enabled),
     .reset_out(reset),
     .vdd(vdd),
     .vss(vss),
@@ -652,6 +1227,46 @@ module user_project_wrapper (user_clock2,
     la_data_out[2],
     la_data_out[1],
     la_data_out[0]}),
+    .last_addr({\last_addr[15] ,
+    \last_addr[14] ,
+    \last_addr[13] ,
+    \last_addr[12] ,
+    \last_addr[11] ,
+    \last_addr[10] ,
+    \last_addr[9] ,
+    \last_addr[8] ,
+    \last_addr[7] ,
+    \last_addr[6] ,
+    \last_addr[5] ,
+    \last_addr[4] ,
+    \last_addr[3] ,
+    \last_addr[2] ,
+    \last_addr[1] ,
+    \last_addr[0] }),
+    .ram_bus_in({\ram_bus_in[7] ,
+    \ram_bus_in[6] ,
+    \ram_bus_in[5] ,
+    \ram_bus_in[4] ,
+    \ram_bus_in[3] ,
+    \ram_bus_in[2] ,
+    \ram_bus_in[1] ,
+    \ram_bus_in[0] }),
+    .requested_addr({\requested_addr[15] ,
+    \requested_addr[14] ,
+    \requested_addr[13] ,
+    \requested_addr[12] ,
+    \requested_addr[11] ,
+    \requested_addr[10] ,
+    \requested_addr[9] ,
+    \requested_addr[8] ,
+    \requested_addr[7] ,
+    \requested_addr[6] ,
+    \requested_addr[5] ,
+    \requested_addr[4] ,
+    \requested_addr[3] ,
+    \requested_addr[2] ,
+    \requested_addr[1] ,
+    \requested_addr[0] }),
     .rom_bus_in({\rom_bus_in[7] ,
     \rom_bus_in[6] ,
     \rom_bus_in[5] ,

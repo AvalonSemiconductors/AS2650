@@ -536,6 +536,7 @@ module memory_cycles_tb;
 		failures += OEb != 0;
 		failures += full_addr != counter + 5;
 		if(failures == 0) $display("Completed: Absolute Indexed");
+		step = step + 1;
 		bus_in <= 8'h6D;
 		@(posedge clock);
 		@(posedge clock);

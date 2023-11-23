@@ -97,6 +97,10 @@ wire [2:0] cs_port;
 wire boot_rom_en;
 wire [7:0] rom_bus_out;
 wire [7:0] rom_bus_in;
+wire [7:0] ram_bus_in;
+wire ram_enabled;
+wire [15:0] last_addr;
+wire [15:0] requested_addr;
 wrapped_as2650 wrapped_as2650 (
 `ifdef USE_POWER_PINS
     .vdd(vdd),
@@ -138,7 +142,11 @@ wrapped_as2650 wrapped_as2650 (
     .cs_port(cs_port),
     .boot_rom_en(boot_rom_en),
     .rom_bus_out(rom_bus_out),
-    .rom_bus_in(rom_bus_in)
+    .rom_bus_in(rom_bus_in),
+    .ram_bus_in(ram_bus_in),
+    .ram_enabled(ram_enabled),
+    .last_addr(last_addr),
+    .requested_addr(requested_addr)
 );
 
 wire tmr0_o;
@@ -241,13 +249,8 @@ boot_rom boot_rom(
     .vss(vss),
 `endif
     .wb_clk_i(wb_clk_i),
-    .rst(reset),
-    .WEb_raw(WEb_raw),
-    .le_lo_act(le_lo_act),
-    .le_hi_act(le_hi_act),
-    .bus_in(rom_bus_out),
+    .last_addr(last_addr[7:0]),
     .bus_out(rom_bus_in),
-    .rom_enabled(boot_rom_en),
     .ram_start(RAM_start_addr),
     .ram_end(RAM_end_addr),
     .cs_port(cs_port)
@@ -269,6 +272,172 @@ sid_top sid(
     .bus_out(bus_data_sid),
     .bus_cyc(bus_cyc),
     .bus_we(bus_we_sid)
+);
+
+wire CEN_all;
+wire [7:0] WEN_all;
+wire [8:0] A_all;
+wire [7:0] D_all;
+wire GWEN_0;
+wire GWEN_1;
+wire GWEN_2;
+wire GWEN_3;
+wire GWEN_4;
+wire GWEN_5;
+wire GWEN_6;
+wire GWEN_7;
+wire [7:0] Q0;
+wire [7:0] Q1;
+wire [7:0] Q2;
+wire [7:0] Q3;
+wire [7:0] Q4;
+wire [7:0] Q5;
+wire [7:0] Q6;
+wire [7:0] Q7;
+ram_controller ram_controller(
+`ifdef USE_POWER_PINS
+    .vdd(vdd),
+    .vss(vss),
+`endif
+    .wb_clk_i(wb_clk_i),
+    .rst(reset),
+    .WEb_raw(WEb_raw),
+    .requested_addr(requested_addr),
+    .bus_in(rom_bus_out),
+    .bus_out(ram_bus_in),
+    .ram_enabled(ram_enabled),
+    .CEN_all(CEN_all),
+    .WEN_all(WEN_all),
+    .A_all(A_all),
+    .D_all(D_all),
+    .GWEN_0(GWEN_0),
+    .GWEN_1(GWEN_1),
+    .GWEN_2(GWEN_2),
+    .GWEN_3(GWEN_3),
+    .GWEN_4(GWEN_4),
+    .GWEN_5(GWEN_5),
+    .GWEN_6(GWEN_6),
+    .GWEN_7(GWEN_7),
+    .Q0(Q0),
+    .Q1(Q1),
+    .Q2(Q2),
+    .Q3(Q3),
+    .Q4(Q4),
+    .Q5(Q5),
+    .Q6(Q6),
+    .Q7(Q7)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram0(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_0),
+    .Q(Q0)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram1(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_1),
+    .Q(Q1)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram2(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_2),
+    .Q(Q2)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram3(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_3),
+    .Q(Q3)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram4(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_4),
+    .Q(Q4)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram5(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_5),
+    .Q(Q5)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram6(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_6),
+    .Q(Q6)
+);
+
+gf180_ram_512x8_wrapper_as2650 sram7(
+`ifdef USE_POWER_PINS
+    .VDD(vdd),
+    .VSS(vss),
+`endif
+    .CLK(wb_clk_i),
+    .CEN(CEN_all),
+    .WEN(WEN_all),
+    .A(A_all),
+    .D(D_all),
+    .GWEN(GWEN_7),
+    .Q(Q7)
 );
 
 avali_logo avali_logo (

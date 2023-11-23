@@ -615,7 +615,7 @@ namespace Signetics2650 {
                 outputFilename = $"{outputFilename}{(i == 0 ? "" : ".")}{parts[i]}";
             }
             StreamWriter sw = new StreamWriter($"{outputFilename}.txt");
-            sw.WriteLine("case(rom_ptr)");
+            sw.WriteLine("case(last_addr)");
             sw.WriteLine("\tdefault: rom_data = 8'h00;");
             for(int i = 0; i < ptr; i++) {
                 byte val = (byte)outputData[i];

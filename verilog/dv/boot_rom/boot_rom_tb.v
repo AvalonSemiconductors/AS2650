@@ -65,12 +65,7 @@ module boot_rom_tb;
 	
 	assign mprj_io[12:5] = OEb ? 8'hzz : bus_in;
 	
-	reg [7:0] memory [8191:0];
-	
 	initial begin
-		for(integer i = 0; i < 8192; i = i + 1) begin
-			memory[i] = 0;
-		end
 		bus_in = 8'h00;
 		clock = 0;
 		design_rst = 0;
@@ -84,15 +79,6 @@ module boot_rom_tb;
 	
 	always @(negedge le_hi) begin
 		full_addr_latch[15:8] <= bus_out;
-	end
-	
-	always @(negedge OEb) begin
-		#1;
-		bus_in <= memory[full_addr[12:0]];
-	end
-	
-	always @(posedge WEb) begin
-		memory[full_addr[12:0]] <= bus_out;
 	end
 	
 	always @(posedge SCLK) begin

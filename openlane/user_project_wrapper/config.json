@@ -8,7 +8,7 @@
 	],
 	"CLOCK_PORT": "wb_clk_i",
 	"CLOCK_NET": "wb_clk_i",
-	"CLOCK_PERIOD": 30,
+	"CLOCK_PERIOD": 31,
 	"MACRO_PLACEMENT_CFG": "dir::macro.cfg",
 	"VERILOG_FILES_BLACKBOX": [
 		"dir::../../verilog/gl/wrapped_as2650.v",
@@ -17,7 +17,9 @@
 		"dir::../../verilog/gl/timers.v",
 		"dir::../../verilog/gl/serial_ports.v",
 		"dir::../../verilog/gl/boot_rom.v",
-		"dir::../../verilog/gl/sid_top.v"
+		"dir::../../verilog/gl/sid_top.v",
+		"dir::../../verilog/gl/ram_controller.v",
+		"dir::../../verilog/gl/gf180_ram_512x8_wrapper_as2650.v"
 	],
 	"EXTRA_LEFS": [
 		"dir::../../lef/wrapped_as2650.lef",
@@ -26,7 +28,9 @@
 		"dir::../../lef/timers.lef",
 		"dir::../../lef/serial_ports.lef",
 		"dir::../../lef/boot_rom.lef",
-		"dir::../../lef/sid_top.lef"
+		"dir::../../lef/sid_top.lef",
+		"dir::../../lef/ram_controller.lef",
+		"dir::../../lef/gf180_ram_512x8_wrapper_as2650.lef"
 	],
 	"EXTRA_GDS_FILES": [
 		"dir::../../gds/wrapped_as2650.gds",
@@ -35,7 +39,9 @@
 		"dir::../../gds/timers.gds",
 		"dir::../../gds/serial_ports.gds",
 		"dir::../../gds/boot_rom.gds",
-		"dir::../../gds/sid_top.gds"
+		"dir::../../gds/sid_top.gds",
+		"dir::../../gds/ram_controller.gds",
+		"dir::../../gds/gf180_ram_512x8_wrapper_as2650.gds"
 	],
 	"EXTRA_LIBS": [
 		"dir::../../lib/wrapped_as2650.lib",
@@ -43,7 +49,9 @@
 		"dir::../../lib/timers.lib",
 		"dir::../../lib/serial_ports.lib",
 		"dir::../../lib/boot_rom.lib",
-		"dir::../../lib/sid_top.lib"
+		"dir::../../lib/sid_top.lib",
+		"dir::../../lib/ram_controller.lib",
+		"dir::../../lib/gf180_ram_512x8_wrapper_as2650.lib"
 	],
 	"EXTRA_SPEFS": [
 		"wrapped_as2650",
@@ -74,9 +82,19 @@
 		"sid_top",
 		"dir::../../spef/multicorner/sid_top.min.spef",
 		"dir::../../spef/multicorner/sid_top.nom.spef",
-		"dir::../../spef/multicorner/sid_top.max.spef"
+		"dir::../../spef/multicorner/sid_top.max.spef",
+		
+		"gf180_ram_512x8_wrapper_as2650",
+		"dir::../../spef/multicorner/gf180_ram_512x8_wrapper_as2650.min.spef",
+		"dir::../../spef/multicorner/gf180_ram_512x8_wrapper_as2650.nom.spef",
+		"dir::../../spef/multicorner/gf180_ram_512x8_wrapper_as2650.max.spef",
+		
+		"ram_controller",
+		"dir::../../spef/multicorner/ram_controller.min.spef",
+		"dir::../../spef/multicorner/ram_controller.nom.spef",
+		"dir::../../spef/multicorner/ram_controller.max.spef"
 	],
-	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss, avali_logo vdd vss vdd vss, gpios vdd vss vdd vss, timers vdd vss vdd vss, serial_ports vdd vss vdd vss, boot_rom vdd vss vdd vss, sid vdd vss vdd vss",
+	"FP_PDN_MACRO_HOOKS": "wrapped_as2650 vdd vss vdd vss, avali_logo vdd vss vdd vss, gpios vdd vss vdd vss, timers vdd vss vdd vss, serial_ports vdd vss vdd vss, boot_rom vdd vss vdd vss, sid vdd vss vdd vss, ram_controller vdd vss vdd vss, sram0 vdd vss VDD VSS, sram1 vdd vss VDD VSS, sram2 vdd vss VDD VSS, sram3 vdd vss VDD VSS, sram4 vdd vss VDD VSS, sram5 vdd vss VDD VSS, sram6 vdd vss VDD VSS, sram7 vdd vss VDD VSS",
 	"QUIT_ON_SYNTH_CHECKS": 0,
 	"FP_PDN_CHECK_NODES": 0,
 	"SYNTH_ELABORATE_ONLY": 1,

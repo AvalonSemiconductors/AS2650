@@ -86,7 +86,9 @@ void main() {
 	while(reg_mprj_xfer == 1);
 	reg_mprj_counter = 1954958191;
 	reg_mprj_rom_opts_1 = 0x01210000;
-	reg_mprj_rom_opts_2 = 0x80000007;
+	//reg_mprj_rom_opts_1 = 0x00210000;
+	reg_mprj_rom_opts_2 = 0x80000007U;
+	reg_mprj_debug_opts = 256;
 	reg_gpio_out = 1;
 	
 	delay(4000000);

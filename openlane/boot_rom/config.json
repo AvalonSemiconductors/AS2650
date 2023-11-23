@@ -4,17 +4,17 @@
 	"DESIGN_NAME": "boot_rom",
 	"VERILOG_FILES": [
 		"dir::../../verilog/rtl/defines.v",
-		"dir::../../verilog/rtl/IO_Block/boot_rom.v"
+		"dir::../../verilog/rtl/boot_rom.v"
 	],
 	"DESIGN_IS_CORE": 0,
 	"CLOCK_PORT": "wb_clk_i",
 	"CLOCK_NET": "wb_clk_i",
-	"CLOCK_PERIOD": "28.0",
+	"CLOCK_PERIOD": "15.0",
 	"FP_SIZING": "absolute",
-	"DIE_AREA": "0 0 300 300",
+	"DIE_AREA": "0 0 210 210",
 	"FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
 	"PL_BASIC_PLACEMENT": 0,
-	"PL_TARGET_DENSITY": 0.38,
+	"PL_TARGET_DENSITY": 0.45,
 	"FP_CORE_UTIL": 40,
 	"MAX_FANOUT_CONSTRAINT": 4,
 	"RT_MAX_LAYER": "Metal4",

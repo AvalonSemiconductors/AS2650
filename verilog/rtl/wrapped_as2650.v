@@ -50,7 +50,11 @@ module wrapped_as2650(
 	output reg [2:0] cs_port,
 	output boot_rom_en,
 	output [7:0] rom_bus_out,
-	input [7:0] rom_bus_in
+	input [7:0] rom_bus_in,
+	input [7:0] ram_bus_in,
+	output reg ram_enabled,
+	output [15:0] last_addr,
+	output [15:0] requested_addr
 );
 assign irq = 3'b000;
 
@@ -88,6 +92,7 @@ always @(posedge wb_clk_i) begin
 		wb_io3_test <= 0;
 		wb_io3_state <= 0;
 		wb_hidden_rom_enable <= 0;
+		ram_enabled <= 0;
 	end else begin
 		wb_counter <= wb_counter + 1;
 		if(wb_valid && !wb_feedback_delay) begin
@@ -103,8 +108,9 @@ always @(posedge wb_clk_i) begin
 					wb_reset_override <= wbs_dat_i[5];
 					wb_io3_test <= wbs_dat_i[6];
 					wb_io3_state <= wbs_dat_i[7];
+					ram_enabled <= wbs_dat_i[8];
 				end
-				wbs_o_buff <= {16'h0000, debug_psu, debug_psl};
+				wbs_o_buff <= {15'h0000, ram_enabled, debug_psu, debug_psl};
 			end else if(wbs_adr_i[20] && wbs_adr_i[19]) begin
 				if(wbs_we_i) begin
 					wb_hidden_rom_enable <= wbs_dat_i[31];
@@ -190,8 +196,7 @@ assign bus_we_timers = io_bus_we && device_addr == 1;
 assign bus_we_serial_ports = io_bus_we && device_addr == 2;
 assign bus_we_sid = io_bus_we && device_addr == 3;
 
-wire [15:0] requested_addr;
-wire [7:0] bus_in = boot_rom_en ? rom_bus_in : io_in[12:5];
+wire [7:0] bus_in = boot_rom_en ? rom_bus_in : (ram_enabled && last_addr[15:11] == 0 ? ram_bus_in : io_in[12:5]);
 
 as2650 as2650(
 	.clk(wb_clk_i),
@@ -223,6 +228,7 @@ as2650 as2650(
 	
 	.le_lo_act_o(le_lo_act),
 	.le_hi_act_o(le_hi_act),
+	.last_addr_o(last_addr),
 	.requested_addr_o(requested_addr)
 );
 

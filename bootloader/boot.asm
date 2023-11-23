@@ -48,24 +48,19 @@ check_loop:
 	bcfr,eq check_loop
 
 	ppsl 8
-	loda,r0 dynamic_data+0
-	stra,r0 0x1FFE
-	loda,r0 dynamic_data+1
-	stra,r0 0x1FFF
+	loda,r3 dynamic_data+0
+	loda,r2 dynamic_data+1
 copy_loop:
 	eorz,r0
 	bsta,un spi_tx_rx
-	stra,r0 *0x1FFE
+	db 0xB7
+	db 0x93
 	cpsl 1
-	loda,r0 0x1FFF
-	addi,r0 1
-	stra,r0 0x1FFF
-	loda,r1 0x1FFE
-	addi,r1 0
-	stra,r1 0x1FFE
-	coma,r1 dynamic_data+3
+	addi,r2 1
+	addi,r3 0
+	coma,r3 dynamic_data+3
 	bcfr,eq copy_loop
-	coma,r0 dynamic_data+4
+	coma,r2 dynamic_data+4
 	bcfr,eq copy_loop
 	
 	bstr,un spi_desel

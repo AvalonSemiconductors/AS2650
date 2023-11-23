@@ -7,3 +7,5 @@
 -v $(USER_PROJECT_VERILOG)/gl/serial_ports.v
 -v $(USER_PROJECT_VERILOG)/gl/boot_rom.v
 -v $(USER_PROJECT_VERILOG)/gl/sid_top.v
+-v $(USER_PROJECT_VERILOG)/gl/ram_controller.v
+-v $(USER_PROJECT_VERILOG)/gl/gf180_ram_512x8_wrapper_as2650.v

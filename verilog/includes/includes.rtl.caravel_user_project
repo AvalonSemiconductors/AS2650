@@ -8,9 +8,11 @@
 -v $(USER_PROJECT_VERILOG)/rtl/IO_Block/serial_ports.v
 -v $(USER_PROJECT_VERILOG)/rtl/IO_Block/spi.v
 -v $(USER_PROJECT_VERILOG)/rtl/IO_Block/uart.v
--v $(USER_PROJECT_VERILOG)/rtl/IO_Block/boot_rom.v
+-v $(USER_PROJECT_VERILOG)/rtl/boot_rom.v
 -v $(USER_PROJECT_VERILOG)/rtl/SID/SID_channels.v
 -v $(USER_PROJECT_VERILOG)/rtl/SID/SID_filter.v
 -v $(USER_PROJECT_VERILOG)/rtl/SID/SID_top.v
 -v $(USER_PROJECT_VERILOG)/rtl/SID/spi_dac_i.v
 -v $(USER_PROJECT_VERILOG)/rtl/SID/tt_um_rejunity_sn76489.v
+-v $(USER_PROJECT_VERILOG)/rtl/gf180_ram_512x8_wrapper.v
+-v $(USER_PROJECT_VERILOG)/rtl/IO_Block/ram_controller.v
