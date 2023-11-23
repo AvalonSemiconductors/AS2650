@@ -1,6 +1,11 @@
 {
     "TOP_SOURCE": "user_project_wrapper",
     "TOP_LAYOUT": "$TOP_SOURCE",
+    "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+    "INCLUDE_CONFIGS": [
+      "$LVS_ROOT/tech/$PDK/lvs_config.base.json",
+      "$UPRJ_ROOT/lvs/$TOP_SOURCE/lvs_config.sram512x8m8wm1.json"
+    ],
     "EXTRACT_FLATGLOB": [
         ""
     ],
@@ -23,6 +28,13 @@
     ],
     "LVS_VERILOG_FILES": [
         "$UPRJ_ROOT/verilog/gl/wrapped_as2650.v",
+        "$UPRJ_ROOT/verilog/gl/boot_rom.v",
+        "$UPRJ_ROOT/verilog/gl/gf180_ram_512x8_wrapper_as2650.v",
+        "$UPRJ_ROOT/verilog/gl/gpios.v",
+        "$UPRJ_ROOT/verilog/gl/ram_controller.v",
+        "$UPRJ_ROOT/verilog/gl/serial_ports.v",
+        "$UPRJ_ROOT/verilog/gl/sid_top.v",
+        "$UPRJ_ROOT/verilog/gl/timers.v",
         "$UPRJ_ROOT/verilog/gl/$TOP_SOURCE.v"
     ],
     "LAYOUT_FILE": "$UPRJ_ROOT/gds/$TOP_LAYOUT.gds"
