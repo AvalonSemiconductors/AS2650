@@ -19,9 +19,9 @@
 
 * Black-box entry subcircuit for sid_top abstract view
 .subckt sid_top DAC_clk DAC_dat_1 DAC_dat_2 DAC_le addr[0] addr[1] addr[2] addr[3]
-+ addr[4] bus_cyc bus_in[0] bus_in[1] bus_in[2] bus_in[3] bus_in[4] bus_in[5] bus_in[6]
-+ bus_in[7] bus_out[0] bus_out[1] bus_out[2] bus_out[3] bus_out[4] bus_out[5] bus_out[6]
-+ bus_out[7] bus_we clk rst vdd vss
++ addr[4] addr[5] bus_cyc bus_in[0] bus_in[1] bus_in[2] bus_in[3] bus_in[4] bus_in[5]
++ bus_in[6] bus_in[7] bus_out[0] bus_out[1] bus_out[2] bus_out[3] bus_out[4] bus_out[5]
++ bus_out[6] bus_out[7] bus_we clk rst vdd vss
 .ends
 
 * Black-box entry subcircuit for gpios abstract view
@@ -55,7 +55,7 @@
 + Q3[5] Q3[6] Q3[7] Q4[0] Q4[1] Q4[2] Q4[3] Q4[4] Q4[5] Q4[6] Q4[7] Q5[0] Q5[1] Q5[2]
 + Q5[3] Q5[4] Q5[5] Q5[6] Q5[7] Q6[0] Q6[1] Q6[2] Q6[3] Q6[4] Q6[5] Q6[6] Q6[7] Q7[0]
 + Q7[1] Q7[2] Q7[3] Q7[4] Q7[5] Q7[6] Q7[7] WEN_all[0] WEN_all[1] WEN_all[2] WEN_all[3]
-+ WEN_all[4] WEN_all[5] WEN_all[6] WEN_all[7] WEb_raw bus_in[0] bus_in[1] bus_in[2]
++ WEN_all[4] WEN_all[5] WEN_all[6] WEN_all[7] WEb_ram bus_in[0] bus_in[1] bus_in[2]
 + bus_in[3] bus_in[4] bus_in[5] bus_in[6] bus_in[7] bus_out[0] bus_out[1] bus_out[2]
 + bus_out[3] bus_out[4] bus_out[5] bus_out[6] bus_out[7] ram_enabled requested_addr[0]
 + requested_addr[10] requested_addr[11] requested_addr[12] requested_addr[13] requested_addr[14]
@@ -82,7 +82,7 @@
 + RAM_end_addr[8] RAM_end_addr[9] RAM_start_addr[0] RAM_start_addr[10] RAM_start_addr[11]
 + RAM_start_addr[12] RAM_start_addr[13] RAM_start_addr[14] RAM_start_addr[15] RAM_start_addr[1]
 + RAM_start_addr[2] RAM_start_addr[3] RAM_start_addr[4] RAM_start_addr[5] RAM_start_addr[6]
-+ RAM_start_addr[7] RAM_start_addr[8] RAM_start_addr[9] WEb_raw boot_rom_en bus_addr[0]
++ RAM_start_addr[7] RAM_start_addr[8] RAM_start_addr[9] WEb_ram boot_rom_en bus_addr[0]
 + bus_addr[1] bus_addr[2] bus_addr[3] bus_addr[4] bus_addr[5] bus_cyc bus_data_out[0]
 + bus_data_out[1] bus_data_out[2] bus_data_out[3] bus_data_out[4] bus_data_out[5]
 + bus_data_out[6] bus_data_out[7] bus_in_gpios[0] bus_in_gpios[1] bus_in_gpios[2]
@@ -241,10 +241,11 @@ Xsram7 A_all\[0\] A_all\[1\] A_all\[2\] A_all\[3\] A_all\[4\] A_all\[5\] A_all\[
 + WEN_all\[4\] WEN_all\[5\] WEN_all\[6\] WEN_all\[7\] gf180_ram_512x8_wrapper_as2650
 Xavali_logo vss vdd avali_logo
 Xsid DAC_clk DAC_d1 DAC_d2 DAC_le bus_addr\[0\] bus_addr\[1\] bus_addr\[2\] bus_addr\[3\]
-+ bus_addr\[4\] bus_cyc bus_data_out\[0\] bus_data_out\[1\] bus_data_out\[2\] bus_data_out\[3\]
-+ bus_data_out\[4\] bus_data_out\[5\] bus_data_out\[6\] bus_data_out\[7\] bus_data_sid\[0\]
-+ bus_data_sid\[1\] bus_data_sid\[2\] bus_data_sid\[3\] bus_data_sid\[4\] bus_data_sid\[5\]
-+ bus_data_sid\[6\] bus_data_sid\[7\] bus_we_sid wb_clk_i reset vdd vss sid_top
++ bus_addr\[4\] bus_addr\[5\] bus_cyc bus_data_out\[0\] bus_data_out\[1\] bus_data_out\[2\]
++ bus_data_out\[3\] bus_data_out\[4\] bus_data_out\[5\] bus_data_out\[6\] bus_data_out\[7\]
++ bus_data_sid\[0\] bus_data_sid\[1\] bus_data_sid\[2\] bus_data_sid\[3\] bus_data_sid\[4\]
++ bus_data_sid\[5\] bus_data_sid\[6\] bus_data_sid\[7\] bus_we_sid wb_clk_i reset
++ vdd vss sid_top
 Xgpios DAC_clk DAC_d1 DAC_d2 DAC_le RXD TXD bus_addr\[0\] bus_addr\[1\] bus_addr\[2\]
 + bus_addr\[3\] bus_cyc bus_we_gpios bus_data_out\[0\] bus_data_out\[1\] bus_data_out\[2\]
 + bus_data_out\[3\] bus_data_out\[4\] bus_data_out\[5\] bus_data_out\[6\] bus_data_out\[7\]
@@ -276,7 +277,7 @@ Xram_controller A_all\[0\] A_all\[1\] A_all\[2\] A_all\[3\] A_all\[4\] A_all\[5\
 + Q4\[7\] Q5\[0\] Q5\[1\] Q5\[2\] Q5\[3\] Q5\[4\] Q5\[5\] Q5\[6\] Q5\[7\] Q6\[0\]
 + Q6\[1\] Q6\[2\] Q6\[3\] Q6\[4\] Q6\[5\] Q6\[6\] Q6\[7\] Q7\[0\] Q7\[1\] Q7\[2\]
 + Q7\[3\] Q7\[4\] Q7\[5\] Q7\[6\] Q7\[7\] WEN_all\[0\] WEN_all\[1\] WEN_all\[2\] WEN_all\[3\]
-+ WEN_all\[4\] WEN_all\[5\] WEN_all\[6\] WEN_all\[7\] WEb_raw rom_bus_out\[0\] rom_bus_out\[1\]
++ WEN_all\[4\] WEN_all\[5\] WEN_all\[6\] WEN_all\[7\] WEb_ram rom_bus_out\[0\] rom_bus_out\[1\]
 + rom_bus_out\[2\] rom_bus_out\[3\] rom_bus_out\[4\] rom_bus_out\[5\] rom_bus_out\[6\]
 + rom_bus_out\[7\] ram_bus_in\[0\] ram_bus_in\[1\] ram_bus_in\[2\] ram_bus_in\[3\]
 + ram_bus_in\[4\] ram_bus_in\[5\] ram_bus_in\[6\] ram_bus_in\[7\] ram_enabled requested_addr\[0\]
@@ -303,7 +304,7 @@ Xwrapped_as2650 RAM_end_addr\[0\] RAM_end_addr\[10\] RAM_end_addr\[11\] RAM_end_
 + RAM_start_addr\[12\] RAM_start_addr\[13\] RAM_start_addr\[14\] RAM_start_addr\[15\]
 + RAM_start_addr\[1\] RAM_start_addr\[2\] RAM_start_addr\[3\] RAM_start_addr\[4\]
 + RAM_start_addr\[5\] RAM_start_addr\[6\] RAM_start_addr\[7\] RAM_start_addr\[8\]
-+ RAM_start_addr\[9\] WEb_raw wrapped_as2650/boot_rom_en bus_addr\[0\] bus_addr\[1\]
++ RAM_start_addr\[9\] WEb_ram wrapped_as2650/boot_rom_en bus_addr\[0\] bus_addr\[1\]
 + bus_addr\[2\] bus_addr\[3\] bus_addr\[4\] bus_addr\[5\] bus_cyc bus_data_out\[0\]
 + bus_data_out\[1\] bus_data_out\[2\] bus_data_out\[3\] bus_data_out\[4\] bus_data_out\[5\]
 + bus_data_out\[6\] bus_data_out\[7\] bus_data_gpios\[0\] bus_data_gpios\[1\] bus_data_gpios\[2\]

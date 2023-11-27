@@ -36,7 +36,9 @@ module as2650(
 	output le_lo_act_o,
 	output le_hi_act_o,
 	output [15:0] last_addr_o,
-	output [15:0] requested_addr_o
+	output [15:0] requested_addr_o,
+	
+	output WE_ram
 );
 
 reg trap;
@@ -128,13 +130,19 @@ assign le_lo = le_lo_act && clk && !reset;
 wire le_hi_act = (is_instr_fetch_cycle || is_data_fetch_cycle) && (requested_addr[15:8] != last_addr[15:8]) && !IO_cyc;
 assign le_hi = le_hi_act && clk && !reset;
 
-wire [15:0] requested_addr = ((cycle == DATA1 ? (indirect_cyc || extend ? instruction_args_latch : {page_reg, instruction_args_latch[12:0]}) : (is_instr_fetch_cycle ? {page_reg, PC} : (indirect_cyc || relative_cyc ? indirect_target : 0)) + (!is_instr_fetch_cycle && cycle == PARAM2 ? 1 : 0)) + (indexed_data1 ? index : 0));
+wire [15:0] requested_addr = (cycle == DATA1
+								? (indirect_cyc || extend ? instruction_args_latch : {page_reg, instruction_args_latch[12:0]})
+								: (is_instr_fetch_cycle ? {page_reg, PC} : (indirect_cyc || relative_cyc ? indirect_target : 0))
+									+ (!is_instr_fetch_cycle && cycle == PARAM2 ? 1 : 0))
+								
+								+ (indexed_data1 ? index : 0);
 assign requested_addr_o = requested_addr;
 assign last_addr_o = last_addr;
 
 wire write_cyc = cycle == DATA1 && is_store || (cycle == PARAM1 && relative_cyc && is_store);
 
 assign OEb = !(((is_instr_fetch_cycle || is_data_fetch_cycle) && last_addr == requested_addr) || (IO_cyc && is_IO_READ)) || reset || write_cyc;
+assign WE_ram = write_cyc && !reset && (last_addr == requested_addr);
 assign WEb = !(write_cyc || (is_IO_WRITE && cycle == IO1)) || reset || (last_addr != requested_addr && !IO_cyc);
 assign bus_out = is_IO_WRITE && IO_cyc ? instr_reg_v : (le_lo_act ? requested_addr[7:0] : (le_hi_act ? requested_addr[15:8] : alu_instr_reg));
 assign bus_dir = !(!WEb || le_lo_act || le_hi_act || (is_IO_WRITE && IO_cyc)) || reset;
@@ -421,24 +429,31 @@ always @(posedge clk) begin
 				if(is_immediate || relative_cyc) begin
 					//Immediate mode and relative mode instructions
 					if(is_store) begin
-					end else if(is_TPS) begin
-						if(((instruction[0] ? psl : psu) & bus_in) == bus_in) psl[7:6] <= 2'b00;
-						else psl[7:6] <= 2'b01;
-					end else if(is_CPS) begin
-						if(instruction[0]) psl <= psl & ~bus_in;
-						else psu <= psu & ~bus_in;
-					end else if(is_PPS) begin
-						if(instruction[0]) psl <= psl | bus_in;
-						else psu <= psu | bus_in;
-					end else if(is_EXT_IO) begin
-						ext_io_addr <= bus_in;
-					end else if(is_COM) begin
-						perform_compare(alu_instr_reg, bus_in);
-					end else if(is_TMI) begin
-						if((instr_reg_v & bus_in) == instr_reg_v) psl[7:6] <= 2'b00;
-						else psl[7:6] <= 2'b01;
 					end else if(is_ALU_op) begin
 						perform_alu_op(instr_reg_a);
+					end else begin
+						if(is_TPS) begin
+							if(((instruction[0] ? psl : psu) & bus_in) == bus_in) psl[7:6] <= 2'b00;
+							else psl[7:6] <= 2'b01;
+						end
+						if(is_CPS) begin
+							if(instruction[0]) psl <= psl & ~bus_in;
+							else psu <= psu & ~bus_in;
+						end
+						if(is_PPS) begin
+							if(instruction[0]) psl <= psl | bus_in;
+							else psu <= psu | bus_in;
+						end
+						if(is_EXT_IO) begin
+							ext_io_addr <= bus_in;
+						end
+						if(is_COM) begin
+							perform_compare(alu_instr_reg, bus_in);
+						end
+						if(is_TMI) begin
+							if((instr_reg_v & bus_in) == instr_reg_v) psl[7:6] <= 2'b00;
+							else psl[7:6] <= 2'b01;
+						end
 					end
 					cycle <= is_EXT_IO ? EXT_IO1 : FETCH;
 					extend <= 1'b0;

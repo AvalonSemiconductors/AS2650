@@ -24,6 +24,10 @@ gf180mcu_fd_ip_sram__sram512x8m8wm1 sram512x8 (
     .VDD    (VDD),
     .VSS    (VSS)
 `endif
+`ifndef USE_POWER_PINS
+	.VDD(),
+	.VSS()
+`endif
 );
 
 endmodule

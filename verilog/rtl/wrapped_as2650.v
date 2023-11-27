@@ -42,7 +42,7 @@ module wrapped_as2650(
 	output [2:0] irq,
 	output reset_out,
 	
-	output WEb_raw,
+	output WEb_ram,
 	output le_lo_act,
 	output le_hi_act,
 	output reg [15:0] RAM_start_addr,
@@ -98,7 +98,7 @@ always @(posedge wb_clk_i) begin
 		if(wb_valid && !wb_feedback_delay) begin
 			if(wbs_adr_i[22]) begin
 				if(wbs_we_i) wb_counter <= wbs_dat_i;
-				wbs_o_buff <= wb_counter;
+				else wbs_o_buff <= wb_counter;
 			end else if(wbs_adr_i[21]) begin
 				if(wbs_we_i) begin
 					wb_debug_cc <= wbs_dat_i[0];
@@ -110,21 +110,21 @@ always @(posedge wb_clk_i) begin
 					wb_io3_state <= wbs_dat_i[7];
 					ram_enabled <= wbs_dat_i[8];
 				end
-				wbs_o_buff <= {15'h0000, ram_enabled, debug_psu, debug_psl};
+				else wbs_o_buff <= {7'h00, debug_psu, debug_psl, ram_enabled, wb_io3_state, wb_io3_test, wb_reset_override, wb_reset_override_en, web_behavior, wb_debug_carry, wb_debug_cc};
 			end else if(wbs_adr_i[20] && wbs_adr_i[19]) begin
 				if(wbs_we_i) begin
 					wb_hidden_rom_enable <= wbs_dat_i[31];
 					cs_port <= wbs_dat_i[2:0];
 				end
-				wbs_o_buff <= {wb_hidden_rom_enable, 28'h6210000, cs_port};
+				else wbs_o_buff <= {wb_hidden_rom_enable, 28'h6210000, cs_port};
 			end else if(wbs_adr_i[20] && !wbs_adr_i[19]) begin
 				if(wbs_we_i) begin
 					RAM_start_addr <= wbs_dat_i[15:0];
 					RAM_end_addr <= wbs_dat_i[31:16];
 				end
-				wbs_o_buff <= {RAM_end_addr, RAM_start_addr};
+				else wbs_o_buff <= {RAM_end_addr, RAM_start_addr};
 			end else begin
-				wbs_o_buff <= 32'hFFFFFFFF;
+				if(!wbs_we_i) wbs_o_buff <= 32'hFFFFFFFF;
 			end
 		end
 		wb_feedback_delay <= wb_valid;
@@ -144,7 +144,6 @@ wire flag;
 wire IOC;
 wire IOD;
 wire cpu_hidden_rom_enable;
-assign WEb_raw = WEb;
 
 assign io_out[0] = 1'b0;
 assign io_oeb[0] = 1'b1;
@@ -196,7 +195,10 @@ assign bus_we_timers = io_bus_we && device_addr == 1;
 assign bus_we_serial_ports = io_bus_we && device_addr == 2;
 assign bus_we_sid = io_bus_we && device_addr == 3;
 
-wire [7:0] bus_in = boot_rom_en ? rom_bus_in : (ram_enabled && last_addr[15:11] == 0 ? ram_bus_in : io_in[12:5]);
+wire in_ram_range = ram_enabled && last_addr[15:12] == 0;
+wire [7:0] bus_in = boot_rom_en ? rom_bus_in : (in_ram_range ? ram_bus_in : io_in[12:5]);
+wire WE_ram_pre;
+assign WEb_ram = !(WE_ram_pre && in_ram_range);
 
 as2650 as2650(
 	.clk(wb_clk_i),
@@ -229,7 +231,8 @@ as2650 as2650(
 	.le_lo_act_o(le_lo_act),
 	.le_hi_act_o(le_hi_act),
 	.last_addr_o(last_addr),
-	.requested_addr_o(requested_addr)
+	.requested_addr_o(requested_addr),
+	.WE_ram(WE_ram_pre)
 );
 
 endmodule

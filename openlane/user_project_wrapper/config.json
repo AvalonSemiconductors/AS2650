@@ -8,7 +8,7 @@
 	],
 	"CLOCK_PORT": "wb_clk_i",
 	"CLOCK_NET": "wb_clk_i",
-	"CLOCK_PERIOD": 31,
+	"CLOCK_PERIOD": 29,
 	"MACRO_PLACEMENT_CFG": "dir::macro.cfg",
 	"VERILOG_FILES_BLACKBOX": [
 		"dir::../../verilog/gl/wrapped_as2650.v",

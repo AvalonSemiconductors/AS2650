@@ -50,7 +50,7 @@ always @(posedge wb_clk_i) begin
 				default: data_out <= 8'h00;
 				0: begin
 					if(bus_we) begin
-						if(!data_in[1]) uart_ien <= data_in[0];
+						uart_ien <= data_in[0];
 					end
 					data_out <= {7'h00, uart_ien};
 				end

@@ -10,7 +10,7 @@ module sid_top(
 	output DAC_dat_1,
 	output DAC_dat_2,
 	
-	input [4:0] addr,
+	input [5:0] addr,
 	input [7:0] bus_in,
 	output reg [7:0] bus_out,
 	input bus_cyc,
@@ -22,7 +22,7 @@ module sid_top(
 
 reg [7:0] read_res;
 always @(*) begin
-	case(addr[4:0])
+	case(addr)
 		default: read_res = 8'h00;
 		0: read_res = freq_1[7:0];
 		1: read_res = freq_1[15:8];
@@ -104,19 +104,19 @@ always @(posedge clk) begin
         clk_ctr   <= 0;
         clk_trg   <= 0;
         freq_1    <= 0;
-        pw_1      <= 0;
+        pw_1      <= 12'h800;
         ctrl_1    <= 0;
         atk_dec_1 <= 0;
         sus_rel_1 <= 0;
         
         freq_2    <= 0;
-        pw_2      <= 0;
+        pw_2      <= 12'h800;
         ctrl_2    <= 0;
         atk_dec_2 <= 0;
         sus_rel_2 <= 0;
         
         freq_3    <= 0;
-        pw_3      <= 0;
+        pw_3      <= 12'h800;
         ctrl_3    <= 0;
         atk_dec_3 <= 0;
         sus_rel_3 <= 0;
@@ -133,7 +133,7 @@ always @(posedge clk) begin
             /*
             * SID Register Write
             */
-            case(addr[4:0])
+            case(addr)
                 0:  freq_1[7:0]  <= bus_in;
                 1:  freq_1[15:8] <= bus_in;
                 2:  pw_1[7:0]    <= bus_in;

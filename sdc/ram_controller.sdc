@@ -1,12 +1,12 @@
 ###############################################################################
 # Created by write_sdc
-# Thu Nov 23 04:00:38 2023
+# Mon Nov 27 11:55:43 2023
 ###############################################################################
 current_design ram_controller
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name clk -period 20.0000 [get_ports {wb_clk_i}]
+create_clock -name clk -period 18.0000 [get_ports {wb_clk_i}]
 set_clock_transition 0.1500 [get_clocks {clk}]
 set_clock_uncertainty 0.2500 clk
 set_propagated_clock [get_clocks {clk}]

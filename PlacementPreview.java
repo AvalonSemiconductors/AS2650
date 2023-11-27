@@ -22,14 +22,14 @@ public class PlacementPreview {
 		BufferedImage img = new BufferedImage(2968, 2968, BufferedImage.TYPE_INT_RGB);
 		
 		Macro[] macros = new Macro[] {
-			new Macro(300, 1500, 1100, 750, Color.GREEN, "AS2650"), //wrapped_as2650
+			new Macro(300, 1450, 1050, 700, Color.GREEN, "AS2650"), //wrapped_as2650
 			new Macro(300, 2450, 300, 352, new Color(240, 128, 32), "Avali Logo"), //avali_logo
 			new Macro(2400, 1900, 250, 250, Color.RED, "GPIOs"), //gpios
 			new Macro(2350, 2250, 425, 425, Color.BLUE, "Timers & PWM"), //timers
 			new Macro(800, 2500, 275, 275, Color.ORANGE, "Serial Ports"), //serial_ports
 			new Macro(2400, 1500, 210, 210, new Color(128, 64, 255), "Boot ROM"), //boot_rom
 			new Macro(1500, 2000, 750, 750, new Color(245/*244*/, 130, 133), "SID"), //sid_top
-			new Macro(250, 800, 1500, 300, new Color(100, 200, 178), "RAM Controller"), //ram_controller
+			new Macro(300, 800, 1100, 250, new Color(100, 200, 178), "RAM Controller"), //ram_controller
 			new Macro(300, 200, 445, 496, new Color(100, 200, 178), "RAM0"), //sram0
 			new Macro(800, 200, 445, 496, new Color(100, 200, 178), "RAM1"), //sram1
 			new Macro(1300, 200, 445, 496, new Color(100, 200, 178), "RAM2"), //sram2

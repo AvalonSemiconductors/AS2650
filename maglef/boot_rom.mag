@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1700711740
+timestamp 1701085157
 << obsm1 >>
 rect 672 1538 20328 19305
 << metal2 >>
@@ -277,7 +277,7 @@ string FIXED_BBOX 0 0 21000 21000
 string LEFclass BLOCK
 string LEFview TRUE
 string GDS_END 1140074
-string GDS_FILE /run/media/tholin/d9eb5833-69bc-462f-98fb-b7c5c019399b/AS2650/openlane/boot_rom/runs/23_11_23_04_53/results/signoff/boot_rom.magic.gds
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/boot_rom/runs/23_11_27_12_35/results/signoff/boot_rom.magic.gds
 string GDS_START 295462
 << end >>
 

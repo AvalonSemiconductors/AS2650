@@ -35,6 +35,7 @@
         "$UPRJ_ROOT/verilog/gl/serial_ports.v",
         "$UPRJ_ROOT/verilog/gl/sid_top.v",
         "$UPRJ_ROOT/verilog/gl/timers.v",
+        "$UPRJ_ROOT/verilog/rtl/avali_logo.v",
         "$UPRJ_ROOT/verilog/gl/$TOP_SOURCE.v"
     ],
     "LAYOUT_FILE": "$UPRJ_ROOT/gds/$TOP_LAYOUT.gds"

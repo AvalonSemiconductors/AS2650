@@ -1,12 +1,12 @@
 ###############################################################################
 # Created by write_sdc
-# Thu Nov 23 14:46:01 2023
+# Mon Nov 27 22:36:44 2023
 ###############################################################################
 current_design user_project_wrapper
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name clk -period 31.0000 [get_ports {wb_clk_i}]
+create_clock -name clk -period 29.0000 [get_ports {wb_clk_i}]
 set_clock_transition 0.1500 [get_clocks {clk}]
 set_clock_uncertainty 0.2500 clk
 set_propagated_clock [get_clocks {clk}]
@@ -268,7 +268,7 @@ set_input_delay 0.3000 -clock [get_clocks {clk}] -min -add_delay [get_ports {la_
 set_input_delay 1.8900 -clock [get_clocks {clk}] -max -add_delay [get_ports {la_oenb[8]}]
 set_input_delay 0.3000 -clock [get_clocks {clk}] -min -add_delay [get_ports {la_oenb[9]}]
 set_input_delay 1.8900 -clock [get_clocks {clk}] -max -add_delay [get_ports {la_oenb[9]}]
-set_input_delay 15.5000 -clock [get_clocks {clk}] -add_delay [get_ports {wb_rst_i}]
+set_input_delay 14.5000 -clock [get_clocks {clk}] -add_delay [get_ports {wb_rst_i}]
 set_input_delay 0.7900 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_adr_i[0]}]
 set_input_delay 3.8900 -clock [get_clocks {clk}] -max -add_delay [get_ports {wbs_adr_i[0]}]
 set_input_delay 0.7900 -clock [get_clocks {clk}] -min -add_delay [get_ports {wbs_adr_i[10]}]

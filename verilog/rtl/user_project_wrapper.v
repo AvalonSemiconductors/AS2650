@@ -88,7 +88,7 @@ wire [7:0] bus_data_serial_ports;
 wire bus_we_serial_ports;
 wire [7:0] bus_data_sid;
 wire bus_we_sid;
-wire WEb_raw;
+wire WEb_ram;
 wire le_lo_act;
 wire le_hi_act;
 wire [15:0] RAM_start_addr;
@@ -134,7 +134,7 @@ wrapped_as2650 wrapped_as2650 (
     .bus_we_serial_ports(bus_we_serial_ports),
     .bus_in_sid(bus_data_sid),
     .bus_we_sid(bus_we_sid),
-    .WEb_raw(WEb_raw),
+    .WEb_ram(WEb_ram),
     .le_lo_act(le_lo_act),
     .le_hi_act(le_hi_act),
     .RAM_start_addr(RAM_start_addr),
@@ -267,7 +267,7 @@ sid_top sid(
     .DAC_le(DAC_le),
     .DAC_dat_1(DAC_d1),
     .DAC_dat_2(DAC_d2),
-    .addr(bus_addr[4:0]),
+    .addr(bus_addr),
     .bus_in(bus_data_out),
     .bus_out(bus_data_sid),
     .bus_cyc(bus_cyc),
@@ -301,7 +301,7 @@ ram_controller ram_controller(
 `endif
     .wb_clk_i(wb_clk_i),
     .rst(reset),
-    .WEb_raw(WEb_raw),
+    .WEb_ram(WEb_ram),
     .requested_addr(requested_addr),
     .bus_in(rom_bus_out),
     .bus_out(ram_bus_in),

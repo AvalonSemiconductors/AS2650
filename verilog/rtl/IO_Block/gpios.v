@@ -121,7 +121,7 @@ always @(posedge wb_clk_i) begin
 		PORTA <= 8'h00;
 		PORTB <= 8'h00;
 		SPA <= 8'h00;
-		SPB <= 6'h00;
+		SPB <= 8'h00;
 		irq0 <= 1'b0;
 		irq6 <= 1'b0;
 		irq7 <= 1'b0;

@@ -175,7 +175,7 @@ module user_project_wrapper (user_clock2,
  wire \WEN_all[5] ;
  wire \WEN_all[6] ;
  wire \WEN_all[7] ;
- wire WEb_raw;
+ wire WEb_ram;
  wire boot_rom_en;
  wire \bus_addr[0] ;
  wire \bus_addr[1] ;
@@ -469,7 +469,7 @@ module user_project_wrapper (user_clock2,
     .GWEN_5(GWEN_5),
     .GWEN_6(GWEN_6),
     .GWEN_7(GWEN_7),
-    .WEb_raw(WEb_raw),
+    .WEb_ram(WEb_ram),
     .ram_enabled(ram_enabled),
     .rst(reset),
     .vdd(vdd),
@@ -641,7 +641,8 @@ module user_project_wrapper (user_clock2,
     .rst(reset),
     .vdd(vdd),
     .vss(vss),
-    .addr({\bus_addr[4] ,
+    .addr({\bus_addr[5] ,
+    \bus_addr[4] ,
     \bus_addr[3] ,
     \bus_addr[2] ,
     \bus_addr[1] ,
@@ -1004,7 +1005,7 @@ module user_project_wrapper (user_clock2,
     \bus_data_timers[2] ,
     \bus_data_timers[1] ,
     \bus_data_timers[0] }));
- wrapped_as2650 wrapped_as2650 (.WEb_raw(WEb_raw),
+ wrapped_as2650 wrapped_as2650 (.WEb_ram(WEb_ram),
     .boot_rom_en(boot_rom_en),
     .bus_cyc(bus_cyc),
     .bus_we_gpios(bus_we_gpios),
