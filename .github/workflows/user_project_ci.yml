@@ -234,13 +234,13 @@ jobs:
              echo "chirp"
              pip3 install numpy gdspy triangle pygltflib
              python3 gds2gltf.py gds/wrapped_as2650.gds
-             python3 gds2gltf.py gds/user_project_wrapper.gds
+             python3 gds2gltf.py gds/gf180_ram_512x8_wrapper_as2650.gds
              
       - uses: actions/upload-artifact@v3
         with:
           name: glTF
           path: |
-            /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
+            /home/runner/work/AS2650/AS2650/gds/gf180_ram_512x8_wrapper_as2650.gds.gltf
             /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
   generate_svg:
     runs-on: ubuntu-latest
@@ -273,6 +273,10 @@ jobs:
           top_cells = library.top_level()
           top_cells[0].write_svg('/tmp/svg/wrapped_as2650.svg')
           
+          library = gdstk.read_gds('/tmp/gds/gf180_ram_512x8_wrapper_as2650.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/gf180_ram_512x8_wrapper_as2650.svg')
+          
           library = gdstk.read_gds('/tmp/gds/user_project_wrapper.gds')
           top_cells = library.top_level()
           top_cells[0].write_svg('/tmp/svg/user_project_wrapper.svg')
@@ -282,4 +286,5 @@ jobs:
           name: SVG
           path: |
             /tmp/svg/wrapped_as2650.svg
-            /tmp/gds/user_project_wrapper.svg
+            /tmp/svg/gf180_ram_512x8_wrapper_as2650.svg
+            /tmp/svg/user_project_wrapper.svg
