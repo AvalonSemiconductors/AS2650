@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 10
-timestamp 1701086215
+timestamp 1701964110
 << nwell >>
 rect 1258 45824 218710 46342
 rect 1258 44281 218710 45120
@@ -669,7 +669,7 @@ string FIXED_BBOX 0 0 220000 50000
 string LEFclass BLOCK
 string LEFview TRUE
 string GDS_END 1398572
-string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/ram_controller/runs/23_11_27_12_52/results/signoff/ram_controller.magic.gds
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/ram_controller/runs/23_12_07_16_46/results/signoff/ram_controller.magic.gds
 string GDS_START 175762
 << end >>
 

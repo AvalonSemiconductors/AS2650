@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1701085587
+timestamp 1701963989
 << obsm1 >>
 rect 672 1538 24304 23225
 << metal2 >>
@@ -450,7 +450,7 @@ string FIXED_BBOX 0 0 25000 25000
 string LEFclass BLOCK
 string LEFview TRUE
 string GDS_END 1426344
-string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/gpios/runs/23_11_27_12_42/results/signoff/gpios.magic.gds
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/gpios/runs/23_12_07_16_44/results/signoff/gpios.magic.gds
 string GDS_START 217822
 << end >>
 

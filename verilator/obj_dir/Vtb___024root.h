@@ -87,6 +87,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__full_io_addr;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__io_bus_we;
         CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__bus_in_plexed;
+        CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range;
         CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__bus_in;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__trap;
         CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__irqs_latch;
@@ -145,9 +146,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_EXT_IO;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_TRAP;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_CLRT;
-        CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_LIR;
     };
     struct {
+        CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_LIR;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_SIR;
         CData/*2:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__instr_reg_a;
         CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_CC_BRANCH;
@@ -211,9 +212,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         CData/*7:0*/ tb__DOT__uprj__DOT__serial_ports__DOT__spi__DOT__data_in_buff;
         CData/*7:0*/ tb__DOT__uprj__DOT__serial_ports__DOT__spi__DOT__div_counter;
         CData/*4:0*/ tb__DOT__uprj__DOT__serial_ports__DOT__spi__DOT__counter;
-        CData/*7:0*/ tb__DOT__uprj__DOT__boot_rom__DOT__rom_data;
     };
     struct {
+        CData/*7:0*/ tb__DOT__uprj__DOT__boot_rom__DOT__rom_data;
         CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__read_res;
         CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__ctrl_1;
         CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__atk_dec_1;
@@ -277,9 +278,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         CData/*7:0*/ tb__DOT__spiflash__DOT__xip_cmd;
         CData/*0:0*/ tb__DOT__spiflash__DOT__powered_up;
         CData/*3:0*/ tb__DOT__spiflash__DOT__mode;
-        CData/*3:0*/ tb__DOT__spiflash__DOT__next_mode;
     };
     struct {
+        CData/*3:0*/ tb__DOT__spiflash__DOT__next_mode;
         CData/*0:0*/ tb__DOT__spiflash__DOT__io0_oe;
         CData/*0:0*/ tb__DOT__spiflash__DOT__io1_oe;
         CData/*0:0*/ tb__DOT__spiflash__DOT__io2_oe;
@@ -343,9 +344,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he79b84a8__0;
         SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he79b84a8__1;
         SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__sample_buff;
-        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__sample_buff_next;
     };
     struct {
+        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__sample_buff_next;
         SData/*11:0*/ tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__spi_dat_buff_0;
         SData/*11:0*/ tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__spi_dat_buff_1;
         SData/*9:0*/ tb__DOT__uprj__DOT__sid__DOT__tt_um_rejunity_sn76489__DOT____Vcellout__chan__BRA__0__KET____DOT__attenuation__out;

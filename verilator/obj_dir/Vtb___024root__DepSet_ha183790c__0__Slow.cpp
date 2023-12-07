@@ -162,8 +162,8 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2 = 0;
-    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0;
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 = 0;
+    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0;
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 = 0;
     CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__boot_rom__DOT__cs_port_bit;
@@ -621,6 +621,9 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
     __Vtableidx2 = vlSelf->tb__DOT__uprj__DOT__cs_port;
     tb__DOT__uprj__DOT__boot_rom__DOT__cs_port_bit 
         = Vtb__ConstPool__TABLE_hf24594c5_0[__Vtableidx2];
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+           & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))));
     vlSelf->tb__DOT__io_in = ((0x3ffffffffeULL & vlSelf->tb__DOT__io_in) 
                               | (IData)((IData)(vlSelf->rst_n)));
     tb__DOT__SDI__strong__out8 = ((IData)(vlSelf->tb__DOT__spiflash__DOT__io1_dout) 
@@ -2258,8 +2261,7 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
         = (0xffU & (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__cpu_hidden_rom_enable) 
                      & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable))
                      ? (IData)(vlSelf->tb__DOT__uprj__DOT__boot_rom__DOT__rom_data)
-                     : (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-                         & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))))
+                     : ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)
                          ? (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__curr_Q)
                          : (IData)((vlSelf->tb__DOT__io_in 
                                     >> 5U)))));
@@ -2593,6 +2595,9 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
                      & (0U != (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__branch_compare_reg))) 
                     | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_ZBR) 
                        | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_BXA))))));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+           == (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
     vlSelf->tb__DOT__uprj__DOT__le_lo_act = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h0482dd45__0) 
                                              & (((0xffU 
                                                   & (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr)) 
@@ -2616,9 +2621,14 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                    (0xffU 
                                                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
                                                        >> 8U)))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 
-        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
-           != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
+        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
+                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
+               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
+                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
+                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+                        != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr))))));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_next 
         = (0x1ffU & ((1U == (7U & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__instruction) 
                                    >> 5U))) ? ((0x100U 
@@ -2660,6 +2670,13 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
                                           ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl) 
                                            << 8U)) 
                                          | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2))))))));
+    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
+        = ((((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+             & ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset)) 
+                & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0))) 
+            & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)) 
+           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
     vlSelf->tb__DOT__bus_out = (0xffU & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h67c18dcd__0)
                                           ? (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__index)
                                           : ((IData)(vlSelf->tb__DOT__uprj__DOT__le_lo_act)
@@ -2669,19 +2686,13 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                  ((IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr) 
                                                   >> 8U)
                                                   : (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_instr_reg)))));
-    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
-        = ((~ ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc)) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))) 
-           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
-        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
-                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
-                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
-                     & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))));
+    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
+                                & (IData)(vlSelf->clk))
+                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                                 ? ((~ (IData)(vlSelf->clk)) 
+                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
+                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__next_ovf 
         = (((1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1) 
                    >> 7U)) == (1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
@@ -2701,13 +2712,6 @@ VL_ATTR_COLD void Vtb___024root___stl_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                  >> 4U))
                      : ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
                         >> 4U))));
-    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
-                                & (IData)(vlSelf->clk))
-                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                                 ? ((~ (IData)(vlSelf->clk)) 
-                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
-                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
 }
 
 VL_ATTR_COLD void Vtb___024root___eval_stl(Vtb___024root* vlSelf) {
@@ -2900,6 +2904,7 @@ VL_ATTR_COLD void Vtb___024root___ctor_var_reset(Vtb___024root* vlSelf) {
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__full_io_addr = VL_RAND_RESET_I(8);
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__io_bus_we = VL_RAND_RESET_I(1);
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__bus_in_plexed = VL_RAND_RESET_I(8);
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range = VL_RAND_RESET_I(1);
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__bus_in = VL_RAND_RESET_I(8);
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__trap = VL_RAND_RESET_I(1);
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__irqs_latch = VL_RAND_RESET_I(8);

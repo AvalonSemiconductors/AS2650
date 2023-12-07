@@ -22,8 +22,8 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2 = 0;
-    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0;
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 = 0;
+    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0;
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 = 0;
     CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0 = 0;
     // Body
@@ -67,8 +67,7 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
         = (0xffU & (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__cpu_hidden_rom_enable) 
                      & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable))
                      ? (IData)(vlSelf->tb__DOT__uprj__DOT__boot_rom__DOT__rom_data)
-                     : (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-                         & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))))
+                     : ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)
                          ? (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__curr_Q)
                          : (IData)((vlSelf->tb__DOT__io_in 
                                     >> 5U)))));
@@ -402,6 +401,17 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
                      & (0U != (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__branch_compare_reg))) 
                     | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_ZBR) 
                        | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_BXA))))));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+           == (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
+        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
+                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
+               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
+                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
+                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+                        != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr))))));
     vlSelf->tb__DOT__uprj__DOT__le_lo_act = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h0482dd45__0) 
                                              & (((0xffU 
                                                   & (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr)) 
@@ -425,9 +435,6 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                    (0xffU 
                                                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
                                                        >> 8U)))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 
-        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
-           != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_next 
         = (0x1ffU & ((1U == (7U & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__instruction) 
                                    >> 5U))) ? ((0x100U 
@@ -469,6 +476,20 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
                                           ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl) 
                                            << 8U)) 
                                          | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2))))))));
+    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
+        = ((((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+             & ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset)) 
+                & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0))) 
+            & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)) 
+           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
+    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
+                                & (IData)(vlSelf->clk))
+                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                                 ? ((~ (IData)(vlSelf->clk)) 
+                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
+                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
     vlSelf->tb__DOT__bus_out = (0xffU & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h67c18dcd__0)
                                           ? (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__index)
                                           : ((IData)(vlSelf->tb__DOT__uprj__DOT__le_lo_act)
@@ -478,19 +499,6 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                  ((IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr) 
                                                   >> 8U)
                                                   : (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_instr_reg)))));
-    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
-        = ((~ ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc)) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))) 
-           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
-        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
-                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
-                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
-                     & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__next_ovf 
         = (((1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1) 
                    >> 7U)) == (1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
@@ -510,13 +518,6 @@ VL_INLINE_OPT void Vtb___024root___ico_sequent__TOP__0(Vtb___024root* vlSelf) {
                                                  >> 4U))
                      : ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
                         >> 4U))));
-    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
-                                & (IData)(vlSelf->clk))
-                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                                 ? ((~ (IData)(vlSelf->clk)) 
-                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
-                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
 }
 
 void Vtb___024root___eval_ico(Vtb___024root* vlSelf) {
@@ -2113,8 +2114,8 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2 = 0;
-    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0;
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 = 0;
+    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0;
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 = 0;
     CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0 = 0;
     // Body
@@ -2169,8 +2170,7 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
         = (0xffU & (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__cpu_hidden_rom_enable) 
                      & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable))
                      ? (IData)(vlSelf->tb__DOT__uprj__DOT__boot_rom__DOT__rom_data)
-                     : (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-                         & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))))
+                     : ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)
                          ? (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__curr_Q)
                          : (IData)((vlSelf->tb__DOT__io_in 
                                     >> 5U)))));
@@ -2504,6 +2504,17 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
                      & (0U != (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__branch_compare_reg))) 
                     | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_ZBR) 
                        | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_BXA))))));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+           == (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
+        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
+                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
+               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
+                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
+                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+                        != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr))))));
     vlSelf->tb__DOT__uprj__DOT__le_lo_act = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h0482dd45__0) 
                                              & (((0xffU 
                                                   & (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr)) 
@@ -2527,9 +2538,6 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
                                                    (0xffU 
                                                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
                                                        >> 8U)))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 
-        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
-           != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_next 
         = (0x1ffU & ((1U == (7U & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__instruction) 
                                    >> 5U))) ? ((0x100U 
@@ -2571,6 +2579,20 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
                                           ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl) 
                                            << 8U)) 
                                          | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2))))))));
+    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
+        = ((((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+             & ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset)) 
+                & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0))) 
+            & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)) 
+           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
+    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
+                                & (IData)(vlSelf->clk))
+                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                                 ? ((~ (IData)(vlSelf->clk)) 
+                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
+                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
     vlSelf->tb__DOT__bus_out = (0xffU & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h67c18dcd__0)
                                           ? (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__index)
                                           : ((IData)(vlSelf->tb__DOT__uprj__DOT__le_lo_act)
@@ -2580,19 +2602,6 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
                                                  ((IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr) 
                                                   >> 8U)
                                                   : (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_instr_reg)))));
-    vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
-        = ((~ ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc)) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))) 
-           & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-              & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
-        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
-                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
-                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
-                     & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__next_ovf 
         = (((1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1) 
                    >> 7U)) == (1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
@@ -2612,13 +2621,6 @@ VL_INLINE_OPT void Vtb___024root___act_comb__TOP__0(Vtb___024root* vlSelf) {
                                                  >> 4U))
                      : ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
                         >> 4U))));
-    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
-                                & (IData)(vlSelf->clk))
-                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                                 ? ((~ (IData)(vlSelf->clk)) 
-                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
-                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
 }
 
 void Vtb___024root___eval_act(Vtb___024root* vlSelf) {
@@ -2673,8 +2675,8 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2 = 0;
-    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0;
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 = 0;
+    CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0;
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 = 0;
     CData/*0:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0;
     tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_hc9759c1c__0 = 0;
     CData/*7:0*/ tb__DOT__uprj__DOT__boot_rom__DOT__cs_port_bit;
@@ -2749,8 +2751,30 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
     __Vtableidx8 = 0;
     IData/*31:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry = 0;
+    CData/*1:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state = 0;
+    CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__ram_enabled;
+    __Vdly__tb__DOT__uprj__DOT__ram_enabled = 0;
     CData/*0:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable = 0;
+    CData/*2:0*/ __Vdly__tb__DOT__uprj__DOT__cs_port;
+    __Vdly__tb__DOT__uprj__DOT__cs_port = 0;
+    SData/*15:0*/ __Vdly__tb__DOT__uprj__DOT__RAM_start_addr;
+    __Vdly__tb__DOT__uprj__DOT__RAM_start_addr = 0;
+    SData/*15:0*/ __Vdly__tb__DOT__uprj__DOT__RAM_end_addr;
+    __Vdly__tb__DOT__uprj__DOT__RAM_end_addr = 0;
     CData/*7:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl = 0;
     CData/*7:0*/ __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psu;
@@ -3379,10 +3403,28 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
         = vlSelf->tb__DOT__uprj__DOT__sid__DOT__channels__DOT__clk_div;
     __Vdlyvset__tb__DOT__uprj__DOT__sid__DOT__channels__DOT__lfsr__v0 = 0U;
     __Vdlyvset__tb__DOT__uprj__DOT__sid__DOT__channels__DOT__exp_periods__v0 = 0U;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter 
         = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override;
+    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en 
+        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable 
         = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable;
+    __Vdly__tb__DOT__uprj__DOT__RAM_end_addr = vlSelf->tb__DOT__uprj__DOT__RAM_end_addr;
+    __Vdly__tb__DOT__uprj__DOT__RAM_start_addr = vlSelf->tb__DOT__uprj__DOT__RAM_start_addr;
+    __Vdly__tb__DOT__uprj__DOT__cs_port = vlSelf->tb__DOT__uprj__DOT__cs_port;
+    __Vdly__tb__DOT__uprj__DOT__ram_enabled = vlSelf->tb__DOT__uprj__DOT__ram_enabled;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__trap 
         = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__trap;
     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__ivectors_base 
@@ -5371,79 +5413,85 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
         if (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_valid) 
              & (~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_feedback_delay)))) {
             if ((0x400000U & vlSelf->wbs_adr_i)) {
-                vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
-                    = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
                 if (vlSelf->wbs_we_i) {
                     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter 
                         = vlSelf->wbs_dat_i;
+                } else {
+                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
+                        = vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
                 }
             } else if ((0x200000U & vlSelf->wbs_adr_i)) {
-                vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
-                    = (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psu) 
-                        << 0x11U) | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl) 
-                                      << 9U) | (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-                                                 << 8U) 
-                                                | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state) 
-                                                    << 7U) 
-                                                   | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test) 
-                                                       << 6U) 
-                                                      | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override) 
-                                                          << 5U) 
-                                                         | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en) 
-                                                             << 4U) 
-                                                            | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior) 
-                                                                << 2U) 
-                                                               | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry) 
-                                                                   << 1U) 
-                                                                  | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc))))))))));
                 if (vlSelf->wbs_we_i) {
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc 
                         = (1U & vlSelf->wbs_dat_i);
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 1U));
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior 
                         = (3U & (vlSelf->wbs_dat_i 
                                  >> 2U));
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 4U));
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 5U));
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 6U));
-                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state 
+                    __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 7U));
-                    vlSelf->tb__DOT__uprj__DOT__ram_enabled 
+                    __Vdly__tb__DOT__uprj__DOT__ram_enabled 
                         = (1U & (vlSelf->wbs_dat_i 
                                  >> 8U));
+                } else {
+                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
+                        = (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psu) 
+                            << 0x11U) | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__psl) 
+                                          << 9U) | 
+                                         (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+                                           << 8U) | 
+                                          (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state) 
+                                            << 7U) 
+                                           | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test) 
+                                               << 6U) 
+                                              | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override) 
+                                                  << 5U) 
+                                                 | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en) 
+                                                     << 4U) 
+                                                    | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior) 
+                                                        << 2U) 
+                                                       | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry) 
+                                                           << 1U) 
+                                                          | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc))))))))));
                 }
             } else if ((IData)((0x180000U == (0x180000U 
                                               & vlSelf->wbs_adr_i)))) {
-                vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
-                    = (0x31080000U | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable) 
-                                       << 0x1fU) | (IData)(vlSelf->tb__DOT__uprj__DOT__cs_port)));
                 if (vlSelf->wbs_we_i) {
                     __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable 
                         = (vlSelf->wbs_dat_i >> 0x1fU);
-                    vlSelf->tb__DOT__uprj__DOT__cs_port 
+                    __Vdly__tb__DOT__uprj__DOT__cs_port 
                         = (7U & vlSelf->wbs_dat_i);
+                } else {
+                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
+                        = (0x31080000U | (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable) 
+                                           << 0x1fU) 
+                                          | (IData)(vlSelf->tb__DOT__uprj__DOT__cs_port)));
                 }
             } else if ((IData)((0x100000U == (0x180000U 
                                               & vlSelf->wbs_adr_i)))) {
-                vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
-                    = (((IData)(vlSelf->tb__DOT__uprj__DOT__RAM_end_addr) 
-                        << 0x10U) | (IData)(vlSelf->tb__DOT__uprj__DOT__RAM_start_addr));
                 if (vlSelf->wbs_we_i) {
-                    vlSelf->tb__DOT__uprj__DOT__RAM_start_addr 
+                    __Vdly__tb__DOT__uprj__DOT__RAM_start_addr 
                         = (0xffffU & vlSelf->wbs_dat_i);
-                    vlSelf->tb__DOT__uprj__DOT__RAM_end_addr 
+                    __Vdly__tb__DOT__uprj__DOT__RAM_end_addr 
                         = (vlSelf->wbs_dat_i >> 0x10U);
+                } else {
+                    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff 
+                        = (((IData)(vlSelf->tb__DOT__uprj__DOT__RAM_end_addr) 
+                            << 0x10U) | (IData)(vlSelf->tb__DOT__uprj__DOT__RAM_start_addr));
                 }
-            } else {
+            } else if ((1U & (~ (IData)(vlSelf->wbs_we_i)))) {
                 vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff = 0xffffffffU;
             }
         }
@@ -5451,15 +5499,15 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
         vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_ready = 0U;
         vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wbs_o_buff = 0U;
         __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test = 0U;
-        vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test = 0U;
+        __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state = 0U;
         __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable = 0U;
-        vlSelf->tb__DOT__uprj__DOT__ram_enabled = 0U;
+        __Vdly__tb__DOT__uprj__DOT__ram_enabled = 0U;
     }
     vlSelf->tb__DOT__uprj__DOT__sid__DOT__tt_um_rejunity_sn76489__DOT__noise__BRA__0__KET____DOT__gen__DOT__counter 
         = __Vdly__tb__DOT__uprj__DOT__sid__DOT__tt_um_rejunity_sn76489__DOT__noise__BRA__0__KET____DOT__gen__DOT__counter;
@@ -5739,6 +5787,24 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
     }
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter 
         = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_test;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_io3_state;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_cc;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_debug_carry;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override_en;
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override 
+        = __Vdly__tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_reset_override;
+    vlSelf->tb__DOT__uprj__DOT__RAM_start_addr = __Vdly__tb__DOT__uprj__DOT__RAM_start_addr;
+    vlSelf->tb__DOT__uprj__DOT__RAM_end_addr = __Vdly__tb__DOT__uprj__DOT__RAM_end_addr;
+    vlSelf->tb__DOT__uprj__DOT__cs_port = __Vdly__tb__DOT__uprj__DOT__cs_port;
+    vlSelf->tb__DOT__uprj__DOT__ram_enabled = __Vdly__tb__DOT__uprj__DOT__ram_enabled;
     vlSelf->tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__counter 
         = __Vdly__tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__counter;
     vlSelf->tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__spi_dat_buff_0 
@@ -8951,6 +9017,9 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
                                                                 & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr)))
                                                                ? 0x21U
                                                                : 0U)))))))))))))))))))))));
+    vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
+           & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))));
     vlSelf->tb__DOT__uprj__DOT__sid__DOT____Vcellinp__tt_um_rejunity_sn76489__we 
         = ((IData)(vlSelf->tb__DOT__uprj__DOT__bus_cyc) 
            & ((IData)(vlSelf->tb__DOT__uprj__DOT__bus_we_sid) 
@@ -8979,8 +9048,7 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
         = (0xffU & (((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__cpu_hidden_rom_enable) 
                      & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_hidden_rom_enable))
                      ? (IData)(vlSelf->tb__DOT__uprj__DOT__boot_rom__DOT__rom_data)
-                     : (((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
-                         & (0U == (0xf000U & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr))))
+                     : ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)
                          ? (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__curr_Q)
                          : (IData)((vlSelf->tb__DOT__io_in 
                                     >> 5U)))));
@@ -9314,6 +9382,9 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
                      & (0U != (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__branch_compare_reg))) 
                     | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_ZBR) 
                        | (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_BXA))))));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0 
+        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+           == (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
     vlSelf->tb__DOT__uprj__DOT__le_lo_act = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h0482dd45__0) 
                                              & (((0xffU 
                                                   & (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr)) 
@@ -9337,9 +9408,14 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
                                                    (0xffU 
                                                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
                                                        >> 8U)))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0 
-        = ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
-           != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr));
+    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
+        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
+                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
+               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
+                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
+                     & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__last_addr) 
+                        != (IData)(vlSelf->tb__DOT__uprj__DOT__requested_addr))))));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_next 
         = (0x1ffU & ((1U == (7U & ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__instruction) 
                                    >> 5U))) ? ((0x100U 
@@ -9382,18 +9458,19 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
                                            << 8U)) 
                                          | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2))))))));
     vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT____VdfgTmp_h69944c46__0 
-        = ((~ ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc)) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))) 
+        = ((((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
+             & ((~ (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset)) 
+                & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2fcd7d02__0))) 
+            & (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__in_ram_range)) 
            & ((IData)(vlSelf->tb__DOT__uprj__DOT__ram_enabled) 
               & (0x1000U > (IData)(vlSelf->tb__DOT__uprj__DOT__ram_controller__DOT__requested_addr_latch))));
-    tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb = 
-        (1U & ((~ ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__write_cyc) 
-                   | ((IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__is_IO_WRITE) 
-                      & (4U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__cycle))))) 
-               | ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__reset) 
-                  | ((~ (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__IO_cyc)) 
-                     & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT____VdfgTmp_h2f264c6e__0)))));
+    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
+                                & (IData)(vlSelf->clk))
+                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
+                                 ? ((~ (IData)(vlSelf->clk)) 
+                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
+                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
     vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__next_ovf 
         = (((1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input1) 
                    >> 7U)) == (1U & ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
@@ -9413,11 +9490,4 @@ VL_INLINE_OPT void Vtb___024root___nba_sequent__TOP__1(Vtb___024root* vlSelf) {
                                                  >> 4U))
                      : ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__as2650__DOT__alu_input2) 
                         >> 4U))));
-    vlSelf->tb__DOT__WEb = ((1U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                             ? ((IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb) 
-                                & (IData)(vlSelf->clk))
-                             : ((2U == (IData)(vlSelf->tb__DOT__uprj__DOT__wrapped_as2650__DOT__web_behavior))
-                                 ? ((~ (IData)(vlSelf->clk)) 
-                                    & (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb))
-                                 : (IData)(tb__DOT__uprj__DOT__wrapped_as2650__DOT__WEb)));
 }

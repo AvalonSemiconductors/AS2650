@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1701085278
+timestamp 1701963854
 << obsm1 >>
 rect 500 500 43686 48988
 << metal2 >>
@@ -173,7 +173,7 @@ string FIXED_BBOX 0 0 44486 49588
 string LEFclass BLOCK
 string LEFview TRUE
 string GDS_END 3135506
-string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/gf180_ram_512x8_wrapper_as2650/runs/23_11_27_12_39/results/signoff/gf180_ram_512x8_wrapper_as2650.magic.gds
+string GDS_FILE /run/media/tholin/fbc90f8f-67e9-406d-9872-54f02ad6a2d8/AS2650/openlane/gf180_ram_512x8_wrapper_as2650/runs/23_12_07_16_43/results/signoff/gf180_ram_512x8_wrapper_as2650.magic.gds
 string GDS_START 2941564
 << end >>
 
