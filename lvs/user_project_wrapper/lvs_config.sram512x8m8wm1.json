@@ -1,6 +1,4 @@
 {
-	"TOP_SOURCE": "gf180_ram_512x8_wrapper_as2650",
-	"TOP_LAYOUT": "$TOP_SOURCE",
 	"EXTRACT_FLATGLOB": [
 			"*$$*",
 			"*018SRAM_*",
