@@ -19,7 +19,7 @@ public class LogoGen {
 			System.exit(1);
 			return;
 		}
-		int scale = 15;
+		int scale = 18;
 		int gndx = 15;
 		int gndy = 371;
 		int powerx = 334;
