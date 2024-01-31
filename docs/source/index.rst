@@ -23,8 +23,13 @@ AS2650-2
 ========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 99
    :caption: Overview
    
    overview
+   pinout
+   bus-interface
+   internal-memory
+   wishbone-regs
+   io
    isa

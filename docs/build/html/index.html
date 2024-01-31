@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AS2650-2 &mdash; AS2650-2  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/isa.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -45,11 +47,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">AS2650-2</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinout.html">Pinout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bus-interface.html">Bus Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal-memory.html">Internal Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wishbone-regs.html">Wishbone Registers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input / Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isa.html">Instruction Set Architecture</a></li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -96,7 +104,132 @@
 <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="isa.html">Instruction Set Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinout.html">Pinout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bus-interface.html">Bus Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal-memory.html">Internal Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wishbone-regs.html">Wishbone Registers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wishbone-regs.html#wb-counter">wb_counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wishbone-regs.html#wb-debug-opts">wb_debug_opts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wishbone-regs.html#wb-rom-opts-1">wb_rom_opts_1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wishbone-regs.html#wb-rom-opts-2">wb_rom_opts_2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input / Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="io.html#accessing-io-and-peripherals">Accessing IO and peripherals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#gpio-ports-and-alternate-functions">GPIO ports and alternate functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="io.html#register-descriptions">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#timers-counters">Timers/Counters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="io.html#id1">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#pwm">PWM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="io.html#id2">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#serial-ports">Serial Ports</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="io.html#id3">Register descriptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="isa.html">Instruction Set Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#programming-model">Programming Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#program-status-word">Program Status Word</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#memory-model">Memory Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#instruction-addressing-modes">Instruction Addressing Modes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#implied">Implied</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#register-addressing">Register Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#zero-addressing">Zero Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#immediate-addressing">Immediate Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#relative-addressing">Relative Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#absolute-addressing-for-non-branch-instructions">Absolute Addressing for non-branch instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#absolute-addressing-for-branch-instructions">Absolute Addressing for branch instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#far-far-indirect-addressing">Far / Far Indirect addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#indirect-addressing">Indirect Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#indexed-addressing">Indexed Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#extended-instructions">Extended Instructions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#instructions">Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#lodz-lodi-lodr-loda-load-register-value">lodz/lodi/lodr/loda - Load Register value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#eorz-eori-eorr-eora-logical-exclusive-or">eorz/eori/eorr/eora - Logical Exclusive OR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#andz-andi-andr-anda-logical-and">andz/andi/andr/anda - Logical AND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#iorz-iori-iorr-iora-logical-inclusive-or">iorz/iori/iorr/iora - Logical Inclusive OR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#addz-addi-addr-adda-addition">addz/addi/addr/adda - Addition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#subz-subi-subr-suba-subtraction">subz/subi/subr/suba - Subtraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#strz-strr-stra-store-register-value">strz/strr/stra - Store Register Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#comz-comi-comr-coma-compare-values">comz/comi/comr/coma - Compare Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bctr-bcta-branch-on-condition-true">bctr/bcta - Branch on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bstr-bsta-branch-to-subroutine-on-condition-true">bstr/bsta - Branch to Subroutine on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#brnr-brna-branch-if-not-zero">brnr/brna - Branch if Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bsnr-bsna-branch-to-subroutine-if-not-zero">bsnr/bsna - Branch to Subroutine if Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bcfr-bcfa-branch-on-condition-false">bcfr/bcfa - Branch on Condition False</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bsfr-bsfa-branch-to-subroutine-on-condition-false">bsfr/bsfa - Branch to Subroutine on Condition False</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#birr-bira-branch-on-incrementing-register-not-zero">birr/bira - Branch on Incrementing Register Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bdrr-bdra-branch-on-decrementing-register-not-zero">bdrr/bdra - Branch on Decrementing Register Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#retc-return-on-condition-true">retc - Return on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#rete-return-on-condition-true-and-enable-interrupts">rete - Return on Condition True and Enable Interrupts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#rrr-rotate-register-right">rrr - Rotate Register Right</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#rrl-rotate-register-left">rrl - Rotate Register Left</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#dar-decimal-adjust-register">dar - Decimal Adjust Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#wrtc-write-command">wrtc - Write Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#wrtd-write-data">wrtd - Write Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#redc-read-command">redc - Read Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#redd-read-data">redd - Read Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#wrte-write-extended-io">wrte - Write Extended IO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#rede-read-extended-io">rede - Read Extended IO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#spsu-store-program-status-upper">spsu - Store Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#spsl-store-program-status-lower">spsl - Store Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#lpsu-load-program-status-upper">lpsu - Load Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#lpsl-load-program-status-lower">lpsl - Load Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#halt-halt">halt - Halt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#cpsu-clear-bits-in-program-status-upper">cpsu - Clear bits in Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#cpsl-clear-bits-in-program-status-lower">cpsl - Clear bits in Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#ppsu-preset-bits-in-program-status-upper">ppsu - Preset bits in Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#ppsl-preset-bits-in-program-status-lower">ppsl - Preset bits in Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#tpsu-test-program-status-upper">tpsu - Test Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#tpsl-test-program-status-lower">tpsl - Test Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#nop-no-operation">nop - No Operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#tmi-test-under-mask-immediate">tmi - Test Under Mask Immediate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#zbrr-zero-branch-relative">zbrr - Zero-Branch Relative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#zbsr-zero-branch-to-subroutine-relative">zbsr - Zero-Branch to Subroutine Relative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bxa-branch-indexed-absolute">bxa - Branch Indexed, Absolute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bsxa-branch-to-subroutine-indexed-absolute">bsxa - Branch to Subroutine Indexed, Absolute</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="isa.html#id1">Extended Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#push-push-to-internal-stack">push - Push to Internal Stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#pop-pop-from-internal-stack">pop - Pop from Internal Stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#mul-unsigned-multiply-of-r0-and-r1">mul - Unsigned multiply of R0 and R1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#xchg-exchange-r0-and-r1">xchg - Exchange R0 and R1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#clr-clear-register">clr - Clear Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#trap-software-trap">trap - Software Trap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#clrt-clear-trap-pending-flag">clrt - Clear Trap Pending Flag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#cpl-complement-register">cpl - Complement Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#pshs-push-program-status">pshs - Push Program Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#pops-pop-program-status">pops - Pop Program Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#svb-set-interrupt-vector-base">svb - Set Interrupt Vector Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#lodf-load-register-value-far">lodf - Load Register value, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#ldfi-load-register-value-far-indirect">ldfi - Load Register value, Far Indirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#strf-store-register-value-far">strf - Store Register value, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#stfi-store-register-value-far-indirect">stfi - Store Register value, Far Indirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bctf-branch-on-condition-true-far">bctf - Branch on Condition True, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bstf-branch-to-subroutine-on-condition-true-far">bstf - Branch to Subroutine on Condition True, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#brnf-branch-on-not-zero-far">brnf - Branch on Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bsnf-branch-to-subroutine-on-not-zero-far">bsnf - Branch to Subroutine on Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bcff-branch-on-condition-false-far">bcff - Branch on Condition False, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bsff-branch-to-subroutine-on-condition-false-far">bsff - Branch to Subroutine on Condition False, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#birf-branch-on-incrementing-register-not-zero-far">birf - Branch on Incrementing Register Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="isa.html#bdrf-branch-on-decrementing-register-not-zero-far">bdrf - Branch on Decrementing Register Not Zero, Far</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

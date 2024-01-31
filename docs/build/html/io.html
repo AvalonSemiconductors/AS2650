@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input / Output &mdash; AS2650-2  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="https://wavedrom.com/skins/default.js"></script>
+        <script src="https://wavedrom.com/wavedrom.min.js"></script>
+        <script src="_static/js/table.js?v=242732aa"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Instruction Set Architecture" href="isa.html" />
+    <link rel="prev" title="Wishbone Registers" href="wishbone-regs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            AS2650-2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinout.html">Pinout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bus-interface.html">Bus Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal-memory.html">Internal Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wishbone-regs.html">Wishbone Registers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input / Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#accessing-io-and-peripherals">Accessing IO and peripherals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gpio-ports-and-alternate-functions">GPIO ports and alternate functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#register-descriptions">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#timers-counters">Timers/Counters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pwm">PWM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Register descriptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#serial-ports">Serial Ports</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Register descriptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="isa.html">Instruction Set Architecture</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AS2650-2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Input / Output</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/io.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="input-output">
+<span id="io"></span><h1>Input / Output<a class="headerlink" href="#input-output" title="Link to this heading"></a></h1>
+<p>The AS2650v2 contains a wide variety of IO and peripheral capabilities. These include GPIO, UART, SPI, timers and PWM generators.</p>
+<section id="accessing-io-and-peripherals">
+<h2>Accessing IO and peripherals<a class="headerlink" href="#accessing-io-and-peripherals" title="Link to this heading"></a></h2>
+<p>On-die IO and peripherals are not memory-mapped. Instead, a set of special CPU instructions, <code class="docutils literal notranslate"><span class="pre">wrte</span></code> and <code class="docutils literal notranslate"><span class="pre">rede</span></code> are used. These instructions always have an argument of an 8-bit address. This address is used to select a register inside a IO or peripheral to read or write. The rest of this chapter describes register locations in terms of this IO address.</p>
+<p>This IO address is internally decoded by splitting it into a device and register address. The most-significant two bits of the address are used to select one of four macros on the die, while the remaining 6 bits are used to address a particular register within that macro.</p>
+<table class="docutils align-default" id="macro-addr">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Macro addresses</span><a class="headerlink" href="#macro-addr" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Address</p></th>
+<th class="head"><p>Macro</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0b00</span></code></p></td>
+<td><p>GPIO Ports</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0b01</span></code></p></td>
+<td><p>Timers/Counters</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0b10</span></code></p></td>
+<td><p>Serial Ports</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0b11</span></code></p></td>
+<td><p>SID - Sound Interface Device</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="gpio-ports-and-alternate-functions">
+<h2>GPIO ports and alternate functions<a class="headerlink" href="#gpio-ports-and-alternate-functions" title="Link to this heading"></a></h2>
+<p>Most IO functionality of the AS2650v2 is exposed through its two 8-bit GPIO ports PORTA and PORTB. By default, both ports act as bi-directional inputs/output ports who’s direction and state can be set by the processor. However, each pin can also be individually set to expose the functionality of another IO peripheral, as described in the following tables.</p>
+<table class="docutils align-default" id="portb-alt">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">PORTA alternate functions</span><a class="headerlink" href="#portb-alt" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Port #</p></th>
+<th class="head"><p>Alt. pin name</p></th>
+<th class="head"><p>Direction</p></th>
+<th class="head"><p>Alt. function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PA0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IRQ0</span></code></p></td>
+<td><p>I</p></td>
+<td><p>Lowest-priority external interrupt</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PA1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TXD</span></code></p></td>
+<td><p>O</p></td>
+<td><p>UART data out</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PA2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RXD</span></code></p></td>
+<td><p>I</p></td>
+<td><p>UART data in</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PA3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TO0</span></code></p></td>
+<td><p>O</p></td>
+<td><p>Timer Output of Timer/Counter 0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PA4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PA1</span></code></p></td>
+<td><p>O</p></td>
+<td><p>Timer Output of Timer/Counter 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PA5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PWM0</span></code></p></td>
+<td><p>O</p></td>
+<td><p>Output of PWM channel 0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PA6</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PWM1</span></code></p></td>
+<td><p>O</p></td>
+<td><p>Output of PWM channel 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PA7</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IRQ7</span></code></p></td>
+<td><p>I</p></td>
+<td><p>Highest-priority external interrupt</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="porta-alt">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">PORTB alternate functions</span><a class="headerlink" href="#porta-alt" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Port #</p></th>
+<th class="head"><p>Alt. pin name</p></th>
+<th class="head"><p>Direction</p></th>
+<th class="head"><p>Alt. function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PB0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IRQ6</span></code></p></td>
+<td><p>I</p></td>
+<td><p>Priority 6 interrupt</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PB1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PWM2</span></code></p></td>
+<td><p>O</p></td>
+<td><p>Output of PWM channel 2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PB2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T0CLK</span></code></p></td>
+<td><p>I</p></td>
+<td><p>External clock input for Timer/Counter 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PB3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T1CLK</span></code></p></td>
+<td><p>I</p></td>
+<td><p>External clock input for Timer/Counter 1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PB4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DAC1</span> <span class="pre">DAT</span></code></p></td>
+<td><p>O</p></td>
+<td><p>SID DAC data #1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PB5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DAC0</span> <span class="pre">DAT</span></code></p></td>
+<td><p>O</p></td>
+<td><p>SID DAC data #0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PB6</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DAC</span> <span class="pre">LE</span></code></p></td>
+<td><p>O</p></td>
+<td><p>SID DAC Latch Enable</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PB7</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DAC</span> <span class="pre">CLK</span></code></p></td>
+<td><p>O</p></td>
+<td><p>SID DAC Serial Clock</p></td>
+</tr>
+</tbody>
+</table>
+<section id="register-descriptions">
+<h3>Register descriptions<a class="headerlink" href="#register-descriptions" title="Link to this heading"></a></h3>
+<p><strong>DDRA/DDRB - Data Direction Register A/B</strong></p>
+<p>These registers set the direction of each individual port in PORTA and PORTB. A one equals an output port while a zero equals an input port.</p>
+<p>Address: 0x00</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "DDRA[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x01</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "DDRB[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>PORTA/PORTB - Output data of PORTA/PORTB</strong></p>
+<p>The states of each port pin configured as an output is set in these registers.</p>
+<p>Address: 0x02</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PORTA[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x03</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PORTB[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>PINA/PINB - Input data of PORTA/PORTB</strong></p>
+<p>Data read from each port pin configured as an input can be accessed by the processor by reading these registers. They may only be read.</p>
+<p>Address: 0x05</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PINA[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x06</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PINB[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>SPA/SPB - Alternate function enable of PORTA/PORTB</strong></p>
+<p>These registers allow selection of the alternate function for each pin of PORTA or PORTB individually. For every bit that is a one in this register, the corresponding pin will cease to respond to configuration in DDRx and PORTx and will instead be connected to an on-die peripheral device. Both pin direction and data will be controlled by the peripheral.</p>
+<p>Address: 0x04</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "SPA[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x08</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "SPB[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>IRQC - Interrupt Request Clear (for external interrupts)</strong></p>
+<p>Address: 0x07</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "IC0", "bits": 1},
+  {"type": 1, "bits": 5},
+  {"name": "IC6", "bits": 1},
+  {"name": "IC7", "bits": 1}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Writing a one into any of the <code class="docutils literal notranslate"><span class="pre">ICx</span></code> bits in this register will clear that external interrupt request latch, removing the pending interrupt.</p>
+<p>Additionally, this register can be read, in which case the bits reflect which interrupts are currently pending.</p>
+</section>
+</section>
+<section id="timers-counters">
+<h2>Timers/Counters<a class="headerlink" href="#timers-counters" title="Link to this heading"></a></h2>
+<p>The AS2650v2 contains a set of three 16-bit up-counters capable of counting up either by a fixed rate driven by the processor clock and a prescaler (timer mode) or by an external clock input (counter mode).</p>
+<p>Each timer/counter consists of a 16-bit count register, a 16-bit prescaler and a 16-bit “top” register. The prescaler acts as a clock divider for either the internal or external clock which provides the rate at which the counter is incremented. The counter increments until it reaches the value set in the top register, at which point it resets to 0 and begins counting up again.</p>
+<p>Timers/counters 0 and 1 may also be used as frequency generators on the <code class="docutils literal notranslate"><span class="pre">TO0</span></code> and <code class="docutils literal notranslate"><span class="pre">TO1</span></code> pins by toggling these pins on each time they reach top and reset.
+These signals are actually always generated, they must simply be exposed by selecting the alternative function on <code class="docutils literal notranslate"><span class="pre">PA3</span></code> or <code class="docutils literal notranslate"><span class="pre">PA4</span></code>.</p>
+<p>Only timers/counters 0 and 1 may use an external clock input or generate an output signal. Timer/counter 2 can only be driven using the internal clock.</p>
+<p>All timers/counters may generate interrupts when reaching top.</p>
+<p>All timers/counters may be loaded and read by the processor. As neither operation is possible in one pass due to the processor only being able to transfer 8-bits of data at a time, the process for doing so is as follows:</p>
+<p>For reading a timer/counter’s value, it must be captured first by writing the Timer Capture Register. The captured value can then be read.</p>
+<p>A timer/counter’s value can be loaded by writing into its capture data register LSB first. The first byte written will be buffered internally until the MSB is written. Only then are the LSB and MSB combined and copied into the counter.
+The 16-bit prescaler and top registers behave similarly, with the LSB having to be written first before the MSB, as they use the same buffering mechanism to ensure a complete 16-bit value is written.</p>
+<section id="id1">
+<h3>Register descriptions<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><strong>TS - Timer Setings</strong></p>
+<p>Address: 0x40</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0IE", "bits": 1},
+  {"name": "T1IE", "bits": 1},
+  {"name": "T2IE", "bits": 1},
+  {"name": "IC1", "bits": 1},
+  {"name": "IC2", "bits": 1},
+  {"name": "IC5", "bits": 1},
+  {"name": "T0EXT", "bits": 1},
+  {"name": "T1EXT", "bits": 1}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">T0IE</span></code>, <code class="docutils literal notranslate"><span class="pre">T1IE</span></code> and <code class="docutils literal notranslate"><span class="pre">T2IE</span></code> are the interrupt enables for timers/counters 0, 1 and 2 respectively. If set to a one and that timer reaches top, an interrupt is generated.</p>
+<p>The priorities for these interrupts are:</p>
+<p>Timer/Counter 0: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+<p>Timer/Counter 1: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+<p>Timer/Counter 2: <code class="docutils literal notranslate"><span class="pre">5</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">IC1</span></code>, <code class="docutils literal notranslate"><span class="pre">IC2</span></code>, <code class="docutils literal notranslate"><span class="pre">IC5</span></code> are the interrupt resets for the timer/counter interrupts. These bits must be all zero for the setting bits to be changed. If any of these bits are not zero during a write operation, only the interrupt reset(s) will occur. No settings will be changed, making the remaining 5 bits don’t-care.</p>
+<p><code class="docutils literal notranslate"><span class="pre">T0EXT</span></code>, <code class="docutils literal notranslate"><span class="pre">T1EXT</span></code> are the external clock input enables for timers/counters 0 and 1. Setting either bit will put that timer/counter into “counter” mode, switching its clock source from the processor clock to an external clock input. The alternative function selects on PORTB must also be set to expose these clock inputs.</p>
+<p><strong>TCR - Timer Capture Register</strong></p>
+<p>Timer/counter values may be captured by writing into this register, a which point every timer/counter’s current value will be copied into its corresponding Capture Data Register. The value written is discarded. The action of attempting to write to this IO address is what triggers the capture.</p>
+<p>Address: 0x41</p>
+<p><strong>TxPRE - Timer 0/1/2 Prescaler</strong></p>
+<p>Address: 0x42</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0PRE[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x43</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0PRE[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x44</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1PRE[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x45</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1PRE[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x46</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T2PRE[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x47</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1PRE[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>TxTOP - Timer 0/1/2 Top</strong></p>
+<p>Address: 0x48</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0TOP[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x49</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0TOP[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x4A</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1TOP[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x4B</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1TOP[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x4C</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T2TOP[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x4D</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T2TOP[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p><strong>TxCD - Timer 0/1/2 Capture Data</strong></p>
+<p>Address: 0x4E</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0CD[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x4F</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T0CD[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x50</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1CD[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x51</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T1CD[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x52</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T2CD[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x53</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "T2CD[15:8]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+</section>
+</section>
+<section id="pwm">
+<h2>PWM<a class="headerlink" href="#pwm" title="Link to this heading"></a></h2>
+<p>There are a total of three PWM channels integrated on the AS2650v2 which are driven by an independent timer using the processor clock. Only the pulse-width is adjustable.
+The PWM signals are always generated. Using them only requires selecting them in the alternate function selection for PORTA/PORTB.</p>
+<section id="id2">
+<h3>Register descriptions<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p><strong>PWx - Pulse Width 0/1/2</strong></p>
+<p>The registers inversely adjust the pulse width of each channel from 0 (longest) to 254 (shortest). Setting a value of 255 will cause the output to be always on.</p>
+<p>Address: 0x54</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PW0[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x55</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PW1[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>Address: 0x56</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": "PW2[7:0]", "bits": 8}],
+ "config": {"hspace": 700}
+}
+</script>
+</div>
+</section>
+</section>
+<section id="serial-ports">
+<h2>Serial Ports<a class="headerlink" href="#serial-ports" title="Link to this heading"></a></h2>
+<p>There are two kinds of serial ports present on the AS2650v2: a UART and a SPI master port. The SPI port is the only IO peripheral with dedicated pins, but the UART must be exposed by activating the relevant alternate functions on PORTA.</p>
+<p>Both have independent prescalers, with the UART additionally able to trigger a CPU interrupt on receipt of a complete character.</p>
+<section id="id3">
+<h3>Register descriptions<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p><strong>UIE - UART Interrupt Enable</strong></p>
+<p>Address: 0x80</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+    {"name": "UIE", "bits": 1},
+{"type": "1", "bits": 7}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>Writing a one to this register enables the UART to trigger an interrupt whenever it has received a full character.</p>
+<p><strong>UDIV - UART Clock Divider</strong></p>
+<p>Address: 0x81</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "UDIV[7:0]", "bits": 8}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>Address: 0x82</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "UDIV[15:8]", "bits": 8}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to CPU clock / (UDIV + 1).</p>
+<p><strong>STAT - Serial Status</strong></p>
+<p>Address: 0x83</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "UBUSY", "bits": 1},
+{"name": "SBUSY", "bits": 1},
+{"name": "UHB", "bits": 1},
+{"type": 1, "bits": 5}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>This is the combined status register for all serial ports.</p>
+<p><code class="docutils literal notranslate"><span class="pre">UBUSY</span></code> is set if the UART is busy sending a character and cannot accept a new character at this time.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is set if the SPI port is busy exchanging a byte.</p>
+<p><code class="docutils literal notranslate"><span class="pre">UHB</span></code> is set if the UART has received a complete character which is ready to be read by processor. This bit is cleared once the processor reads UDR.</p>
+<p><strong>SDIV - SPI Clock Divider</strong></p>
+<p>Address: 0x84</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "SDIV", "bits": 8}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to CPU clock / (SDIV * 2 + 1).</p>
+<p><strong>UDR - UART Data Register</strong></p>
+<p>Address: 0x85</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "UDR", "bits": 8}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>This register is used to transfer characters in and out of the UART. Writing this register immediately begins a UART transfer. <code class="docutils literal notranslate"><span class="pre">UBUSY</span></code> is set and the written character is sent out serially over <code class="docutils literal notranslate"><span class="pre">TXD</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">UDIV</span></code>.</p>
+<p>If this register is read, the last character received by the UART on the <code class="docutils literal notranslate"><span class="pre">RXD</span></code> line is retreived. This also clears the <code class="docutils literal notranslate"><span class="pre">UHB</span></code> flag and any pending UART interrupt.</p>
+<p><strong>SDR - SPI Data Register</strong></p>
+<p>Address: 0x86</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "SDR", "bits": 8}],
+   "config": {"hspace": 700}
+  }
+</script>
+</div>
+<p>This register is used to transfer bytes in and out of the SPI port. Writing this register immediately begins a SPI full-duplex transfer. <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is set and the written byte is sent out serially over <code class="docutils literal notranslate"><span class="pre">SDO</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">SDIV</span></code>. Simultaneously, a byte is received over <code class="docutils literal notranslate"><span class="pre">SDI</span></code>. Once the transfer is complete and <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is cleared, the <code class="docutils literal notranslate"><span class="pre">SDR</span></code> will contain the received byte, which can now be read by the processor.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/javascript">
+        function init() {
+            WaveDrom.ProcessAll();
+        }
+        window.onload = init;
+    </script>
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="wishbone-regs.html" class="btn btn-neutral float-left" title="Wishbone Registers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="isa.html" class="btn btn-neutral float-right" title="Instruction Set Architecture" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Tholin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

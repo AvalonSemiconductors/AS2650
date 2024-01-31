@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Instruction Set Architecture &mdash; AS2650-2  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/isa.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -23,7 +25,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Overview" href="overview.html" /> 
+    <link rel="prev" title="Input / Output" href="io.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,11 +47,112 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Instruction Set Architecture</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pinout.html">Pinout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bus-interface.html">Bus Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal-memory.html">Internal Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wishbone-regs.html">Wishbone Registers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input / Output</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instruction Set Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#programming-model">Programming Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#program-status-word">Program Status Word</a></li>
 </ul>
-</div>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-model">Memory Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instruction-addressing-modes">Instruction Addressing Modes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#implied">Implied</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-addressing">Register Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zero-addressing">Zero Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#immediate-addressing">Immediate Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relative-addressing">Relative Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#absolute-addressing-for-non-branch-instructions">Absolute Addressing for non-branch instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#absolute-addressing-for-branch-instructions">Absolute Addressing for branch instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#far-far-indirect-addressing">Far / Far Indirect addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indirect-addressing">Indirect Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indexed-addressing">Indexed Addressing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extended-instructions">Extended Instructions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#instructions">Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lodz-lodi-lodr-loda-load-register-value">lodz/lodi/lodr/loda - Load Register value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eorz-eori-eorr-eora-logical-exclusive-or">eorz/eori/eorr/eora - Logical Exclusive OR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#andz-andi-andr-anda-logical-and">andz/andi/andr/anda - Logical AND</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iorz-iori-iorr-iora-logical-inclusive-or">iorz/iori/iorr/iora - Logical Inclusive OR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addz-addi-addr-adda-addition">addz/addi/addr/adda - Addition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subz-subi-subr-suba-subtraction">subz/subi/subr/suba - Subtraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strz-strr-stra-store-register-value">strz/strr/stra - Store Register Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comz-comi-comr-coma-compare-values">comz/comi/comr/coma - Compare Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bctr-bcta-branch-on-condition-true">bctr/bcta - Branch on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bstr-bsta-branch-to-subroutine-on-condition-true">bstr/bsta - Branch to Subroutine on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#brnr-brna-branch-if-not-zero">brnr/brna - Branch if Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsnr-bsna-branch-to-subroutine-if-not-zero">bsnr/bsna - Branch to Subroutine if Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bcfr-bcfa-branch-on-condition-false">bcfr/bcfa - Branch on Condition False</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsfr-bsfa-branch-to-subroutine-on-condition-false">bsfr/bsfa - Branch to Subroutine on Condition False</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#birr-bira-branch-on-incrementing-register-not-zero">birr/bira - Branch on Incrementing Register Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bdrr-bdra-branch-on-decrementing-register-not-zero">bdrr/bdra - Branch on Decrementing Register Not Zero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retc-return-on-condition-true">retc - Return on Condition True</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rete-return-on-condition-true-and-enable-interrupts">rete - Return on Condition True and Enable Interrupts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rrr-rotate-register-right">rrr - Rotate Register Right</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rrl-rotate-register-left">rrl - Rotate Register Left</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dar-decimal-adjust-register">dar - Decimal Adjust Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wrtc-write-command">wrtc - Write Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wrtd-write-data">wrtd - Write Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#redc-read-command">redc - Read Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#redd-read-data">redd - Read Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wrte-write-extended-io">wrte - Write Extended IO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rede-read-extended-io">rede - Read Extended IO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spsu-store-program-status-upper">spsu - Store Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spsl-store-program-status-lower">spsl - Store Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lpsu-load-program-status-upper">lpsu - Load Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lpsl-load-program-status-lower">lpsl - Load Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#halt-halt">halt - Halt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cpsu-clear-bits-in-program-status-upper">cpsu - Clear bits in Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cpsl-clear-bits-in-program-status-lower">cpsl - Clear bits in Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ppsu-preset-bits-in-program-status-upper">ppsu - Preset bits in Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ppsl-preset-bits-in-program-status-lower">ppsl - Preset bits in Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tpsu-test-program-status-upper">tpsu - Test Program Status Upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tpsl-test-program-status-lower">tpsl - Test Program Status Lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nop-no-operation">nop - No Operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tmi-test-under-mask-immediate">tmi - Test Under Mask Immediate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zbrr-zero-branch-relative">zbrr - Zero-Branch Relative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zbsr-zero-branch-to-subroutine-relative">zbsr - Zero-Branch to Subroutine Relative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bxa-branch-indexed-absolute">bxa - Branch Indexed, Absolute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsxa-branch-to-subroutine-indexed-absolute">bsxa - Branch to Subroutine Indexed, Absolute</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Extended Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#push-push-to-internal-stack">push - Push to Internal Stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pop-pop-from-internal-stack">pop - Pop from Internal Stack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mul-unsigned-multiply-of-r0-and-r1">mul - Unsigned multiply of R0 and R1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xchg-exchange-r0-and-r1">xchg - Exchange R0 and R1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clr-clear-register">clr - Clear Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trap-software-trap">trap - Software Trap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clrt-clear-trap-pending-flag">clrt - Clear Trap Pending Flag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cpl-complement-register">cpl - Complement Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pshs-push-program-status">pshs - Push Program Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pops-pop-program-status">pops - Pop Program Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#svb-set-interrupt-vector-base">svb - Set Interrupt Vector Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lodf-load-register-value-far">lodf - Load Register value, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ldfi-load-register-value-far-indirect">ldfi - Load Register value, Far Indirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strf-store-register-value-far">strf - Store Register value, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stfi-store-register-value-far-indirect">stfi - Store Register value, Far Indirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bctf-branch-on-condition-true-far">bctf - Branch on Condition True, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bstf-branch-to-subroutine-on-condition-true-far">bstf - Branch to Subroutine on Condition True, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#brnf-branch-on-not-zero-far">brnf - Branch on Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsnf-branch-to-subroutine-on-not-zero-far">bsnf - Branch to Subroutine on Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bcff-branch-on-condition-false-far">bcff - Branch on Condition False, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsff-branch-to-subroutine-on-condition-false-far">bsff - Branch to Subroutine on Condition False, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#birf-branch-on-incrementing-register-not-zero-far">birf - Branch on Incrementing Register Not Zero, Far</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bdrf-branch-on-decrementing-register-not-zero-far">bdrf - Branch on Decrementing Register Not Zero, Far</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -76,6 +179,8 @@
              
   <section id="instruction-set-architecture">
 <span id="isa"></span><h1>Instruction Set Architecture<a class="headerlink" href="#instruction-set-architecture" title="Link to this heading"></a></h1>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <p>The following table summarizes the ISA of the AS2650-2. Hover over table entries for more detailed description and affected flags.</p>
 <h3>Base Instructions</h3>
 <table title="isa" class="isa-table">
@@ -238,10 +343,10 @@
             <td desc="---1|1|F|F|_|Reads one byte from the databus into r1 with IOD-Flag asserted.">redd,r1</td>
             <td desc="---1|1|F|F|_|Reads one byte from the databus into r2 with IOD-Flag asserted.">redd,r2</td>
             <td desc="---1|1|F|F|_|Reads one byte from the databus into r3 with IOD-Flag asserted.">redd,r3</td>
-            <td desc="----|2|F|F|_|Clears individual bits in the PSU by Logical ANDing it with the complemented contents of r0.">cpsu</td>
-            <td desc="1114|2|F|F|_|Clears individual bits in the PSL by Logical ANDing it with the complemented contents of r0.">cpsl</td>
-            <td desc="----|2|F|F|_|Sets individual bits in the PSU by Logical Inclusive-ORing it with the contents of r0.">ppsu</td>
-            <td desc="1114|2|F|F|_|Sets individual bits in the PSL by Logical Inclusive-ORing it with the contents of r0.">ppsl</td>
+            <td desc="----|2|F|F|_|Clears individual bits in the PSU by Logical ANDing it with the complemented contents of a mask in its Immediate.">cpsu</td>
+            <td desc="1114|2|F|F|_|Clears individual bits in the PSL by Logical ANDing it with the complemented contents of a mask in its Immediate.">cpsl</td>
+            <td desc="----|2|F|F|_|Sets individual bits in the PSU by Logical Inclusive-ORing it with the contents of a mask in its Immediate.">ppsu</td>
+            <td desc="1114|2|F|F|_|Sets individual bits in the PSL by Logical Inclusive-ORing it with the contents of a mask in its Immediate.">ppsl</td>
             <td desc="----|2|T|F|_|Branches to PC+Immediate if the value of r0 does not equals to 0 and pushes a return address onto the internal stack. Immediate is signed value -64 -> 63.">bsnr,r0</td>
             <td desc="----|2|T|F|_|Branches to PC+Immediate if the value of r1 does not equals to 0 and pushes a return address onto the internal stack. Immediate is signed value -64 -> 63.">bsnr,r1</td>
             <td desc="----|2|T|F|_|Branches to PC+Immediate if the value of r2 does not equals to 0 and pushes a return address onto the internal stack. Immediate is signed value -64 -> 63.">bsnr,r2</td>
@@ -755,6 +860,1721 @@
     </tbody>
 </table>
 <br></section>
+<section id="programming-model">
+<h2>Programming Model<a class="headerlink" href="#programming-model" title="Link to this heading"></a></h2>
+<p>The AS2650v2 CPU is an 8-bit CPU core that can directly address 65,536 bytes of memory organized in 8,192 byte large pages. It contains 7 total general-purpose registers, of which 4 are accessible at any time. R0, or the accumulator, is always the same, while R1 - R3 can be instantly banked with a second set of registers, R1’ - R3’.</p>
+<p>There is also an internal 16x16-bit large stack memory that can be used to store program variables, but is intended to be used as the subroutine and interrupt call stack.</p>
+<p>There is also a register to hold processor status and flags, the Program Status Word (PSW). As it is 16-bits wide, it is split into the PSL (Program Status Lower) and PSU (Program Status Upper).</p>
+<p>Lastly, there is a 16-bit Instruction Pointer which is split into the Page Control and Program Counter registers.</p>
+<p>The Interrupt Vector Base (IVB) register is used as part of the interrupt configuration.</p>
+<table class="regbox">
+<tbody>
+        <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+        </tr>
+        <tr>
+                <td style="width: 6.25%;">2¹⁵</td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;">2⁸</td>
+                <td style="width: 6.25%;">2⁷</td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;"></td>
+                <td style="width: 6.25%;">2⁰</td>
+        </tr>
+        <tr><td colspan="16"><b>General-Purpose</b></td></tr>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R3'</td>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R2'</td>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R1'</td>
+        <tr><td colspan="16"></td></tr>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R3</td>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R2</td>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R1</td>
+        <tr><td colspan="16"></td></tr>
+        <tr><td colspan="8" class="regbox-type1"></td><td colspan="8">R0</td>
+        <tr><td colspan="16"><b>Stack</b></td></tr>
+        <tr><td colspan="16">S[15]</td></tr>
+        <tr><td colspan="16">[...]</td></tr>
+        <tr><td colspan="16">S[0]</td></tr>
+        <tr><td colspan="16"><b>Instruction Pointer</b></td></tr>
+        <tr><td colspan="3">Page Control</td><td colspan="13">Program Counter</td></tr>
+        <tr><td colspan="16"><b>Program Status</b></td></tr>
+        <tr><td colspan="8">PSU</td><td colspan="8">PSL</td></tr>
+        <tr><td colspan="16"><b>Interrupts</b></td></tr>
+        <tr><td colspan="12">IVB</td><td colspan="4" class="regbox-type1"></td></tr>
+</tbody>
+</table><section id="program-status-word">
+<h3>Program Status Word<a class="headerlink" href="#program-status-word" title="Link to this heading"></a></h3>
+<p><strong>Program Status Upper</strong></p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "SP", "bits": 4},
+{"type": 1, "bits": 1},
+{"name": "II", "bits": 1},
+{"name": "F", "bits": 1},{"name": "S", "bits": 1}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>The PSU primarily contains the Stack Pointer <code class="docutils literal notranslate"><span class="pre">SP</span></code> for the internal stack as well as the global Interrupt Inhibit <code class="docutils literal notranslate"><span class="pre">II</span></code>. The pointer increments when values are pushed onto the stack and decrements when values are popped. It always points to where the next value will go, so the TOS is actually at <code class="docutils literal notranslate"><span class="pre">SP</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+<p>This register also contains the bits that control the two digital input/output lines <code class="docutils literal notranslate"><span class="pre">Sense</span></code> and <code class="docutils literal notranslate"><span class="pre">Flag</span></code>. The <code class="docutils literal notranslate"><span class="pre">F</span></code> bit sets the state (high or low) of <code class="docutils literal notranslate"><span class="pre">Sense</span></code> and the current state of the <code class="docutils literal notranslate"><span class="pre">Flag</span></code> input can be read out of the <code class="docutils literal notranslate"><span class="pre">F</span></code> bit.</p>
+<p>Bit 4 of the PSU is not wired up to any hardware functionality but is physically present and can be read and writen by a user program.</p>
+<p>The PSU is reset to 20h on reset, meaning the <code class="docutils literal notranslate"><span class="pre">II</span></code> bit is set.</p>
+<p><strong>Program Status Lower</strong></p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "C", "bits": 1},
+{"name": "COM", "bits": 1},
+{"name": "OVF", "bits": 1},
+{"name": "WC", "bits": 1},{"name": "RS", "bits": 1},
+{"name": "IDC", "bits": 1},
+{"name": "CC", "bits": 2}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>The PSL contains all processor flags and settings.</p>
+<p><code class="docutils literal notranslate"><span class="pre">C</span></code> is the carry flag defined by arithmatic operations.</p>
+<p><code class="docutils literal notranslate"><span class="pre">COM</span></code> is a processor setting that modifies the behavior of the compare instructions. If clear, they will compare values as two’s-complement signed bytes. If set, they will compare values as unsigned bytes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OVF</span></code> if set, indicates that the last addition or subtraction operation resulted in an arithmatic overflow, meaning the result could not be represented by a signed byte.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WC</span></code> is a processor setting that modifies the behavior of addition and subtraction instructions. If set, the value of the carry flag, either one or zero, will aditionally be added or subtracted (depending on the type of operation performed) onto the result. If clear, the carry flag is ignored.</p>
+<p><code class="docutils literal notranslate"><span class="pre">IDC</span></code> is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction of bitshift operation. It is used in combination with the <code class="docutils literal notranslate"><span class="pre">dar</span></code> instruction to perform arithmatic on packed BCD values.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CC</span></code> is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare instructions. This code can be tested by software or conditional branch instructions.</p>
+<p>This PSL is initialized to 0 on reset.</p>
+<p>Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies in the following way:</p>
+<table class="docutils align-default" id="condition-codes">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Register Contents</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Positive</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Zero</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Negative</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The value <code class="docutils literal notranslate"><span class="pre">11</span></code> will never be generated in the CC by any instruction.</p>
+</section>
+</section>
+<section id="memory-model">
+<h2>Memory Model<a class="headerlink" href="#memory-model" title="Link to this heading"></a></h2>
+<p>The AS2650v2 segments its view of the 65,536 byte memory space into 8,192 pages. There is always one “current” page set by the 3 bit Page Control. This is combined with the 13 bit Program Counter to form the address of the next instruction to be executed. The Page Control can only be changed by a far branch or indirect addressed branch changing the Instruction Pointer to a different page.</p>
+<p>All absolute and relative addressed instructions can only directly reach memory within the current page, essentially allowing faster access to local data. Indirect addressing and far addressing can access bytes anywhere within the complete 65,536 byte memory space.</p>
+<p>Notably, the Program Counter reaching its maximum value and wrapping to 0 does not cause the Instruction Pointer to be advanced into the follow page. Only branch instructions can change the current page.</p>
+<p>The 4KiB of on-die SRAM lie entirely within the first half of page 0.</p>
+</section>
+<section id="instruction-addressing-modes">
+<h2>Instruction Addressing Modes<a class="headerlink" href="#instruction-addressing-modes" title="Link to this heading"></a></h2>
+<section id="implied">
+<h3>Implied<a class="headerlink" href="#implied" title="Link to this heading"></a></h3>
+<p>The instruction consists only of a 8-bit opcode. All operands are implied.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Opcode", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="register-addressing">
+<h3>Register Addressing<a class="headerlink" href="#register-addressing" title="Link to this heading"></a></h3>
+<p>All instructions that operate on a single instruction in-place are encoded in a single byte with a 6-bit opcode and 2-bit register address.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="zero-addressing">
+<h3>Zero Addressing<a class="headerlink" href="#zero-addressing" title="Link to this heading"></a></h3>
+<p>This is a special form of Register Addressing that is identical in encoding but operates on a pair of registers, the second of which is implied to be R0.</p>
+<p>With the exception of <code class="docutils literal notranslate"><span class="pre">strz</span></code> or unless otherwise specified, R0 is also the destination for the instruction result with the specified register index only used as a source.</p>
+</section>
+<section id="immediate-addressing">
+<h3>Immediate Addressing<a class="headerlink" href="#immediate-addressing" title="Link to this heading"></a></h3>
+<p>Immediate addressed instructions operate on a register and immediate value. The operation and register are encoded as in Register Addressing and followed by a second byte containing the immediate value.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Immediate", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="relative-addressing">
+<h3>Relative Addressing<a class="headerlink" href="#relative-addressing" title="Link to this heading"></a></h3>
+<p>Relative addressed instructions are memory reference instructions, meaning the load or store one byte in memory as part of their operation.
+Relative instructions reference a memory location relative to the current Program Counter value. The second byte contains a signed 7-bit displacement value that is added to the Program Counter to obtain the effective address.</p>
+<p>Indirect addressing may additionally be specified.</p>
+<p>There are some exceptions (<code class="docutils literal notranslate"><span class="pre">zbsr</span></code>, <code class="docutils literal notranslate"><span class="pre">zbrr</span></code>) where the effective address is computed not as relative to the Program Counter, but as relative to address 0, page 0.</p>
+<p>This mode applies the same to branch or memory reference instructions.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Relative Displacement", "bits": 7},{"name": "I", "bits": 1}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="absolute-addressing-for-non-branch-instructions">
+<h3>Absolute Addressing for non-branch instructions<a class="headerlink" href="#absolute-addressing-for-non-branch-instructions" title="Link to this heading"></a></h3>
+<p>Absolute addressed instructions encode a complete 13-bit page-relative address in the two bytes following the opcode and register index. This immediate address is the effective address.</p>
+<p>Indirect and/or indexed addressing may additionally be specified.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[12:8]", "bits": 5},{"name": "Index Control", "bits": 2},{"name": "I", "bits": 1}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[7:0]", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="absolute-addressing-for-branch-instructions">
+<h3>Absolute Addressing for branch instructions<a class="headerlink" href="#absolute-addressing-for-branch-instructions" title="Link to this heading"></a></h3>
+<p>Absolute addressing for branch instructions differs from regular absolute addressing, not allowing for indexed addressing (but still allowing indirect addressing).</p>
+<p>These instructions encode a 15-bit address as the branch target, corresponding to the entire PC and the 2 least-significant bits of Page Control. The most significant bit of Page Control is unchanged.</p>
+<p>Additionally, the register index may instead be a Condition Code Mask for conditional branches.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg or CC Mask", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[14:8]", "bits": 7},{"name": "I", "bits": 1}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[7:0]", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="far-far-indirect-addressing">
+<h3>Far / Far Indirect addressing<a class="headerlink" href="#far-far-indirect-addressing" title="Link to this heading"></a></h3>
+<p>Far and Far Indirect addressing modes were added in the AS2650v2 to extend the available total address space to 65,536 bytes, as well as make working with the paged memory layout easier.</p>
+<p>These instructions encode a full 16-bit address. Unlike the other addressing modes, wether indirect addressing is specified is encoded in the opcode.</p>
+<p>This mode applies the same to branch or memory reference instructions.</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "Reg or CC Mask", "bits": 2},
+{"name": "Opcode", "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[15:8]", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "addr[7:0]", "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+</section>
+<section id="indirect-addressing">
+<h3>Indirect Addressing<a class="headerlink" href="#indirect-addressing" title="Link to this heading"></a></h3>
+<p>Indirect Addressing may be specified on top of another addressing mode when supported by setting the <code class="docutils literal notranslate"><span class="pre">I</span></code> bit. When specified, the original effective address of the instruction is no longer the true memory reference. Instead, two successive bytes are read from this location which become the new effective address for the memory reference.</p>
+<p>Essentially, this mode implements a pointer dereference. The pointer is stored in big endian format.</p>
+</section>
+<section id="indexed-addressing">
+<h3>Indexed Addressing<a class="headerlink" href="#indexed-addressing" title="Link to this heading"></a></h3>
+<p>Indexed Addressing may be specified on top of another addressing mode when supported by setting the Index Control bits to a value other than zero. Once enabled, the register index in the first instruction byte instead specifies which register to use for indexing. The operation’s actual register index implicitely becomes R0.</p>
+<p>The current value of the register chosen for indexing is added onto the original effective address to obtain the new effective address.</p>
+<p>If autoincrement or autodecrement are specified, the index register’s value is incremented or decremented <strong>before</strong> the address calculation.</p>
+<table class="docutils align-default" id="index-control">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Index Control</span><a class="headerlink" href="#index-control" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Bit 6</p></th>
+<th class="head"><p>Bit 5</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>No indexing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Indexed with auto-increment</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Indexed with auto-decrement</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Indexed only</p></td>
+</tr>
+</tbody>
+</table>
+<p>Indexed and Indirect Addressing may both be supported on the same instruction. They are not mutually exclusive. If both are specified, the Indirect Addressing takes precedence and the pointer is read from memory and the index added onto it.</p>
+</section>
+<section id="extended-instructions">
+<h3>Extended Instructions<a class="headerlink" href="#extended-instructions" title="Link to this heading"></a></h3>
+<p>The AS2650v2 contains a series of extended instructions marked by a prefix, B7h. If the processor encounters this opcode, it will skip it and interpret the following bytes as an extended instruction. Besides this prefix, extended instructions follow the same rules for their addressing modes.</p>
+</section>
+</section>
+<section id="instructions">
+<h2>Instructions<a class="headerlink" href="#instructions" title="Link to this heading"></a></h2>
+<p><strong>Note:</strong> for most (but not all) non-extended instructions, the addressing mode is encoded within the least significant two bits of the opcode. This will be refered to as <code class="docutils literal notranslate"><span class="pre">m</span></code> from here on out, and is defined as follows:</p>
+<table class="docutils align-default" id="addr-mode-enc">
+<caption><span class="caption-number">Table 7 </span><span class="caption-text">Adressing mode encodings</span><a class="headerlink" href="#addr-mode-enc" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></th>
+<th class="head"><p>Mode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+<td><p>Zero Addressing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+<td><p>Immediate Addressing</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p>Relative Addressing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">11</span></code></p></td>
+<td><p>Absolute Addressing</p></td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, in these cases, the addressing mode is represented as part of the instruction mnemonic, either as a <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>, <code class="docutils literal notranslate"><span class="pre">a</span></code> or <code class="docutils literal notranslate"><span class="pre">f</span></code> character at the end of the mnemonic.</p>
+<section id="lodz-lodi-lodr-loda-load-register-value">
+<h3>lodz/lodi/lodr/loda - Load Register value<a class="headerlink" href="#lodz-lodi-lodr-loda-load-register-value" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 0, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions transfer a byte of data into one of the general purpose registers. The source of the value may be another register, an immediate or a memory reference.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="eorz-eori-eorr-eora-logical-exclusive-or">
+<h3>eorz/eori/eorr/eora - Logical Exclusive OR<a class="headerlink" href="#eorz-eori-eorr-eora-logical-exclusive-or" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 2, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform an exclusive OR logic operation on the bits of both operands.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="andz-andi-andr-anda-logical-and">
+<h3>andz/andi/andr/anda - Logical AND<a class="headerlink" href="#andz-andi-andr-anda-logical-and" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 4, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform a AND logic operation on the bits of both operands.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+<p><strong>Note:</strong> the combination of r == 0 and m == 0 (<code class="docutils literal notranslate"><span class="pre">andz,r0</span></code>) is invalid. This opcode is used for a different instruction.</p>
+</section>
+<section id="iorz-iori-iorr-iora-logical-inclusive-or">
+<h3>iorz/iori/iorr/iora - Logical Inclusive OR<a class="headerlink" href="#iorz-iori-iorr-iora-logical-inclusive-or" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 6, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform a OR logic operation on the bits of both operands.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="addz-addi-addr-adda-addition">
+<h3>addz/addi/addr/adda - Addition<a class="headerlink" href="#addz-addi-addr-adda-addition" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 8, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform an arithmatic addition on both operands. If the <code class="docutils literal notranslate"><span class="pre">WC</span></code> bit in the PSL is set, the carry flag <code class="docutils literal notranslate"><span class="pre">C</span></code> is also added onto the result.</p>
+<p>The carry flag will be set to the carry out of the addition. The interdigit carry will be set to the carry from bit 3 to bit 4. The overflow flag is set if a signed overflow occured.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code></p>
+</section>
+<section id="subz-subi-subr-suba-subtraction">
+<h3>subz/subi/subr/suba - Subtraction<a class="headerlink" href="#subz-subi-subr-suba-subtraction" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 10, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform an arithmatic subtraction of one operand from the other. If the <code class="docutils literal notranslate"><span class="pre">WC</span></code> bit in the PSL is set, the inverse of the carry flag <code class="docutils literal notranslate"><span class="pre">C</span></code> is also subtracted from the result.</p>
+<p>In the case of Zero Addressing, the subtrahend is the value of the register determined by the register index. In the case of Immediate Addressing or a memory reference addressing, the subtrahend is the immediate or value from memory.</p>
+<p>Internally, this operation forms the binary complement subtrahend and adds it onto the minuend, and also adds either one (<code class="docutils literal notranslate"><span class="pre">WC</span></code> == 0) or the carry flag (<code class="docutils literal notranslate"><span class="pre">WC</span></code> == 1).</p>
+<p>The carry flag will be set to the carry out of this addition. The interdigit carry will be set to the carry from bit 3 to bit 4. The overflow flag is set if a signed overflow occured.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code></p>
+</section>
+<section id="strz-strr-stra-store-register-value">
+<h3>strz/strr/stra - Store Register Value<a class="headerlink" href="#strz-strr-stra-store-register-value" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m != 1", "bits": 2},
+{"name": 12, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions store a register value to another register or memory. Immediate Addressing or a combination of r == 0 and m == 0 may not be specified. These opcodes are used for other instructions.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CC</span></code> is not affected unless m == 0 (Zero Addressing), in which case it is affected as normal based on the stored value. In Zero Addressing, the value of R0 is copied into another register.</p>
+</section>
+<section id="comz-comi-comr-coma-compare-values">
+<h3>comz/comi/comr/coma - Compare Values<a class="headerlink" href="#comz-comi-comr-coma-compare-values" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m", "bits": 2},
+{"name": 14, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions compare two values from registers or memory and set the Condition Code according to the following tables. No registers or memory values are modified, only the comparison takes place.</p>
+<p>If Zero Addressing is used:</p>
+<table class="docutils align-default" id="condition-codes-com-zr">
+<caption><span class="caption-text">Condition Codes (Zero Addressing)</span><a class="headerlink" href="#condition-codes-com-zr" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>R0 &gt; r</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>R0 == r</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>R0 &lt; r</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Otherwise, where V is the byte loaded by the memory reference:</p>
+<table class="docutils align-default" id="condition-codes-com">
+<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-com" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>r &gt; V</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>r == V</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>r &lt; V</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The comparison can be either signed or unsigned as set by the <code class="docutils literal notranslate"><span class="pre">COM</span></code> bit in PSL (signed if <code class="docutils literal notranslate"><span class="pre">COM</span></code> == 0, unsigned if <code class="docutils literal notranslate"><span class="pre">COM</span></code> == 1).</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="bctr-bcta-branch-on-condition-true">
+<h3>bctr/bcta - Branch on Condition True<a class="headerlink" href="#bctr-bcta-branch-on-condition-true" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 1, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions affect a relative or absolute branch only if the Condition Code matches the mask in the opcode, or the mask is equal to <code class="docutils literal notranslate"><span class="pre">11</span></code>, which always affects an unconditional branch.</p>
+<p>In the instruction mnemonic, the mask value can either be defined explicitely, eg. <code class="docutils literal notranslate"><span class="pre">bcta,2</span> <span class="pre">[target]</span></code> or according to the following syntax:</p>
+<table class="docutils align-default" id="br-cond-syntax-1">
+<caption><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Syntax</p></th>
+<th class="head"><p>Mask value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">eq</span></code> (equal)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gt</span></code> (greater-than)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lt</span></code> (less-than)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">un</span></code> (unconditional)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">11</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>eg. <code class="docutils literal notranslate"><span class="pre">bctr,eq</span> <span class="pre">[target]</span></code></p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bstr-bsta-branch-to-subroutine-on-condition-true">
+<h3>bstr/bsta - Branch to Subroutine on Condition True<a class="headerlink" href="#bstr-bsta-branch-to-subroutine-on-condition-true" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 3, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions behave identically to bctr/bcta explained above, except that they additionally push a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="brnr-brna-branch-if-not-zero">
+<h3>brnr/brna - Branch if Not Zero<a class="headerlink" href="#brnr-brna-branch-if-not-zero" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 5, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions test the specified general purpose register’s value and only affect a branch if it is not zero. The register value is not modified.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bsnr-bsna-branch-to-subroutine-if-not-zero">
+<h3>bsnr/bsna - Branch to Subroutine if Not Zero<a class="headerlink" href="#bsnr-bsna-branch-to-subroutine-if-not-zero" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 7, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions behave identically to brnr/brna explained above, except that they additionally push a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bcfr-bcfa-branch-on-condition-false">
+<h3>bcfr/bcfa - Branch on Condition False<a class="headerlink" href="#bcfr-bcfa-branch-on-condition-false" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask != 3", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 9, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions affect a relative or absolute branch only if the Condition Code does <strong>not</strong> match the mask in the opcode.</p>
+<p>In the instruction mnemonic, the mask value can either be defined explicitely, eg. <code class="docutils literal notranslate"><span class="pre">bcfa,2</span> <span class="pre">[target]</span></code> or according to the following syntax:</p>
+<table class="docutils align-default" id="br-cond-syntax-2">
+<caption><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Syntax</p></th>
+<th class="head"><p>Mask value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">eq</span></code> (equal)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gt</span></code> (greater-than)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">01</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lt</span></code> (less-than)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Illegal</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">11</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>eg. <code class="docutils literal notranslate"><span class="pre">bcfr,eq</span> <span class="pre">[target]</span></code></p>
+<p>The CC mask may not be equal to 3. Those opcodes are used by other instructions.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bsfr-bsfa-branch-to-subroutine-on-condition-false">
+<h3>bsfr/bsfa - Branch to Subroutine on Condition False<a class="headerlink" href="#bsfr-bsfa-branch-to-subroutine-on-condition-false" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask != 3", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 11, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions behave identically to bcfr/bcfa explained above, except that they additionally push a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p>The CC mask may not be equal to 3. Those opcodes are used by other instructions.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="birr-bira-branch-on-incrementing-register-not-zero">
+<h3>birr/bira - Branch on Incrementing Register Not Zero<a class="headerlink" href="#birr-bira-branch-on-incrementing-register-not-zero" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 13, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions first increment the specified register, then affect a branch only if the new register value is not equal to zero.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bdrr-bdra-branch-on-decrementing-register-not-zero">
+<h3>bdrr/bdra - Branch on Decrementing Register Not Zero<a class="headerlink" href="#bdrr-bdra-branch-on-decrementing-register-not-zero" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": "m = 2,3", "bits": 2},
+{"name": 15, "bits": 4}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions first decrement the specified register, then affect a branch only if the new register value is not equal to zero.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="retc-return-on-condition-true">
+<h3>retc - Return on Condition True<a class="headerlink" href="#retc-return-on-condition-true" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": 5, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions affect a subroutine return if the Condition Code matches the mask in the opcode. When true, a value is popped off of the internal stack and used to load the Page Control and Program Counter to become the new Instruction Pointer.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="rete-return-on-condition-true-and-enable-interrupts">
+<h3>rete - Return on Condition True and Enable Interrupts<a class="headerlink" href="#rete-return-on-condition-true-and-enable-interrupts" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": 13, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions affect a subroutine return if the Condition Code matches the mask in the opcode. When true, a value is popped off of the internal stack and used to load the Page Control and Program Counter to become the new Instruction Pointer.</p>
+<p>Additionally, the Interrupt Inhibit bit in the PSU is cleared, enabling interrupts globally.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">II</span></code></p>
+</section>
+<section id="rrr-rotate-register-right">
+<h3>rrr - Rotate Register Right<a class="headerlink" href="#rrr-rotate-register-right" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 20, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform a right-rotate on the specified register in-place. The exact operation depends on the state of the <code class="docutils literal notranslate"><span class="pre">WC</span></code> flag in the PSL.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">WC</span></code> is clear, the register is right-rotated and the Carry and Interdigit Carry are not changed. Bit 7 of the new register value is set from Bit 0 of the previous value.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">WC</span></code> is set, the register is right-rotated through the Carry. The previous Carry is shifted into bit 7 of the result and the previous bit 0 becomes the next Carry. Additionally, the Interdigit Carry is loaded from bit 6 of the old register value.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code> (if <code class="docutils literal notranslate"><span class="pre">WC</span></code>), <code class="docutils literal notranslate"><span class="pre">IDC</span></code> (if <code class="docutils literal notranslate"><span class="pre">WC</span></code>)</p>
+</section>
+<section id="rrl-rotate-register-left">
+<h3>rrl - Rotate Register Left<a class="headerlink" href="#rrl-rotate-register-left" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 52, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform a left-rotate on the specified register in-place. The exact operation depends on the state of the <code class="docutils literal notranslate"><span class="pre">WC</span></code> flag in the PSL.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">WC</span></code> is clear, the register is left-rotated and the Carry and Interdigit Carry are not changed. Bit 0 of the new register value is set from Bit 7 of the previous value.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">WC</span></code> is set, the register is left-rotated through the Carry. The previous Carry is shifted into bi t 0 of the result and the previous bit 7 becomes the next Carry. Additionally, the Interdigit Carry is loaded from bit 4 of the old register value.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code> (if <code class="docutils literal notranslate"><span class="pre">WC</span></code>), <code class="docutils literal notranslate"><span class="pre">IDC</span></code> (if <code class="docutils literal notranslate"><span class="pre">WC</span></code>)</p>
+</section>
+<section id="dar-decimal-adjust-register">
+<h3>dar - Decimal Adjust Register<a class="headerlink" href="#dar-decimal-adjust-register" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 37, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>These instructions perform a decimal adjust based on the states of the Carry and Interdigit Carry to help perform arithmatic on packed BCD values.</p>
+<p>If the Carry is clear, a value of A0h is added to the register’s value.</p>
+<p>If the Interdigit Carry is clear, a value of 0Ah is added to the register’s value.</p>
+<p>If both are clear, a value of AAh is added to the register’s value.</p>
+<p>Packed BCD operations may then be performed according to these algorithms:</p>
+<p>To perform addition, add 66h to either term, then add both terms. This instruction will then adjust the sum to its correct BCD value.</p>
+<p>To perform subtraction, perform subtraction as normal, then execute this instruction to get the correct BCD result.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="wrtc-write-command">
+<h3>wrtc - Write Command<a class="headerlink" href="#wrtc-write-command" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 44, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a external IO Write transaction using the value of the specified register as the value written. The <code class="docutils literal notranslate"><span class="pre">IOC</span></code> and <code class="docutils literal notranslate"><span class="pre">WE</span></code> lines are asserted as part of the transaction.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="wrtd-write-data">
+<h3>wrtd - Write Data<a class="headerlink" href="#wrtd-write-data" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 60, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a external IO Write transaction using the value of the specified register as the value written. The <code class="docutils literal notranslate"><span class="pre">IOD</span></code> and <code class="docutils literal notranslate"><span class="pre">WE</span></code> lines are asserted as part of the transaction.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="redc-read-command">
+<h3>redc - Read Command<a class="headerlink" href="#redc-read-command" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 12, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a external IO Read transaction and saves the received value into the specified register. The <code class="docutils literal notranslate"><span class="pre">IOC</span></code> and <code class="docutils literal notranslate"><span class="pre">OE</span></code> lines are asserted as part of the transaction.</p>
+<p><strong>Affected flags:</strong> CC</p>
+</section>
+<section id="redd-read-data">
+<h3>redd - Read Data<a class="headerlink" href="#redd-read-data" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 28, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a external IO Read transaction and saves the received value into the specified register. The <code class="docutils literal notranslate"><span class="pre">IOD</span></code> and <code class="docutils literal notranslate"><span class="pre">OE</span></code> lines are asserted as part of the transaction.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="wrte-write-extended-io">
+<h3>wrte - Write Extended IO<a class="headerlink" href="#wrte-write-extended-io" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 53, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a write to an on-die IO device using the value of the specified register. A immediate 8-bit address follows the opcode which is decoded to address one of the on-die peripheral registers.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="rede-read-extended-io">
+<h3>rede - Read Extended IO<a class="headerlink" href="#rede-read-extended-io" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 21, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction triggers a read from an on-die IO device and writes the received value into the specified register. A immediate 8-bit address follows the opcode which is decoded to address one of the on-die perhipheral registers.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="spsu-store-program-status-upper">
+<h3>spsu - Store Program Status Upper<a class="headerlink" href="#spsu-store-program-status-upper" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 18, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This instruction copies the value of the PSU into R0. Flags are not affected until after the copy.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="spsl-store-program-status-lower">
+<h3>spsl - Store Program Status Lower<a class="headerlink" href="#spsl-store-program-status-lower" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 19, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This instruction copies the value of the PSL into R0. Flags are not affected until after the copy.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="lpsu-load-program-status-upper">
+<h3>lpsu - Load Program Status Upper<a class="headerlink" href="#lpsu-load-program-status-upper" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 146, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This instruction copies the value in R0 into the PSU.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code>, <code class="docutils literal notranslate"><span class="pre">II</span></code>, <code class="docutils literal notranslate"><span class="pre">SP</span></code></p>
+</section>
+<section id="lpsl-load-program-status-lower">
+<h3>lpsl - Load Program Status Lower<a class="headerlink" href="#lpsl-load-program-status-lower" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 147, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This instruction copies the value in R0 into the PSL.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">WC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code>, <code class="docutils literal notranslate"><span class="pre">COM</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code></p>
+</section>
+<section id="halt-halt">
+<h3>halt - Halt<a class="headerlink" href="#halt-halt" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 64, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This instruction pauses program execution until an interrupt occurs. The Program Counter will become stuck in place until the servicing of an interrupt routine. Once the interrupt routine returns, execution resumes from the first instruction following the halt.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="cpsu-clear-bits-in-program-status-upper">
+<h3>cpsu - Clear bits in Program Status Upper<a class="headerlink" href="#cpsu-clear-bits-in-program-status-upper" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 116, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction clears specific bits in the PSU according to the mask in its immediate argument. All bits in the PSU for which the corresponding bit in the mask is a one will be cleared to zero.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code>, <code class="docutils literal notranslate"><span class="pre">II</span></code>, <code class="docutils literal notranslate"><span class="pre">SP</span></code></p>
+</section>
+<section id="cpsl-clear-bits-in-program-status-lower">
+<h3>cpsl - Clear bits in Program Status Lower<a class="headerlink" href="#cpsl-clear-bits-in-program-status-lower" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 117, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction clears specific bits in the PSL according to the mask in its immediate argument. All bits in the PSL for which the corresponding bit in the mask is a one will be cleared to zero.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">WC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code>, <code class="docutils literal notranslate"><span class="pre">COM</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code></p>
+</section>
+<section id="ppsu-preset-bits-in-program-status-upper">
+<h3>ppsu - Preset bits in Program Status Upper<a class="headerlink" href="#ppsu-preset-bits-in-program-status-upper" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 118, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction sets specific bits in the PSU according to the mask in its immediate argument. The mask is simply inclusive-OR’d onto the PSU.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code>, <code class="docutils literal notranslate"><span class="pre">II</span></code>, <code class="docutils literal notranslate"><span class="pre">SP</span></code></p>
+</section>
+<section id="ppsl-preset-bits-in-program-status-lower">
+<h3>ppsl - Preset bits in Program Status Lower<a class="headerlink" href="#ppsl-preset-bits-in-program-status-lower" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 119, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction sets specific bits in the PSL according to the mask in its immediate argument. The mask is simply inclusive-OR’d onto the PSL.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">WC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code>, <code class="docutils literal notranslate"><span class="pre">COM</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code></p>
+</section>
+<section id="tpsu-test-program-status-upper">
+<h3>tpsu - Test Program Status Upper<a class="headerlink" href="#tpsu-test-program-status-upper" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 180, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction tests bits in the PSU according to the mask in its immediate argument. Every bit in the PSU for which there is a one in the mask is checked. The test succeeds if all checked bits are one.</p>
+<table class="docutils align-default" id="condition-codes-tpsu">
+<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsu" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>All of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Not all of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="tpsl-test-program-status-lower">
+<h3>tpsl - Test Program Status Lower<a class="headerlink" href="#tpsl-test-program-status-lower" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 181, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>This immediate-addressed instruction tests bits in the PSL according to the mask in its immediate argument. Every bit in the PSL for which there is a one in the mask is checked. The test succeeds if all checked bits are one.</p>
+<table class="docutils align-default" id="condition-codes-tpsl">
+<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsl" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>All of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Not all of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="nop-no-operation">
+<h3>nop - No Operation<a class="headerlink" href="#nop-no-operation" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+  {"name": 192, "bits": 8}],
+ "config": {"hspace": 600}
+}
+</script>
+</div>
+<p>No operation is performed and the following instruction executed.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="tmi-test-under-mask-immediate">
+<h3>tmi - Test Under Mask Immediate<a class="headerlink" href="#tmi-test-under-mask-immediate" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 61, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This immediate-addressed instruction tests bits in the value of the specified register according to the mask in its immediate argument. Every bit in the register value for which there is a one in the mask is checked. The test succeeds if all checked bits are ones.</p>
+<table class="docutils align-default" id="condition-codes-tmi">
+<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tmi" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>CC</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>All of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">00</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Not all of the selected bits are one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="zbrr-zero-branch-relative">
+<h3>zbrr - Zero-Branch Relative<a class="headerlink" href="#zbrr-zero-branch-relative" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 155, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This relative-addressed instruction performs a unconditional branch to a location relative to page 0, byte 0. The displacement in the argument is interpreted as being relative to this address and negative values cause a wrap-around to page 0, byte 8191 - 8128.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="zbsr-zero-branch-to-subroutine-relative">
+<h3>zbsr - Zero-Branch to Subroutine Relative<a class="headerlink" href="#zbsr-zero-branch-to-subroutine-relative" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 187, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves identically to zbrr explained above, except that it additionally pushes a return address onto the internal stack. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="bxa-branch-indexed-absolute">
+<h3>bxa - Branch Indexed, Absolute<a class="headerlink" href="#bxa-branch-indexed-absolute" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 159, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This absolute-addressed instruction is encoded the same as an unconditionally, absolute branch instruction but has indexing implicitely enabled. The index register is always R3, however.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="bsxa-branch-to-subroutine-indexed-absolute">
+<h3>bsxa - Branch to Subroutine Indexed, Absolute<a class="headerlink" href="#bsxa-branch-to-subroutine-indexed-absolute" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 191, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves identically to bxa explained above, except that it additionally pushes a return address onto the internal stack. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+</section>
+<section id="id1">
+<h2>Extended Instructions<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>Extended Instructions, in this case, refers to all instructions that were added in the AS2650v2 on top of the original 2650’s instruction set. Not all of these use the extension prefix. Some use opcodes that went unused in the 2650. Which instructions use the prefix will be indicated as part of their opcode.</p>
+<section id="push-push-to-internal-stack">
+<h3>push - Push to Internal Stack<a class="headerlink" href="#push-push-to-internal-stack" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 16, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction pushes a 16-bit wide value pair onto the internal stack. These values are taken from registers R0 (LSB, bits 0 - 7) and R1 (MSB, bits 8 - 15).</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="pop-pop-from-internal-stack">
+<h3>pop - Pop from Internal Stack<a class="headerlink" href="#pop-pop-from-internal-stack" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 17, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction pops a 16-bit wide value pair from the internal stack into registers R0 (LSB, bits 0 - 7) and R1 (MSB, bits 8 - 15). No flags are affected despite the register writes.</p>
+<p>push and pop are intended to allow the call stack to be spilled over into memory if necesarry and are not meant to be used to store program data.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="mul-unsigned-multiply-of-r0-and-r1">
+<h3>mul - Unsigned multiply of R0 and R1<a class="headerlink" href="#mul-unsigned-multiply-of-r0-and-r1" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 144, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction multiplies the value of R0 by the value of R1. This produces a 16-bit result that is written back into R0 (LSB, bits 0 - 7) and R1 (MSB, bits 8 - 15). The Condition Code is set according to the full 16-bit value.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="xchg-exchange-r0-and-r1">
+<h3>xchg - Exchange R0 and R1<a class="headerlink" href="#xchg-exchange-r0-and-r1" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 145, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction exchanges the values in R0 and R1 in-place without affecting flags.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="clr-clear-register">
+<h3>clr - Clear Register<a class="headerlink" href="#clr-clear-register" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 49, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction sets the value of the specified register to zero. No flags are affected despite the register change.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="trap-software-trap">
+<h3>trap - Software Trap<a class="headerlink" href="#trap-software-trap" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 144, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction sets the trap interrupt (priority 4) as pending. This does not mean that the interrupt is immediately served as any incoming higher-priority interrupts will be served first.
+Additionally, the instruction has no effect if the global Interrupt Inhibit flag is set. The trap will remain pending until the flag is cleared.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="clrt-clear-trap-pending-flag">
+<h3>clrt - Clear Trap Pending Flag<a class="headerlink" href="#clrt-clear-trap-pending-flag" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 145, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction serves as the pending interrupt clear for the software trap. It will always clear any pending trap interrupt even if that interrupt hasn’t been served yet.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="cpl-complement-register">
+<h3>cpl - Complement Register<a class="headerlink" href="#cpl-complement-register" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 240, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction complements all the bits of the specified register’s value. Notably, this operation does not affect any flags.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="pshs-push-program-status">
+<h3>pshs - Push Program Status<a class="headerlink" href="#pshs-push-program-status" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 16, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction pushes the whole PSW onto the internal stack. It is meant to only be used at the start of interrupt routines.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="pops-pop-program-status">
+<h3>pops - Pop Program Status<a class="headerlink" href="#pops-pop-program-status" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 17, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction pops a value from the internal stack and loads it into the PSW. It is meant to only be used at the end of interrupt routines.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">F</span></code>, <code class="docutils literal notranslate"><span class="pre">II</span></code>, <code class="docutils literal notranslate"><span class="pre">SP</span></code>, <code class="docutils literal notranslate"><span class="pre">CC</span></code>, <code class="docutils literal notranslate"><span class="pre">IDC</span></code>, <code class="docutils literal notranslate"><span class="pre">RS</span></code>, <code class="docutils literal notranslate"><span class="pre">WC</span></code>, <code class="docutils literal notranslate"><span class="pre">OVF</span></code>, <code class="docutils literal notranslate"><span class="pre">COM</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code></p>
+</section>
+<section id="svb-set-interrupt-vector-base">
+<h3>svb - Set Interrupt Vector Base<a class="headerlink" href="#svb-set-interrupt-vector-base" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 18, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction sets the value of the IVB register by copying the combined value of R0 (LSB, bits 4 - 7) and R1 (MSB, bits 8 - 15). Bits 0 - 3 are always zero.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="lodf-load-register-value-far">
+<h3>lodf - Load Register value, Far<a class="headerlink" href="#lodf-load-register-value-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 2, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction performs a register load from memory same as lodr/loda, but using Far Addressing.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="ldfi-load-register-value-far-indirect">
+<h3>ldfi - Load Register value, Far Indirect<a class="headerlink" href="#ldfi-load-register-value-far-indirect" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 3, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction performs a register load from memory same as lodr/loda but using Far Addressing plus Indirect Addressing.</p>
+<p><strong>Affected flags:</strong> <code class="docutils literal notranslate"><span class="pre">CC</span></code></p>
+</section>
+<section id="strf-store-register-value-far">
+<h3>strf - Store Register value, Far<a class="headerlink" href="#strf-store-register-value-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 50, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction performs a register store to memory same as strr/stra, but using Far Addressing.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="stfi-store-register-value-far-indirect">
+<h3>stfi - Store Register value, Far Indirect<a class="headerlink" href="#stfi-store-register-value-far-indirect" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 51, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction performs a register store to memory same as strr/stra, but using Far Addressing plus Indirect Addressing.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bctf-branch-on-condition-true-far">
+<h3>bctf - Branch on Condition True, Far<a class="headerlink" href="#bctf-branch-on-condition-true-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": 7, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bcta, branching only if the Condition Code value matches the Mask in the opcode, but using Far Addressing. This sets all 3 bits of Page Control as well as all 13 bits of the Program Counter.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bstf-branch-to-subroutine-on-condition-true-far">
+<h3>bstf - Branch to Subroutine on Condition True, Far<a class="headerlink" href="#bstf-branch-to-subroutine-on-condition-true-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask", "bits": 2},
+{"name": 15, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bctf, except that it additionally pushes a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="brnf-branch-on-not-zero-far">
+<h3>brnf - Branch on Not Zero, Far<a class="headerlink" href="#brnf-branch-on-not-zero-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 23, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as brna, branching only if the specified register’s value is not zero, but using Far Addressing. This sets all 3 bits of Page Control as well as all 13 bits of the Program Counter.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bsnf-branch-to-subroutine-on-not-zero-far">
+<h3>bsnf - Branch to Subroutine on Not Zero, Far<a class="headerlink" href="#bsnf-branch-to-subroutine-on-not-zero-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 31, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as brnf, except that it additionally pushes a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bcff-branch-on-condition-false-far">
+<h3>bcff - Branch on Condition False, Far<a class="headerlink" href="#bcff-branch-on-condition-false-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask != 3", "bits": 2},
+{"name": 39, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bcfa, branching only if the Condition Code does <strong>not</strong> match the Mask in the opcode, but using Far Addressing. This sets all 3 bits of Page Control as well as all 13 bits of the Program Counter.</p>
+<p>The CC mask may not be equal to 3. This opcode is used by another instruction.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bsff-branch-to-subroutine-on-condition-false-far">
+<h3>bsff - Branch to Subroutine on Condition False, Far<a class="headerlink" href="#bsff-branch-to-subroutine-on-condition-false-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "CC Mask != 3", "bits": 2},
+{"name": 47, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bcff, except that it additionally pushes a return address onto the internal stack if the branch is taken. This address is a complete Instruction Pointer and will always point to the instruction immediatly following the branch.</p>
+<p>The CC mask may not be equal to 3. This opcode is used by another instruction.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="birf-branch-on-incrementing-register-not-zero-far">
+<h3>birf - Branch on Incrementing Register Not Zero, Far<a class="headerlink" href="#birf-branch-on-incrementing-register-not-zero-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 55, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bira, branching only if the value of the specified register after it is incremented is not zero, but using Far Addressing. This sets all 3 bits of Page Control as well as all 13 bits of the Program Counter.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+<section id="bdrf-branch-on-decrementing-register-not-zero-far">
+<h3>bdrf - Branch on Decrementing Register Not Zero, Far<a class="headerlink" href="#bdrf-branch-on-decrementing-register-not-zero-far" title="Link to this heading"></a></h3>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": 183, "bits": 8}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+  { "reg": [
+{"name": "r", "bits": 2},
+{"name": 63, "bits": 6}],
+   "config": {"hspace": 600}
+  }
+</script>
+</div>
+<p>This instruction behaves the same as bira, branching only if the value of the specified register after it is decremented is not zero, but using Far Addressing. This sets all 3 bits of Page Control as well as all 13 bits of the Program Counter.</p>
+<p><strong>Affected flags:</strong> none</p>
+</section>
+</section>
+</section>
 
     <script type="text/javascript">
         function init() {
@@ -766,7 +2586,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="io.html" class="btn btn-neutral float-left" title="Input / Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
