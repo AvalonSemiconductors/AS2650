@@ -11,7 +11,7 @@ Accessing IO and peripherals
 
 On-die IO and peripherals are not memory-mapped. Instead, a set of special CPU instructions, ``wrte`` and ``rede`` are used. These instructions always have an argument of an 8-bit address. This address is used to select a register inside a IO or peripheral to read or write. The rest of this chapter describes register locations in terms of this IO address.
 
-This IO address is internally decoded by splitting it into a device and register address. The most-significant two bits of the address are used to select one of four macros on the die, while the remaining 6 bits are used to address a particular register within that macro.
+The IO address is internally decoded by splitting it into a device and register address. The most-significant two bits of the address are used to select one of four macros on the die, while the remaining 6 bits are used to address a particular register within that macro.
 
 .. list-table:: Macro addresses
     :name: macro-addr
@@ -32,7 +32,7 @@ This IO address is internally decoded by splitting it into a device and register
 GPIO ports and alternate functions
 ----------------------------------
 
-Most IO functionality of the AS2650v2 is exposed through its two 8-bit GPIO ports PORTA and PORTB. By default, both ports act as bi-directional inputs/output ports who’s direction and state can be set by the processor. However, each pin can also be individually set to expose the functionality of another IO peripheral, as described in the following tables.
+Most IO functionality of the AS2650v2 is exposed through its two 8-bit GPIO ports PORTA and PORTB. By default, both ports act as bi-directional input/output ports who’s direction and state can be set by the processor. However, each pin can also be individually set to expose the functionality of another IO peripheral, as described in the following tables.
 
 .. list-table:: PORTA alternate functions
     :name: portb-alt
@@ -225,6 +225,11 @@ Writing a one into any of the ``ICx`` bits in this register will clear that exte
 
 Additionally, this register can be read, in which case the bits reflect which interrupts are currently pending.
 
+Interrupts
+----------
+
+Three of the GPIO pins have an alternate function of an interrupt request. These are only active if the alternate function is active. However, pending interrupts will not be cleared by disabling the alternate function on these pins. The interrupts are edge-sensitive going low to high.
+
 ---------------
 Timers/Counters
 ---------------
@@ -272,15 +277,17 @@ Address: 0x40
 
 The priorities for these interrupts are:
 
-Timer/Counter 0: ``1``
+Timer/Counter 0: ``IRQ1``
 
-Timer/Counter 1: ``2``
+Timer/Counter 1: ``IRQ2``
 
-Timer/Counter 2: ``5``
+Timer/Counter 2: ``IRQ5``
 
-``IC1``, ``IC2``, ``IC5`` are the interrupt resets for the timer/counter interrupts. These bits must be all zero for the setting bits to be changed. If any of these bits are not zero during a write operation, only the interrupt reset(s) will occur. No settings will be changed, making the remaining 5 bits don’t-care.
+``IC1``, ``IC2``, ``IC5`` are the interrupt clears for the timer/counter interrupts. These bits must be all zero for the setting bits to be changed. If any of these bits are not zero during a write operation, only the interrupt clear(s) will occur. No settings will be changed, making the remaining 5 bits don’t-care.
 
-``T0EXT``, ``T1EXT`` are the external clock input enables for timers/counters 0 and 1. Setting either bit will put that timer/counter into "counter" mode, switching its clock source from the processor clock to an external clock input. The alternative function selects on PORTB must also be set to expose these clock inputs.
+``T0EXT``, ``T1EXT`` are the external clock input enables for timers/counters 0 and 1. Setting either bit will put that timer/counter into "counter" mode, switching its clock source from the processor clock to an external clock input. The alternative function selects on PORTB must also be set to expose these clock inputs. The prescaler still applies to the external clock inputs.
+
+*Note:* due to a hardware bug, attempts to read this register will return invalid data. Do not read this register.
 
 **TCR - Timer Capture Register**
 
@@ -343,6 +350,8 @@ Address: 0x47
 	  {"name": "T1PRE[15:8]", "bits": 8}],
 	 "config": {"hspace": 700}
 	}
+
+The final timer/counter up-count rate will be ``clock / (TxPRE + 1)``.
 
 **TxTOP - Timer 0/1/2 Top**
 
@@ -468,7 +477,7 @@ Register descriptions
 
 **PWx - Pulse Width 0/1/2**
 
-The registers inversely adjust the pulse width of each channel from 0 (longest) to 254 (shortest). Setting a value of 255 will cause the output to be always on.
+These registers inversely adjust the pulse width of each channel from 0 (longest) to 254 (shortest). Setting a value of 255 will cause the output to be always on.
 
 Address: 0x54
 
@@ -542,7 +551,7 @@ Address: 0x82
 	 "config": {"hspace": 700}
 	}
 
-This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to CPU clock / (UDIV + 1).
+This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to ``CPU clock / (UDIV + 1)``.
 
 **STAT - Serial Status**
 
@@ -577,7 +586,7 @@ Address: 0x84
 	 "config": {"hspace": 700}
 	}
 
-This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to CPU clock / (SDIV * 2 + 1).
+This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to ``CPU clock / (SDIV * 2 + 1)``.
 
 **UDR - UART Data Register**
 

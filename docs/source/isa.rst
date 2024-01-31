@@ -784,9 +784,9 @@ Program Status Word
 
 The PSU primarily contains the Stack Pointer ``SP`` for the internal stack as well as the global Interrupt Inhibit ``II``. The pointer increments when values are pushed onto the stack and decrements when values are popped. It always points to where the next value will go, so the TOS is actually at ``SP - 1``.
 
-This register also contains the bits that control the two digital input/output lines ``Sense`` and ``Flag``. The ``F`` bit sets the state (high or low) of ``Sense`` and the current state of the ``Flag`` input can be read out of the ``F`` bit.
+This register also contains the bits that control the two digital input/output lines ``Sense`` and ``Flag``. The ``F`` bit sets the state (high or low) of ``Flag`` and the current state of the ``Sense`` input can be read out of the ``F`` bit.
 
-Bit 4 of the PSU is not wired up to any hardware functionality but is physically present and can be read and writen by a user program.
+Bit 4 of the PSU is not wired up to any hardware functionality, but is physically present and can be read and writen by a user program.
 
 The PSU is reset to 20h on reset, meaning the ``II`` bit is set.
 
@@ -812,15 +812,15 @@ The PSL contains all processor flags and settings.
 
 ``OVF`` if set, indicates that the last addition or subtraction operation resulted in an arithmatic overflow, meaning the result could not be represented by a signed byte.
 
-``WC`` is a processor setting that modifies the behavior of addition and subtraction instructions. If set, the value of the carry flag, either one or zero, will aditionally be added or subtracted (depending on the type of operation performed) onto the result. If clear, the carry flag is ignored.
+``WC`` is a processor setting that modifies the behavior of addition and subtraction instructions, as well as left- and right-rotate.
 
 ``IDC`` is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction of bitshift operation. It is used in combination with the ``dar`` instruction to perform arithmatic on packed BCD values.
 
-``CC`` is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare instructions. This code can be tested by software or conditional branch instructions.
+``CC`` is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare and bit-test instructions. This code can be tested by software or conditional branch instructions.
 
 This PSL is initialized to 0 on reset.
 
-Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies in the following way:
+Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies as listed in this table:
 
 .. list-table:: Condition Codes
     :name: condition-codes
@@ -845,7 +845,7 @@ The AS2650v2 segments its view of the 65,536 byte memory space into 8,192 pages.
 
 All absolute and relative addressed instructions can only directly reach memory within the current page, essentially allowing faster access to local data. Indirect addressing and far addressing can access bytes anywhere within the complete 65,536 byte memory space.
 
-Notably, the Program Counter reaching its maximum value and wrapping to 0 does not cause the Instruction Pointer to be advanced into the follow page. Only branch instructions can change the current page.
+Notably, the Program Counter reaching its maximum value and wrapping to 0 does not cause the Instruction Pointer to be advanced into the following page. Only branch instructions can change the current page.
 
 The 4KiB of on-die SRAM lie entirely within the first half of page 0.
 
@@ -868,7 +868,7 @@ The instruction consists only of a 8-bit opcode. All operands are implied.
 Register Addressing
 -------------------
 
-All instructions that operate on a single instruction in-place are encoded in a single byte with a 6-bit opcode and 2-bit register address.
+All instructions that operate on a single register in-place are encoded in a single byte with a 6-bit opcode and 2-bit register index.
 
 .. wavedrom::
 
@@ -881,7 +881,7 @@ All instructions that operate on a single instruction in-place are encoded in a 
 Zero Addressing
 ---------------
 
-This is a special form of Register Addressing that is identical in encoding but operates on a pair of registers, the second of which is implied to be R0.
+This is a special form of Register Addressing that is identical in encoding but operates on a pair of registers, the second of which is always implied to be R0.
 
 With the exception of ``strz`` or unless otherwise specified, R0 is also the destination for the instruction result with the specified register index only used as a source.
 
@@ -908,7 +908,7 @@ Immediate addressed instructions operate on a register and immediate value. The 
 Relative Addressing
 -------------------
 
-Relative addressed instructions are memory reference instructions, meaning the load or store one byte in memory as part of their operation.
+Relative addressed instructions are either branch instructions or memory reference instructions, in which case they load or store one byte in memory as part of their operation.
 Relative instructions reference a memory location relative to the current Program Counter value. The second byte contains a signed 7-bit displacement value that is added to the Program Counter to obtain the effective address.
 
 Indirect addressing may additionally be specified.
@@ -1026,14 +1026,14 @@ This mode applies the same to branch or memory reference instructions.
 Indirect Addressing
 -------------------
 
-Indirect Addressing may be specified on top of another addressing mode when supported by setting the ``I`` bit. When specified, the original effective address of the instruction is no longer the true memory reference. Instead, two successive bytes are read from this location which become the new effective address for the memory reference.
+Indirect Addressing may be specified on top of another addressing mode, when supported, by setting the ``I`` bit. When specified, the original effective address of the instruction is no longer the true memory reference. Instead, two successive bytes are read from this location which become the new effective address for the memory reference.
 
 Essentially, this mode implements a pointer dereference. The pointer is stored in big endian format.
 
 Indexed Addressing
 ------------------
 
-Indexed Addressing may be specified on top of another addressing mode when supported by setting the Index Control bits to a value other than zero. Once enabled, the register index in the first instruction byte instead specifies which register to use for indexing. The operation’s actual register index implicitely becomes R0.
+Indexed Addressing may be specified on top of another addressing mode, when supported, by setting the Index Control bits to a value other than zero. Once enabled, the register index in the first instruction byte instead specifies which register to use for indexing. The operation’s actual register index implicitly becomes R0.
 
 The current value of the register chosen for indexing is added onto the original effective address to obtain the new effective address.
 
@@ -1064,7 +1064,7 @@ Indexed and Indirect Addressing may both be supported on the same instruction. T
 Extended Instructions
 ---------------------
 
-The AS2650v2 contains a series of extended instructions marked by a prefix, B7h. If the processor encounters this opcode, it will skip it and interpret the following bytes as an extended instruction. Besides this prefix, extended instructions follow the same rules for their addressing modes.
+The AS2650v2 contains a series of extended instructions marked by a prefix, B7h. If the processor encounters this opcode, it will skip it and interpret the following byte(s) as an extended instruction. Besides this prefix, extended instructions follow the same rules for their addressing modes.
 
 ------------
 Instructions

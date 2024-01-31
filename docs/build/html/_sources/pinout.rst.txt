@@ -68,7 +68,7 @@ For more information on caravel, see `here <https://caravel-harness.readthedocs.
     * - ``mprj_io[26:19]``
       - PA[7:0]
       - IO
-      - Built-in GPIO Port A and alternative functions
+      - GPIO Port A and alternative functions
     * - ``mprj_io[34:27]``
       - PB[7:0]
       - IO
@@ -83,5 +83,5 @@ For more information on caravel, see `here <https://caravel-harness.readthedocs.
       - SPI port serial data output
     * - ``mprj_io[37]``
       - SDI
-      - O
+      - I
       - SPI port serial data input

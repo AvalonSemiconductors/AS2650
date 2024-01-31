@@ -6,6 +6,7 @@
 #define VERILATED_VTB___024ROOT_H_  // guard
 
 #include "verilated.h"
+#include "verilated_timing.h"
 
 
 class Vtb__Syms;
@@ -240,24 +241,24 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         CData/*2:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__clk_div;
         CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__curr_channel;
         CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__env_top;
-        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h9c41962c__0;
-        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h63536d3f__0;
-        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hf3367c70__0;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h23d5ccfe__0;
-        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h8d2418fb__0;
-        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h47606175__0;
-        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h8d2418fb__1;
-        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h47606175__1;
-        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h47606175__2;
-        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h8d2418fb__2;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__0;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__1;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__2;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__3;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__4;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__5;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__6;
-        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hff9cd4f8__7;
+        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hb3170973__0;
+        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he328b697__0;
+        CData/*0:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he755b0f5__0;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h7da9ad18__0;
+        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h0f3908ee__0;
+        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h53c571ef__0;
+        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h0f3908ee__1;
+        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h53c571ef__1;
+        CData/*7:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h53c571ef__2;
+        CData/*1:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h0f3908ee__2;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__0;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__1;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__2;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__3;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__4;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__5;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__6;
+        CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h51de987e__7;
         CData/*2:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__filter_step;
         CData/*5:0*/ tb__DOT__uprj__DOT__sid__DOT__spi_dac_i__DOT__counter;
         CData/*4:0*/ tb__DOT__uprj__DOT__sid__DOT__tt_um_rejunity_sn76489__DOT__clk_counter;
@@ -340,9 +341,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         SData/*10:0*/ tb__DOT__uprj__DOT__sid__DOT__fc;
         SData/*15:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__curr_freq;
         SData/*11:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__curr_pw;
-        SData/*11:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h531ab05d__0;
-        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he79b84a8__0;
-        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_he79b84a8__1;
+        SData/*11:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h19bf6dd8__0;
+        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hd92f9416__0;
+        SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hd92f9416__1;
         SData/*14:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__sample_buff;
     };
     struct {
@@ -365,8 +366,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtb___024root final : public VerilatedModule 
         IData/*31:0*/ tb__DOT__uprj__DOT__wrapped_as2650__DOT__wb_counter;
         IData/*23:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__accum_next;
         IData/*19:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT__mul_sample;
-        IData/*23:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hdd8bc3f4__0;
-        IData/*21:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hded46c95__0;
+        IData/*23:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_hd2232b2a__0;
+        IData/*21:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____Vlvbound_h44b3a740__0;
         IData/*22:0*/ tb__DOT__uprj__DOT__sid__DOT__channels__DOT____VdfgTmp_h36ba4a2e__0;
         IData/*31:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__high;
         IData/*31:0*/ tb__DOT__uprj__DOT__sid__DOT__filters__DOT__band;

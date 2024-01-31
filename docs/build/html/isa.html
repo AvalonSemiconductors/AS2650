@@ -25,7 +25,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Input / Output" href="io.html" /> 
+    <link rel="prev" title="Interrupt Model" href="interrupt-model.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="internal-memory.html">Internal Memory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="wishbone-regs.html">Wishbone Registers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Input / Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interrupt-model.html">Interrupt Model</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Instruction Set Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#programming-model">Programming Model</a><ul>
@@ -942,8 +943,8 @@
 </script>
 </div>
 <p>The PSU primarily contains the Stack Pointer <code class="docutils literal notranslate"><span class="pre">SP</span></code> for the internal stack as well as the global Interrupt Inhibit <code class="docutils literal notranslate"><span class="pre">II</span></code>. The pointer increments when values are pushed onto the stack and decrements when values are popped. It always points to where the next value will go, so the TOS is actually at <code class="docutils literal notranslate"><span class="pre">SP</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
-<p>This register also contains the bits that control the two digital input/output lines <code class="docutils literal notranslate"><span class="pre">Sense</span></code> and <code class="docutils literal notranslate"><span class="pre">Flag</span></code>. The <code class="docutils literal notranslate"><span class="pre">F</span></code> bit sets the state (high or low) of <code class="docutils literal notranslate"><span class="pre">Sense</span></code> and the current state of the <code class="docutils literal notranslate"><span class="pre">Flag</span></code> input can be read out of the <code class="docutils literal notranslate"><span class="pre">F</span></code> bit.</p>
-<p>Bit 4 of the PSU is not wired up to any hardware functionality but is physically present and can be read and writen by a user program.</p>
+<p>This register also contains the bits that control the two digital input/output lines <code class="docutils literal notranslate"><span class="pre">Sense</span></code> and <code class="docutils literal notranslate"><span class="pre">Flag</span></code>. The <code class="docutils literal notranslate"><span class="pre">F</span></code> bit sets the state (high or low) of <code class="docutils literal notranslate"><span class="pre">Flag</span></code> and the current state of the <code class="docutils literal notranslate"><span class="pre">Sense</span></code> input can be read out of the <code class="docutils literal notranslate"><span class="pre">F</span></code> bit.</p>
+<p>Bit 4 of the PSU is not wired up to any hardware functionality, but is physically present and can be read and writen by a user program.</p>
 <p>The PSU is reset to 20h on reset, meaning the <code class="docutils literal notranslate"><span class="pre">II</span></code> bit is set.</p>
 <p><strong>Program Status Lower</strong></p>
 
@@ -964,13 +965,13 @@
 <p><code class="docutils literal notranslate"><span class="pre">C</span></code> is the carry flag defined by arithmatic operations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">COM</span></code> is a processor setting that modifies the behavior of the compare instructions. If clear, they will compare values as two’s-complement signed bytes. If set, they will compare values as unsigned bytes.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OVF</span></code> if set, indicates that the last addition or subtraction operation resulted in an arithmatic overflow, meaning the result could not be represented by a signed byte.</p>
-<p><code class="docutils literal notranslate"><span class="pre">WC</span></code> is a processor setting that modifies the behavior of addition and subtraction instructions. If set, the value of the carry flag, either one or zero, will aditionally be added or subtracted (depending on the type of operation performed) onto the result. If clear, the carry flag is ignored.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WC</span></code> is a processor setting that modifies the behavior of addition and subtraction instructions, as well as left- and right-rotate.</p>
 <p><code class="docutils literal notranslate"><span class="pre">IDC</span></code> is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction of bitshift operation. It is used in combination with the <code class="docutils literal notranslate"><span class="pre">dar</span></code> instruction to perform arithmatic on packed BCD values.</p>
-<p><code class="docutils literal notranslate"><span class="pre">CC</span></code> is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare instructions. This code can be tested by software or conditional branch instructions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CC</span></code> is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare and bit-test instructions. This code can be tested by software or conditional branch instructions.</p>
 <p>This PSL is initialized to 0 on reset.</p>
-<p>Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies in the following way:</p>
+<p>Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies as listed in this table:</p>
 <table class="docutils align-default" id="condition-codes">
-<caption><span class="caption-number">Table 5 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Register Contents</p></th>
 <th class="head"><p>CC</p></th>
@@ -995,7 +996,7 @@
 <h2>Memory Model<a class="headerlink" href="#memory-model" title="Link to this heading"></a></h2>
 <p>The AS2650v2 segments its view of the 65,536 byte memory space into 8,192 pages. There is always one “current” page set by the 3 bit Page Control. This is combined with the 13 bit Program Counter to form the address of the next instruction to be executed. The Page Control can only be changed by a far branch or indirect addressed branch changing the Instruction Pointer to a different page.</p>
 <p>All absolute and relative addressed instructions can only directly reach memory within the current page, essentially allowing faster access to local data. Indirect addressing and far addressing can access bytes anywhere within the complete 65,536 byte memory space.</p>
-<p>Notably, the Program Counter reaching its maximum value and wrapping to 0 does not cause the Instruction Pointer to be advanced into the follow page. Only branch instructions can change the current page.</p>
+<p>Notably, the Program Counter reaching its maximum value and wrapping to 0 does not cause the Instruction Pointer to be advanced into the following page. Only branch instructions can change the current page.</p>
 <p>The 4KiB of on-die SRAM lie entirely within the first half of page 0.</p>
 </section>
 <section id="instruction-addressing-modes">
@@ -1015,7 +1016,7 @@
 </section>
 <section id="register-addressing">
 <h3>Register Addressing<a class="headerlink" href="#register-addressing" title="Link to this heading"></a></h3>
-<p>All instructions that operate on a single instruction in-place are encoded in a single byte with a 6-bit opcode and 2-bit register address.</p>
+<p>All instructions that operate on a single register in-place are encoded in a single byte with a 6-bit opcode and 2-bit register index.</p>
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
@@ -1029,7 +1030,7 @@
 </section>
 <section id="zero-addressing">
 <h3>Zero Addressing<a class="headerlink" href="#zero-addressing" title="Link to this heading"></a></h3>
-<p>This is a special form of Register Addressing that is identical in encoding but operates on a pair of registers, the second of which is implied to be R0.</p>
+<p>This is a special form of Register Addressing that is identical in encoding but operates on a pair of registers, the second of which is always implied to be R0.</p>
 <p>With the exception of <code class="docutils literal notranslate"><span class="pre">strz</span></code> or unless otherwise specified, R0 is also the destination for the instruction result with the specified register index only used as a source.</p>
 </section>
 <section id="immediate-addressing">
@@ -1057,7 +1058,7 @@
 </section>
 <section id="relative-addressing">
 <h3>Relative Addressing<a class="headerlink" href="#relative-addressing" title="Link to this heading"></a></h3>
-<p>Relative addressed instructions are memory reference instructions, meaning the load or store one byte in memory as part of their operation.
+<p>Relative addressed instructions are either branch instructions or memory reference instructions, in which case they load or store one byte in memory as part of their operation.
 Relative instructions reference a memory location relative to the current Program Counter value. The second byte contains a signed 7-bit displacement value that is added to the Program Counter to obtain the effective address.</p>
 <p>Indirect addressing may additionally be specified.</p>
 <p>There are some exceptions (<code class="docutils literal notranslate"><span class="pre">zbsr</span></code>, <code class="docutils literal notranslate"><span class="pre">zbrr</span></code>) where the effective address is computed not as relative to the Program Counter, but as relative to address 0, page 0.</p>
@@ -1185,16 +1186,16 @@ Relative instructions reference a memory location relative to the current Progra
 </section>
 <section id="indirect-addressing">
 <h3>Indirect Addressing<a class="headerlink" href="#indirect-addressing" title="Link to this heading"></a></h3>
-<p>Indirect Addressing may be specified on top of another addressing mode when supported by setting the <code class="docutils literal notranslate"><span class="pre">I</span></code> bit. When specified, the original effective address of the instruction is no longer the true memory reference. Instead, two successive bytes are read from this location which become the new effective address for the memory reference.</p>
+<p>Indirect Addressing may be specified on top of another addressing mode, when supported, by setting the <code class="docutils literal notranslate"><span class="pre">I</span></code> bit. When specified, the original effective address of the instruction is no longer the true memory reference. Instead, two successive bytes are read from this location which become the new effective address for the memory reference.</p>
 <p>Essentially, this mode implements a pointer dereference. The pointer is stored in big endian format.</p>
 </section>
 <section id="indexed-addressing">
 <h3>Indexed Addressing<a class="headerlink" href="#indexed-addressing" title="Link to this heading"></a></h3>
-<p>Indexed Addressing may be specified on top of another addressing mode when supported by setting the Index Control bits to a value other than zero. Once enabled, the register index in the first instruction byte instead specifies which register to use for indexing. The operation’s actual register index implicitely becomes R0.</p>
+<p>Indexed Addressing may be specified on top of another addressing mode, when supported, by setting the Index Control bits to a value other than zero. Once enabled, the register index in the first instruction byte instead specifies which register to use for indexing. The operation’s actual register index implicitly becomes R0.</p>
 <p>The current value of the register chosen for indexing is added onto the original effective address to obtain the new effective address.</p>
 <p>If autoincrement or autodecrement are specified, the index register’s value is incremented or decremented <strong>before</strong> the address calculation.</p>
 <table class="docutils align-default" id="index-control">
-<caption><span class="caption-number">Table 6 </span><span class="caption-text">Index Control</span><a class="headerlink" href="#index-control" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 7 </span><span class="caption-text">Index Control</span><a class="headerlink" href="#index-control" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Bit 6</p></th>
 <th class="head"><p>Bit 5</p></th>
@@ -1224,14 +1225,14 @@ Relative instructions reference a memory location relative to the current Progra
 </section>
 <section id="extended-instructions">
 <h3>Extended Instructions<a class="headerlink" href="#extended-instructions" title="Link to this heading"></a></h3>
-<p>The AS2650v2 contains a series of extended instructions marked by a prefix, B7h. If the processor encounters this opcode, it will skip it and interpret the following bytes as an extended instruction. Besides this prefix, extended instructions follow the same rules for their addressing modes.</p>
+<p>The AS2650v2 contains a series of extended instructions marked by a prefix, B7h. If the processor encounters this opcode, it will skip it and interpret the following byte(s) as an extended instruction. Besides this prefix, extended instructions follow the same rules for their addressing modes.</p>
 </section>
 </section>
 <section id="instructions">
 <h2>Instructions<a class="headerlink" href="#instructions" title="Link to this heading"></a></h2>
 <p><strong>Note:</strong> for most (but not all) non-extended instructions, the addressing mode is encoded within the least significant two bits of the opcode. This will be refered to as <code class="docutils literal notranslate"><span class="pre">m</span></code> from here on out, and is defined as follows:</p>
 <table class="docutils align-default" id="addr-mode-enc">
-<caption><span class="caption-number">Table 7 </span><span class="caption-text">Adressing mode encodings</span><a class="headerlink" href="#addr-mode-enc" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 8 </span><span class="caption-text">Adressing mode encodings</span><a class="headerlink" href="#addr-mode-enc" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></th>
 <th class="head"><p>Mode</p></th>
@@ -1386,7 +1387,7 @@ Relative instructions reference a memory location relative to the current Progra
 <p>These instructions compare two values from registers or memory and set the Condition Code according to the following tables. No registers or memory values are modified, only the comparison takes place.</p>
 <p>If Zero Addressing is used:</p>
 <table class="docutils align-default" id="condition-codes-com-zr">
-<caption><span class="caption-text">Condition Codes (Zero Addressing)</span><a class="headerlink" href="#condition-codes-com-zr" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 9 </span><span class="caption-text">Condition Codes (Zero Addressing)</span><a class="headerlink" href="#condition-codes-com-zr" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Meaning</p></th>
 <th class="head"><p>CC</p></th>
@@ -1406,7 +1407,7 @@ Relative instructions reference a memory location relative to the current Progra
 </table>
 <p>Otherwise, where V is the byte loaded by the memory reference:</p>
 <table class="docutils align-default" id="condition-codes-com">
-<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-com" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 10 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-com" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Meaning</p></th>
 <th class="head"><p>CC</p></th>
@@ -1443,7 +1444,7 @@ Relative instructions reference a memory location relative to the current Progra
 <p>These instructions affect a relative or absolute branch only if the Condition Code matches the mask in the opcode, or the mask is equal to <code class="docutils literal notranslate"><span class="pre">11</span></code>, which always affects an unconditional branch.</p>
 <p>In the instruction mnemonic, the mask value can either be defined explicitely, eg. <code class="docutils literal notranslate"><span class="pre">bcta,2</span> <span class="pre">[target]</span></code> or according to the following syntax:</p>
 <table class="docutils align-default" id="br-cond-syntax-1">
-<caption><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-1" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 11 </span><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-1" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Syntax</p></th>
 <th class="head"><p>Mask value</p></th>
@@ -1531,7 +1532,7 @@ Relative instructions reference a memory location relative to the current Progra
 <p>These instructions affect a relative or absolute branch only if the Condition Code does <strong>not</strong> match the mask in the opcode.</p>
 <p>In the instruction mnemonic, the mask value can either be defined explicitely, eg. <code class="docutils literal notranslate"><span class="pre">bcfa,2</span> <span class="pre">[target]</span></code> or according to the following syntax:</p>
 <table class="docutils align-default" id="br-cond-syntax-2">
-<caption><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-2" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 12 </span><span class="caption-text">Branch condition syntax</span><a class="headerlink" href="#br-cond-syntax-2" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Syntax</p></th>
 <th class="head"><p>Mask value</p></th>
@@ -1920,7 +1921,7 @@ Relative instructions reference a memory location relative to the current Progra
 </div>
 <p>This immediate-addressed instruction tests bits in the PSU according to the mask in its immediate argument. Every bit in the PSU for which there is a one in the mask is checked. The test succeeds if all checked bits are one.</p>
 <table class="docutils align-default" id="condition-codes-tpsu">
-<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsu" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 13 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsu" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Meaning</p></th>
 <th class="head"><p>CC</p></th>
@@ -1950,7 +1951,7 @@ Relative instructions reference a memory location relative to the current Progra
 </div>
 <p>This immediate-addressed instruction tests bits in the PSL according to the mask in its immediate argument. Every bit in the PSL for which there is a one in the mask is checked. The test succeeds if all checked bits are one.</p>
 <table class="docutils align-default" id="condition-codes-tpsl">
-<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsl" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 14 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tpsl" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Meaning</p></th>
 <th class="head"><p>CC</p></th>
@@ -1995,7 +1996,7 @@ Relative instructions reference a memory location relative to the current Progra
 </div>
 <p>This immediate-addressed instruction tests bits in the value of the specified register according to the mask in its immediate argument. Every bit in the register value for which there is a one in the mask is checked. The test succeeds if all checked bits are ones.</p>
 <table class="docutils align-default" id="condition-codes-tmi">
-<caption><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tmi" title="Link to this table"></a></caption>
+<caption><span class="caption-number">Table 15 </span><span class="caption-text">Condition Codes</span><a class="headerlink" href="#condition-codes-tmi" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Meaning</p></th>
 <th class="head"><p>CC</p></th>
@@ -2586,7 +2587,7 @@ Additionally, the instruction has no effect if the global Interrupt Inhibit flag
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="io.html" class="btn btn-neutral float-left" title="Input / Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interrupt-model.html" class="btn btn-neutral float-left" title="Interrupt Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

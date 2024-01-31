@@ -4,7 +4,7 @@
 
 This is a microcontroller / microprocessor architecture submitted to GFMPW-0 and GFMPW-1. It contains an 8-bit CPU core with 4KiB of on-die RAM as well as various I/O capabilities:
 
-* Three 16-bit timers, two usable as frequency generators
+* Three 16-bit timers, two usable as frequency generators, two with external clock input option
 * Three PWM channels
 * 16 GPIO lines
 * UART and SPI serial ports
@@ -13,3 +13,5 @@ This is a microcontroller / microprocessor architecture submitted to GFMPW-0 and
 Additionaly, the amount of memory accessible to the CPU is externally expandable to 64KiB.
 
 Each of these capabilities has been encapsulated in its own macro, connected to the CPU using the same internal bus interface. This should make re-using these components in other projects easy.
+
+Read the full documentation [here](https://avalonsemiconductors.github.io/AS2650).

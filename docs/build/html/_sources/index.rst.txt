@@ -19,7 +19,7 @@
    -->
 
 ========
-AS2650-2
+AS2650v2
 ========
 
 .. toctree::
@@ -32,4 +32,5 @@ AS2650-2
    internal-memory
    wishbone-regs
    io
+   interrupt-model
    isa

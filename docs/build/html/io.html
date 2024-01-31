@@ -25,7 +25,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Instruction Set Architecture" href="isa.html" />
+    <link rel="next" title="Interrupt Model" href="interrupt-model.html" />
     <link rel="prev" title="Wishbone Registers" href="wishbone-regs.html" /> 
 </head>
 
@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#accessing-io-and-peripherals">Accessing IO and peripherals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gpio-ports-and-alternate-functions">GPIO ports and alternate functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#register-descriptions">Register descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interrupts">Interrupts</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#timers-counters">Timers/Counters</a><ul>
@@ -75,6 +76,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="interrupt-model.html">Interrupt Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="isa.html">Instruction Set Architecture</a></li>
 </ul>
 
@@ -108,7 +110,7 @@
 <section id="accessing-io-and-peripherals">
 <h2>Accessing IO and peripherals<a class="headerlink" href="#accessing-io-and-peripherals" title="Link to this heading"></a></h2>
 <p>On-die IO and peripherals are not memory-mapped. Instead, a set of special CPU instructions, <code class="docutils literal notranslate"><span class="pre">wrte</span></code> and <code class="docutils literal notranslate"><span class="pre">rede</span></code> are used. These instructions always have an argument of an 8-bit address. This address is used to select a register inside a IO or peripheral to read or write. The rest of this chapter describes register locations in terms of this IO address.</p>
-<p>This IO address is internally decoded by splitting it into a device and register address. The most-significant two bits of the address are used to select one of four macros on the die, while the remaining 6 bits are used to address a particular register within that macro.</p>
+<p>The IO address is internally decoded by splitting it into a device and register address. The most-significant two bits of the address are used to select one of four macros on the die, while the remaining 6 bits are used to address a particular register within that macro.</p>
 <table class="docutils align-default" id="macro-addr">
 <caption><span class="caption-number">Table 2 </span><span class="caption-text">Macro addresses</span><a class="headerlink" href="#macro-addr" title="Link to this table"></a></caption>
 <thead>
@@ -134,7 +136,7 @@
 </section>
 <section id="gpio-ports-and-alternate-functions">
 <h2>GPIO ports and alternate functions<a class="headerlink" href="#gpio-ports-and-alternate-functions" title="Link to this heading"></a></h2>
-<p>Most IO functionality of the AS2650v2 is exposed through its two 8-bit GPIO ports PORTA and PORTB. By default, both ports act as bi-directional inputs/output ports who’s direction and state can be set by the processor. However, each pin can also be individually set to expose the functionality of another IO peripheral, as described in the following tables.</p>
+<p>Most IO functionality of the AS2650v2 is exposed through its two 8-bit GPIO ports PORTA and PORTB. By default, both ports act as bi-directional input/output ports who’s direction and state can be set by the processor. However, each pin can also be individually set to expose the functionality of another IO peripheral, as described in the following tables.</p>
 <table class="docutils align-default" id="portb-alt">
 <caption><span class="caption-number">Table 3 </span><span class="caption-text">PORTA alternate functions</span><a class="headerlink" href="#portb-alt" title="Link to this table"></a></caption>
 <thead>
@@ -346,6 +348,10 @@
 <p>Writing a one into any of the <code class="docutils literal notranslate"><span class="pre">ICx</span></code> bits in this register will clear that external interrupt request latch, removing the pending interrupt.</p>
 <p>Additionally, this register can be read, in which case the bits reflect which interrupts are currently pending.</p>
 </section>
+<section id="interrupts">
+<h3>Interrupts<a class="headerlink" href="#interrupts" title="Link to this heading"></a></h3>
+<p>Three of the GPIO pins have an alternate function of an interrupt request. These are only active if the alternate function is active. However, pending interrupts will not be cleared by disabling the alternate function on these pins. The interrupts are edge-sensitive going low to high.</p>
+</section>
 </section>
 <section id="timers-counters">
 <h2>Timers/Counters<a class="headerlink" href="#timers-counters" title="Link to this heading"></a></h2>
@@ -381,11 +387,12 @@ The 16-bit prescaler and top registers behave similarly, with the LSB having to 
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">T0IE</span></code>, <code class="docutils literal notranslate"><span class="pre">T1IE</span></code> and <code class="docutils literal notranslate"><span class="pre">T2IE</span></code> are the interrupt enables for timers/counters 0, 1 and 2 respectively. If set to a one and that timer reaches top, an interrupt is generated.</p>
 <p>The priorities for these interrupts are:</p>
-<p>Timer/Counter 0: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
-<p>Timer/Counter 1: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
-<p>Timer/Counter 2: <code class="docutils literal notranslate"><span class="pre">5</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">IC1</span></code>, <code class="docutils literal notranslate"><span class="pre">IC2</span></code>, <code class="docutils literal notranslate"><span class="pre">IC5</span></code> are the interrupt resets for the timer/counter interrupts. These bits must be all zero for the setting bits to be changed. If any of these bits are not zero during a write operation, only the interrupt reset(s) will occur. No settings will be changed, making the remaining 5 bits don’t-care.</p>
-<p><code class="docutils literal notranslate"><span class="pre">T0EXT</span></code>, <code class="docutils literal notranslate"><span class="pre">T1EXT</span></code> are the external clock input enables for timers/counters 0 and 1. Setting either bit will put that timer/counter into “counter” mode, switching its clock source from the processor clock to an external clock input. The alternative function selects on PORTB must also be set to expose these clock inputs.</p>
+<p>Timer/Counter 0: <code class="docutils literal notranslate"><span class="pre">IRQ1</span></code></p>
+<p>Timer/Counter 1: <code class="docutils literal notranslate"><span class="pre">IRQ2</span></code></p>
+<p>Timer/Counter 2: <code class="docutils literal notranslate"><span class="pre">IRQ5</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">IC1</span></code>, <code class="docutils literal notranslate"><span class="pre">IC2</span></code>, <code class="docutils literal notranslate"><span class="pre">IC5</span></code> are the interrupt clears for the timer/counter interrupts. These bits must be all zero for the setting bits to be changed. If any of these bits are not zero during a write operation, only the interrupt clear(s) will occur. No settings will be changed, making the remaining 5 bits don’t-care.</p>
+<p><code class="docutils literal notranslate"><span class="pre">T0EXT</span></code>, <code class="docutils literal notranslate"><span class="pre">T1EXT</span></code> are the external clock input enables for timers/counters 0 and 1. Setting either bit will put that timer/counter into “counter” mode, switching its clock source from the processor clock to an external clock input. The alternative function selects on PORTB must also be set to expose these clock inputs. The prescaler still applies to the external clock inputs.</p>
+<p><em>Note:</em> due to a hardware bug, attempts to read this register will return invalid data. Do not read this register.</p>
 <p><strong>TCR - Timer Capture Register</strong></p>
 <p>Timer/counter values may be captured by writing into this register, a which point every timer/counter’s current value will be copied into its corresponding Capture Data Register. The value written is discarded. The action of attempting to write to this IO address is what triggers the capture.</p>
 <p>Address: 0x41</p>
@@ -450,6 +457,7 @@ The 16-bit prescaler and top registers behave similarly, with the LSB having to 
 }
 </script>
 </div>
+<p>The final timer/counter up-count rate will be <code class="docutils literal notranslate"><span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(TxPRE</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
 <p><strong>TxTOP - Timer 0/1/2 Top</strong></p>
 <p>Address: 0x48</p>
 
@@ -581,7 +589,7 @@ The PWM signals are always generated. Using them only requires selecting them in
 <section id="id2">
 <h3>Register descriptions<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p><strong>PWx - Pulse Width 0/1/2</strong></p>
-<p>The registers inversely adjust the pulse width of each channel from 0 (longest) to 254 (shortest). Setting a value of 255 will cause the output to be always on.</p>
+<p>These registers inversely adjust the pulse width of each channel from 0 (longest) to 254 (shortest). Setting a value of 255 will cause the output to be always on.</p>
 <p>Address: 0x54</p>
 
 <div style="overflow-x:auto">
@@ -654,7 +662,7 @@ The PWM signals are always generated. Using them only requires selecting them in
   }
 </script>
 </div>
-<p>This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to CPU clock / (UDIV + 1).</p>
+<p>This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(UDIV</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
 <p><strong>STAT - Serial Status</strong></p>
 <p>Address: 0x83</p>
 
@@ -684,7 +692,7 @@ The PWM signals are always generated. Using them only requires selecting them in
   }
 </script>
 </div>
-<p>This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to CPU clock / (SDIV * 2 + 1).</p>
+<p>This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(SDIV</span> <span class="pre">*</span> <span class="pre">2</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
 <p><strong>UDR - UART Data Register</strong></p>
 <p>Address: 0x85</p>
 
@@ -725,7 +733,7 @@ The PWM signals are always generated. Using them only requires selecting them in
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="wishbone-regs.html" class="btn btn-neutral float-left" title="Wishbone Registers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="isa.html" class="btn btn-neutral float-right" title="Instruction Set Architecture" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="interrupt-model.html" class="btn btn-neutral float-right" title="Interrupt Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
