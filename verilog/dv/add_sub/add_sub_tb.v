@@ -286,7 +286,7 @@ module add_sub_tb;
 				lodi_exec(0, in2);
 				immediate_exec(8'h75, 1);
 				expected = {1'b1, in2} - {1'b0, in1} - 9'h001;
-				implied_exec(8'h81);
+				implied_exec(8'hA1);
 
 				wait(full_addr == address_counter && OEb == 0);
 				bus_in = 8'hC8;

@@ -27,6 +27,7 @@ wire [37:0] io_out;
 wire [37:0] io_oeb;
 
 assign io_in[0] = rst_n;
+assign io_in[36:1] = 0;
 
 wire ROM_CS = io_out[34];
 wire SCLK = io_out[35];

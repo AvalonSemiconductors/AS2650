@@ -139,6 +139,7 @@ jobs:
       - name: Harden using Openlane
         run: |
           make uncompress
+          rm gds/wrapped_as2650.gds
           make wrapped_as2650
           rm -rf openlane/wrapped_as2650/runs
           make gpios
@@ -243,7 +244,7 @@ jobs:
           path: |
             /home/runner/work/AS2650/AS2650/gds/serial_ports.gds.gltf
             /home/runner/work/AS2650/AS2650/gds/boot_rom.gds.gltf
-            /home/runner/work/AS2650/AS2650/gds/user_project_wrapper.gds.gltf
+            /home/runner/work/AS2650/AS2650/gds/wrapped_as2650.gds.gltf
   generate_svg:
     runs-on: ubuntu-latest
     needs: [user_project_flow_gf180mcuD]
@@ -283,6 +284,22 @@ jobs:
           top_cells = library.top_level()
           top_cells[0].write_svg('/tmp/svg/user_project_wrapper.svg')
           
+          library = gdstk.read_gds('/tmp/gds/avali_logo.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/avali_logo.svg')
+          
+          library = gdstk.read_gds('/tmp/gds/gpios.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/gpios.svg')
+          
+          library = gdstk.read_gds('/tmp/gds/ram_controller.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/ram_controller.svg')
+          
+          library = gdstk.read_gds('/tmp/gds/boot_rom.gds')
+          top_cells = library.top_level()
+          top_cells[0].write_svg('/tmp/svg/boot_rom.svg')
+          
       - uses: actions/upload-artifact@v3
         with:
           name: SVG
@@ -290,3 +307,7 @@ jobs:
             /tmp/svg/wrapped_as2650.svg
             /tmp/svg/gf180_ram_512x8_wrapper_as2650.svg
             /tmp/svg/user_project_wrapper.svg
+            /tmp/svg/avali_logo.svg
+            /tmp/svg/gpios.svg
+            /tmp/svg/ram_controller.svg
+            /tmp/svg/boot_rom.svg
