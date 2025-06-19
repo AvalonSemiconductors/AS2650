@@ -265,7 +265,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install gdstk
-          python -m pip install numpy==1.23.5
+          python -m pip install numpy
           
       - name: Generate SVGs
         run: |
