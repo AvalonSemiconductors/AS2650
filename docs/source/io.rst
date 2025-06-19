@@ -165,7 +165,9 @@ Address: 0x03
 
 **PINA/PINB - Input data of PORTA/PORTB**
 
-Data read from each port pin configured as an input can be accessed by the processor by reading these registers. They may only be read.
+Data read from each port pin configured as an input can be accessed by the processor by reading these registers. For pins configured as outputs, their current state set in PORTx will be mirrored in PINx.
+
+These registers may only be read.
 
 Address: 0x05
 
