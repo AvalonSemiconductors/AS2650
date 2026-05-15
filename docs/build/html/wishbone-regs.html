@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,23 +7,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wishbone Registers &mdash; AS2650-2  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="https://wavedrom.com/skins/default.js"></script>
-        <script src="https://wavedrom.com/wavedrom.min.js"></script>
-        <script src="_static/js/table.js?v=242732aa"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="https://wavedrom.com/skins/default.js"></script>
+      <script src="https://wavedrom.com/wavedrom.min.js"></script>
+      <script src="_static/js/table.js?v=242732aa"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -132,6 +130,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">web_behavior</span></code> modifies the way the signal on the <code class="docutils literal notranslate"><span class="pre">WE</span></code> pin is generated. With the default value of 0, it always stretches a full pulse width and all timing diagrams within this documentation assume this default is set. However, timing requirements with external memory or IO devices may be easier to meet with a differently shaped <code class="docutils literal notranslate"><span class="pre">WE</span></code>. These additional two options exist:</p>
 <p><code class="docutils literal notranslate"><span class="pre">1</span></code>: <code class="docutils literal notranslate"><span class="pre">WE</span></code> is only active when the clock is low.</p>
 <p><code class="docutils literal notranslate"><span class="pre">2</span></code>: <code class="docutils literal notranslate"><span class="pre">WE</span></code> is only active when the clock is high.</p>
+<p><em>Errata:</em> <code class="docutils literal notranslate"><span class="pre">web_behavior</span></code> does not work. Leave it set to 0 at all times.</p>
 <p><code class="docutils literal notranslate"><span class="pre">rst_ovr_en</span></code> and <code class="docutils literal notranslate"><span class="pre">rst_ovr</span></code> allow overriding of the AS2650v2’s reset signal. This may be required if other wishbone registers need to be configured before the CPU can run, i.e. when using the boot ROM. It can also technically be used to eliminate the need of an external reset signal alltogether.
 Setting <code class="docutils literal notranslate"><span class="pre">rst_ovr_en</span></code> enables the override, at which point the value in <code class="docutils literal notranslate"><span class="pre">rst_ovr</span></code> will become the AS2650v2’s new reset signal. The reset is active when <code class="docutils literal notranslate"><span class="pre">rst_ovr</span></code> is set.</p>
 <p><code class="docutils literal notranslate"><span class="pre">io3_test</span></code> and <code class="docutils literal notranslate"><span class="pre">io3_state</span></code> only exist to experimentally determine if <code class="docutils literal notranslate"><span class="pre">mprj_io[3]</span></code> is usable as an output by the user design, as it behaves oddly in simulations.</p>
@@ -151,6 +150,7 @@ Setting <code class="docutils literal notranslate"><span class="pre">rst_ovr_en<
 </script>
 </div>
 <p>This register is used to set the range of addresses that will be loaded by the boot ROM. The range is inclusive. For example, if the intended effect is it to load the contents of the entire internal SRAM, set <code class="docutils literal notranslate"><span class="pre">start_addr</span></code> to 0 and <code class="docutils literal notranslate"><span class="pre">end_addr</span></code> to 4095.</p>
+<p><em>Errata:</em> The highest memory address the boot ROM can access is 8191. Loading any more of the 65,536 byte address space is not possible. Setting <code class="docutils literal notranslate"><span class="pre">end_addr</span></code> to a value larger than 8191 will cause the boot ROM to repeatedly overwrite the contents of page 0.</p>
 </section>
 <section id="wb-rom-opts-2">
 <h2>wb_rom_opts_2<a class="headerlink" href="#wb-rom-opts-2" title="Link to this heading"></a></h2>

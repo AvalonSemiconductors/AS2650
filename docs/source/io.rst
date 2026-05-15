@@ -526,12 +526,13 @@ Address: 0x80
 .. wavedrom::
 
 	{ "reg": [
-	  {"name": "UIE", "bits": 1},
-      {"type": "1", "bits": 7}],
-	 "config": {"hspace": 700}
+		{"name": "UIE", "bits": 1},
+		{"name": "ICL", "bits": 1},
+		{"type": "1", "bits": 6}],
+		"config": {"hspace": 700}
 	}
 
-Writing a one to this register enables the UART to trigger an interrupt whenever it has received a full character.
+Writing a one to `UIE` enables the UART to trigger an interrupt whenever it has received a full character. To clear this interrupt, the `URX` register must first be read, and then a one written into `ICL`.
 
 **UDIV - UART Clock Divider**
 
@@ -557,7 +558,7 @@ This register defines the amount by which the processor clock is divided to arri
 
 **STAT - Serial Status**
 
-Address: 0x83
+Address: 0x83 (read-only)
 
 .. wavedrom::
 
@@ -590,30 +591,78 @@ Address: 0x84
 
 This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to ``CPU clock / (SDIV * 2 + 1)``.
 
-**UDR - UART Data Register**
+**UTX - UART Transmit Data Register**
 
-Address: 0x85
-
-.. wavedrom::
-
-	{ "reg": [
-      {"name": "UDR", "bits": 8}],
-	 "config": {"hspace": 700}
-	}
-
-This register is used to transfer characters in and out of the UART. Writing this register immediately begins a UART transfer. ``UBUSY`` is set and the written character is sent out serially over ``TXD`` at the rate defined in ``UDIV``.
-
-If this register is read, the last character received by the UART on the ``RXD`` line is retreived. This also clears the ``UHB`` flag and any pending UART interrupt.
-
-**SDR - SPI Data Register**
-
-Address: 0x86
+Address: 0x83 (write-only)
 
 .. wavedrom::
 
 	{ "reg": [
-      {"name": "SDR", "bits": 8}],
-	 "config": {"hspace": 700}
+		{"name": "UTX", "bits": 8}],
+		"config": {"hspace": 700}
 	}
 
-This register is used to transfer bytes in and out of the SPI port. Writing this register immediately begins a SPI full-duplex transfer. ``SBUSY`` is set and the written byte is sent out serially over ``SDO`` at the rate defined in ``SDIV``. Simultaneously, a byte is received over ``SDI``. Once the transfer is complete and ``SBUSY`` is cleared, the ``SDR`` will contain the received byte, which can now be read by the processor.
+This register is used to transfer characters out of the UART. Writing this register immediately begins a UART transfer. ``UBUSY`` is set and the written character is sent out serially over ``TXD`` at the rate defined in ``UDIV``.
+
+**URX - UART Receive Data Register**
+
+Address: 0x86 (read-only)
+
+.. wavedrom::
+
+	{ "reg": [
+		{"name": "URX", "bits": 8}],
+		"config": {"hspace": 700}
+	}
+
+If this register is read, the last character received by the UART on the ``RXD`` line is retrieved. This also clears the ``UHB`` flag and allows any pending UART interrupt be cleared by writing a one to `ICL` in `UIE`.
+
+**STX - SPI Transmit Data Register**
+
+Address: 0x85 (write-only)
+
+.. wavedrom::
+
+	{ "reg": [
+		{"name": "STX", "bits": 8}],
+		"config": {"hspace": 700}
+	}
+
+This register is used to transfer bytes in out of the SPI port. Writing this register immediately begins a SPI full-duplex transfer. ``SBUSY`` is set and the written byte is sent out serially over ``SDO`` at the rate defined in ``SDIV``. Simultaneously, a byte is received over ``SDI``. Once the transfer is complete and ``SBUSY`` is cleared, the ``SRX`` register will contain the received byte, which can now be read by the processor.
+
+**SRX - SPI Receive Data Register**
+
+Address: 0x86 (read-only)
+
+.. wavedrom::
+
+	{ "reg": [
+		{"name": "SRX", "bits": 8}],
+		"config": {"hspace": 700}
+	}
+
+After a complete SPI transfer triggered by a write to `STX` has been completed, the byte that was received can be read out of `SRX`.
+
+---------------
+Sound Interface
+---------------
+
+The last IO peripheral is a complete Commodore 64 SID as well as a TI SN76489. The SID registers lie within addresses 0xC0 - 0xDC (inclusive) and the SN76489 can be controlled by writing to address 0xDF. Both peripherals require an external DAC (recommended DAC7611), the interface for which is exposed on the alternate functions of ``PB4`` - ``PB7``. The serial clock and latch enable lines are shared between both peripherals. ``DAC0 DAT``, alternate function on ``PB5``, outputs the serial data from the SID and ``DAC1 DAT``, alternate function on ``PB4``, outputs the serial data from the SN76489. Both peripherals are recommended to be operated at a clock of 8MHz. To allow the processor to be clocked at a higher speed, a clock divider for the sound interface is provided:
+
+**SCD - Sound Clock Div**
+
+Address: 0xD9 (write-only)
+
+.. wavedrom::
+
+	{ "reg": [
+		{"name": "SCD", "bits": 2},
+		{"type": "1", "bits": 6}],
+		"config": {"hspace": 700}
+	}
+
+The clock speed with which the sound interface peripherals run at will be equal to ``CPU clock / (SCD + 1)``.
+
+For a functional description of the SID, see `this page <https://www.waitingforfriday.com/?p=661>`__.
+
+For a functional description of the SN76489, see `its datasheet <https://files.tholin.dev/Public/Datasheets/PSG/SN76489AN_-_Manual.pdf>`__.

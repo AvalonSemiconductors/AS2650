@@ -50,6 +50,8 @@ Address: 0x30200000
 
 ``2``: ``WE`` is only active when the clock is high.
 
+*Errata:* ``web_behavior`` does not work. Leave it set to 0 at all times.
+
 ``rst_ovr_en`` and ``rst_ovr`` allow overriding of the AS2650v2’s reset signal. This may be required if other wishbone registers need to be configured before the CPU can run, i.e. when using the boot ROM. It can also technically be used to eliminate the need of an external reset signal alltogether.
 Setting ``rst_ovr_en`` enables the override, at which point the value in ``rst_ovr`` will become the AS2650v2’s new reset signal. The reset is active when ``rst_ovr`` is set.
 
@@ -71,6 +73,8 @@ Address: 0x30100000
 	}
 
 This register is used to set the range of addresses that will be loaded by the boot ROM. The range is inclusive. For example, if the intended effect is it to load the contents of the entire internal SRAM, set ``start_addr`` to 0 and ``end_addr`` to 4095.
+
+*Errata:* The highest memory address the boot ROM can access is 8191. Loading any more of the 65,536 byte address space is not possible. Setting ``end_addr`` to a value larger than 8191 will cause the boot ROM to repeatedly overwrite the contents of page 0.
 
 wb_rom_opts_2
 -------------

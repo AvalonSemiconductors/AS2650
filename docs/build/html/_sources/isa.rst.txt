@@ -814,7 +814,7 @@ The PSL contains all processor flags and settings.
 
 ``WC`` is a processor setting that modifies the behavior of addition and subtraction instructions, as well as left- and right-rotate.
 
-``IDC`` is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction of bitshift operation. It is used in combination with the ``dar`` instruction to perform arithmatic on packed BCD values.
+``IDC`` is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction or bitshift operation. It is used in combination with the ``dar`` instruction to perform arithmatic on packed BCD values.
 
 ``CC`` is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare and bit-test instructions. This code can be tested by software or conditional branch instructions.
 
@@ -856,7 +856,7 @@ Instruction Addressing Modes
 Implied
 -------
 
-The instruction consists only of a 8-bit opcode. All operands are implied.
+The instruction consists only of an 8-bit opcode. All operands are implied.
 
 .. wavedrom::
 

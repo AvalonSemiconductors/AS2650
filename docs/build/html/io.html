@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,23 +7,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Input / Output &mdash; AS2650-2  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="https://wavedrom.com/skins/default.js"></script>
-        <script src="https://wavedrom.com/wavedrom.min.js"></script>
-        <script src="_static/js/table.js?v=242732aa"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="https://wavedrom.com/skins/default.js"></script>
+      <script src="https://wavedrom.com/wavedrom.min.js"></script>
+      <script src="_static/js/table.js?v=242732aa"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -74,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id3">Register descriptions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#sound-interface">Sound Interface</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="interrupt-model.html">Interrupt Model</a></li>
@@ -288,7 +287,8 @@
 </script>
 </div>
 <p><strong>PINA/PINB - Input data of PORTA/PORTB</strong></p>
-<p>Data read from each port pin configured as an input can be accessed by the processor by reading these registers. They may only be read.</p>
+<p>Data read from each port pin configured as an input can be accessed by the processor by reading these registers. For pins configured as outputs, their current state set in PORTx will be mirrored in PINx.</p>
+<p>These registers may only be read.</p>
 <p>Address: 0x05</p>
 
 <div style="overflow-x:auto">
@@ -633,14 +633,15 @@ The PWM signals are always generated. Using them only requires selecting them in
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
-  { "reg": [
-    {"name": "UIE", "bits": 1},
-{"type": "1", "bits": 7}],
-   "config": {"hspace": 700}
-  }
+{ "reg": [
+        {"name": "UIE", "bits": 1},
+        {"name": "ICL", "bits": 1},
+        {"type": "1", "bits": 6}],
+        "config": {"hspace": 700}
+}
 </script>
 </div>
-<p>Writing a one to this register enables the UART to trigger an interrupt whenever it has received a full character.</p>
+<p>Writing a one to <cite>UIE</cite> enables the UART to trigger an interrupt whenever it has received a full character. To clear this interrupt, the <cite>URX</cite> register must first be read, and then a one written into <cite>ICL</cite>.</p>
 <p><strong>UDIV - UART Clock Divider</strong></p>
 <p>Address: 0x81</p>
 
@@ -664,7 +665,7 @@ The PWM signals are always generated. Using them only requires selecting them in
 </div>
 <p>This register defines the amount by which the processor clock is divided to arrive at the UART bitclock. The UART bitclock will be equal to <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(UDIV</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
 <p><strong>STAT - Serial Status</strong></p>
-<p>Address: 0x83</p>
+<p>Address: 0x83 (read-only)</p>
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
@@ -693,32 +694,74 @@ The PWM signals are always generated. Using them only requires selecting them in
 </script>
 </div>
 <p>This register defines the amount by which the processor clock is divided to arrive at the SPI serial clock. The SPI serial clock will be equal to <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(SDIV</span> <span class="pre">*</span> <span class="pre">2</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
-<p><strong>UDR - UART Data Register</strong></p>
-<p>Address: 0x85</p>
+<p><strong>UTX - UART Transmit Data Register</strong></p>
+<p>Address: 0x83 (write-only)</p>
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
-  { "reg": [
-{"name": "UDR", "bits": 8}],
-   "config": {"hspace": 700}
-  }
+{ "reg": [
+        {"name": "UTX", "bits": 8}],
+        "config": {"hspace": 700}
+}
 </script>
 </div>
-<p>This register is used to transfer characters in and out of the UART. Writing this register immediately begins a UART transfer. <code class="docutils literal notranslate"><span class="pre">UBUSY</span></code> is set and the written character is sent out serially over <code class="docutils literal notranslate"><span class="pre">TXD</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">UDIV</span></code>.</p>
-<p>If this register is read, the last character received by the UART on the <code class="docutils literal notranslate"><span class="pre">RXD</span></code> line is retreived. This also clears the <code class="docutils literal notranslate"><span class="pre">UHB</span></code> flag and any pending UART interrupt.</p>
-<p><strong>SDR - SPI Data Register</strong></p>
-<p>Address: 0x86</p>
+<p>This register is used to transfer characters out of the UART. Writing this register immediately begins a UART transfer. <code class="docutils literal notranslate"><span class="pre">UBUSY</span></code> is set and the written character is sent out serially over <code class="docutils literal notranslate"><span class="pre">TXD</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">UDIV</span></code>.</p>
+<p><strong>URX - UART Receive Data Register</strong></p>
+<p>Address: 0x86 (read-only)</p>
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
-  { "reg": [
-{"name": "SDR", "bits": 8}],
-   "config": {"hspace": 700}
-  }
+{ "reg": [
+        {"name": "URX", "bits": 8}],
+        "config": {"hspace": 700}
+}
 </script>
 </div>
-<p>This register is used to transfer bytes in and out of the SPI port. Writing this register immediately begins a SPI full-duplex transfer. <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is set and the written byte is sent out serially over <code class="docutils literal notranslate"><span class="pre">SDO</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">SDIV</span></code>. Simultaneously, a byte is received over <code class="docutils literal notranslate"><span class="pre">SDI</span></code>. Once the transfer is complete and <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is cleared, the <code class="docutils literal notranslate"><span class="pre">SDR</span></code> will contain the received byte, which can now be read by the processor.</p>
+<p>If this register is read, the last character received by the UART on the <code class="docutils literal notranslate"><span class="pre">RXD</span></code> line is retrieved. This also clears the <code class="docutils literal notranslate"><span class="pre">UHB</span></code> flag and allows any pending UART interrupt be cleared by writing a one to <cite>ICL</cite> in <cite>UIE</cite>.</p>
+<p><strong>STX - SPI Transmit Data Register</strong></p>
+<p>Address: 0x85 (write-only)</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+        {"name": "STX", "bits": 8}],
+        "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>This register is used to transfer bytes in out of the SPI port. Writing this register immediately begins a SPI full-duplex transfer. <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is set and the written byte is sent out serially over <code class="docutils literal notranslate"><span class="pre">SDO</span></code> at the rate defined in <code class="docutils literal notranslate"><span class="pre">SDIV</span></code>. Simultaneously, a byte is received over <code class="docutils literal notranslate"><span class="pre">SDI</span></code>. Once the transfer is complete and <code class="docutils literal notranslate"><span class="pre">SBUSY</span></code> is cleared, the <code class="docutils literal notranslate"><span class="pre">SRX</span></code> register will contain the received byte, which can now be read by the processor.</p>
+<p><strong>SRX - SPI Receive Data Register</strong></p>
+<p>Address: 0x86 (read-only)</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+        {"name": "SRX", "bits": 8}],
+        "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>After a complete SPI transfer triggered by a write to <cite>STX</cite> has been completed, the byte that was received can be read out of <cite>SRX</cite>.</p>
 </section>
+</section>
+<section id="sound-interface">
+<h2>Sound Interface<a class="headerlink" href="#sound-interface" title="Link to this heading"></a></h2>
+<p>The last IO peripheral is a complete Commodore 64 SID as well as a TI SN76489. The SID registers lie within addresses 0xC0 - 0xDC (inclusive) and the SN76489 can be controlled by writing to address 0xDF. Both peripherals require an external DAC (recommended DAC7611), the interface for which is exposed on the alternate functions of <code class="docutils literal notranslate"><span class="pre">PB4</span></code> - <code class="docutils literal notranslate"><span class="pre">PB7</span></code>. The serial clock and latch enable lines are shared between both peripherals. <code class="docutils literal notranslate"><span class="pre">DAC0</span> <span class="pre">DAT</span></code>, alternate function on <code class="docutils literal notranslate"><span class="pre">PB5</span></code>, outputs the serial data from the SID and <code class="docutils literal notranslate"><span class="pre">DAC1</span> <span class="pre">DAT</span></code>, alternate function on <code class="docutils literal notranslate"><span class="pre">PB4</span></code>, outputs the serial data from the SN76489. Both peripherals are recommended to be operated at a clock of 8MHz. To allow the processor to be clocked at a higher speed, a clock divider for the sound interface is provided:</p>
+<p><strong>SCD - Sound Clock Div</strong></p>
+<p>Address: 0xD9 (write-only)</p>
+
+<div style="overflow-x:auto">
+<script type="WaveDrom">
+{ "reg": [
+        {"name": "SCD", "bits": 2},
+        {"type": "1", "bits": 6}],
+        "config": {"hspace": 700}
+}
+</script>
+</div>
+<p>The clock speed with which the sound interface peripherals run at will be equal to <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">clock</span> <span class="pre">/</span> <span class="pre">(SCD</span> <span class="pre">+</span> <span class="pre">1)</span></code>.</p>
+<p>For a functional description of the SID, see <a class="reference external" href="https://www.waitingforfriday.com/?p=661">this page</a>.</p>
+<p>For a functional description of the SN76489, see <a class="reference external" href="https://files.tholin.dev/Public/Datasheets/PSG/SN76489AN_-_Manual.pdf">its datasheet</a>.</p>
 </section>
 </section>
 

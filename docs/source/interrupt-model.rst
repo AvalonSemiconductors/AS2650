@@ -38,7 +38,7 @@ The following table summarizes all 8 IRQ sources:
       - Timer/Counter register "TS"
     * - IRQ3
       - UART receive interrupt
-      - Serial Port register "UDR"
+      - Serial Port register "UIE"
     * - IRQ4
       - ``trap`` instruction
       - ``clrt`` instruction

@@ -3,7 +3,7 @@
 Bus Interface
 =============
 
-On top of the on-die RAM, the AS2650v2 also provides an interface for attaching memory and IO devices externally, though an address/data bus.
+On top of the on-die RAM, the AS2650v2 also provides an interface for attaching memory and IO devices externally, through an address/data bus.
 
 16-bit addresses and 8-bit data is multiplexed on the ``ADB`` pins for this purpose. The control lines ``LE_LO``, ``LE_HI``, ``OE``, ``WE``, ``IOC`` and ``IOD`` control any address latches or memory and IO devices connected to this bus.
 

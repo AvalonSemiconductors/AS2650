@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,23 +7,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Instruction Set Architecture &mdash; AS2650-2  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/isa.css?v=cb7db27e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="https://wavedrom.com/skins/default.js"></script>
-        <script src="https://wavedrom.com/wavedrom.min.js"></script>
-        <script src="_static/js/table.js?v=242732aa"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="https://wavedrom.com/skins/default.js"></script>
+      <script src="https://wavedrom.com/wavedrom.min.js"></script>
+      <script src="_static/js/table.js?v=242732aa"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -966,7 +964,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">COM</span></code> is a processor setting that modifies the behavior of the compare instructions. If clear, they will compare values as two’s-complement signed bytes. If set, they will compare values as unsigned bytes.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OVF</span></code> if set, indicates that the last addition or subtraction operation resulted in an arithmatic overflow, meaning the result could not be represented by a signed byte.</p>
 <p><code class="docutils literal notranslate"><span class="pre">WC</span></code> is a processor setting that modifies the behavior of addition and subtraction instructions, as well as left- and right-rotate.</p>
-<p><code class="docutils literal notranslate"><span class="pre">IDC</span></code> is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction of bitshift operation. It is used in combination with the <code class="docutils literal notranslate"><span class="pre">dar</span></code> instruction to perform arithmatic on packed BCD values.</p>
+<p><code class="docutils literal notranslate"><span class="pre">IDC</span></code> is the Interdigit Carry, that is the carry from bit 3 to bit 4 during an addition, subtraction or bitshift operation. It is used in combination with the <code class="docutils literal notranslate"><span class="pre">dar</span></code> instruction to perform arithmatic on packed BCD values.</p>
 <p><code class="docutils literal notranslate"><span class="pre">CC</span></code> is the Condition Code. This code is set either by any instruction that modifies a general purpose register (unless otherwise specified) and compare and bit-test instructions. This code can be tested by software or conditional branch instructions.</p>
 <p>This PSL is initialized to 0 on reset.</p>
 <p>Unless otherwise specified, any instruction listed in this documentation that is described as affecting CC will do according to the new value in whichever register it modifies as listed in this table:</p>
@@ -1003,7 +1001,7 @@
 <h2>Instruction Addressing Modes<a class="headerlink" href="#instruction-addressing-modes" title="Link to this heading"></a></h2>
 <section id="implied">
 <h3>Implied<a class="headerlink" href="#implied" title="Link to this heading"></a></h3>
-<p>The instruction consists only of a 8-bit opcode. All operands are implied.</p>
+<p>The instruction consists only of an 8-bit opcode. All operands are implied.</p>
 
 <div style="overflow-x:auto">
 <script type="WaveDrom">
